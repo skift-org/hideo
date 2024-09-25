@@ -1,0 +1,16 @@
+{
+    "$schema": "https://schemas.cute.engineering/stable/cutekit.manifest.project.v1",
+    "id": "skift-org/hideo",
+    "type": "project",
+    "description": "A framework for modern C++ application development",
+    "extern": {
+        "skift-org/karm": {
+            "git": "https://github.com/skift-org/karm.git",
+            "tag": "v5"
+        },
+        "odoo/paper-muncher": {
+            "git": "https://github.com/odoo/paper-muncher",
+            "tag": "v0.1.O"
+        }
+    }
+}

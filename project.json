@@ -10,7 +10,7 @@
         },
         "odoo/paper-muncher": {
             "git": "https://github.com/odoo/paper-muncher",
-            "tag": "v0.1.O"
+            "tag": "v0.1.1"
         }
     }
 }

@@ -73,7 +73,7 @@ Ui::Child allFamiliesItem(State const &s, Str family) {
                Ui::labelMedium(Ui::GRAY500, "{} · {} {}", family, nStyle, nStyle == 1 ? "Style" : "Styles"),
                Ui::text(Text::ProseStyle{font}, PANGRAM)
            ) |
-           Ui::insets({12, 8, 0, 8}) |
+           Ui::insets({8, 0, 8, 12}) |
            Ui::hclip() |
            Ui::button(Model::bind<SelectFamily>(family), Ui::ButtonStyle::outline());
 }
@@ -132,7 +132,7 @@ Ui::Child familyItem(State const &, Strong<Text::Fontface> fontface) {
                Ui::text(Text::ProseStyle{font}, PANGRAM),
                fontfaceTags(attrs)
            ) |
-           Ui::insets({12, 8, 0, 8}) |
+           Ui::insets({8, 0, 8, 12}) |
            Ui::hclip() |
            Ui::button(Model::bind<SelectFace>(fontface), Ui::ButtonStyle::outline());
 }

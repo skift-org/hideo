@@ -205,7 +205,7 @@ Ui::Child editorControls(State const &state) {
                4,
                editorFilterControls(state.filter),
                editorFilters(state) |
-                   Ui::insets({8, 0, 8, 8}) |
+                   Ui::insets({0, 8, 8, 8}) |
                    Ui::hscroll()
            ) |
            Ui::slideIn(Ui::SlideFrom::BOTTOM);

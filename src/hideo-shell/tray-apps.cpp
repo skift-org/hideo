@@ -111,7 +111,7 @@ Ui::Child runningApps(State const &state) {
                    })
                    .collect<Ui::Children>()
            ) |
-           Ui::center() | Ui::insets({0, 64, 0, 16});
+           Ui::center() | Ui::insets({64, 0, 16, 0});
 }
 
 Ui::Child apps(State const &state) {
@@ -155,7 +155,7 @@ Ui::Child appsFlyout(State const &state) {
             apps(state) | Ui::grow()
         ) |
             Ui::box({
-                .margin = {8, 8, 8, 8},
+                .margin = {8},
                 .padding = {12, 0},
                 .borderRadii = 8,
                 .borderWidth = 1,

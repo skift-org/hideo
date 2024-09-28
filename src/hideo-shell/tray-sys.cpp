@@ -321,7 +321,7 @@ Ui::Child notiPanel(State const &state) {
     return Ui::vflow(
                8,
                Ui::labelMedium("Notifications") |
-                   Ui::insets({12, 6, 0, 0}),
+                   Ui::insets({6, 0, 0, 12}),
                notifications(state) | Ui::grow()
            ) |
            panel({500, 400});
@@ -329,8 +329,8 @@ Ui::Child notiPanel(State const &state) {
 
 Ui::Child sysFlyout(State const &state) {
     auto box = Ui::box({
-        .margin = {8, 8, 8, 32},
-        .padding = {12, 12, 12, 0},
+        .margin = {8, 8, 32, 8},
+        .padding = {12, 12, 0, 12},
         .borderRadii = 8,
         .borderWidth = 1,
         .borderFill = Ui::GRAY800,
@@ -341,7 +341,7 @@ Ui::Child sysFlyout(State const &state) {
     body.pushBack(quickheader(state));
     if (state.isSysPanelColapsed) {
         body.pushBack(colapsedQuickSettings(state));
-        body.pushBack(Ui::labelMedium("Notifications") | Ui::insets({12, 6, 0, 0}));
+        body.pushBack(Ui::labelMedium("Notifications") | Ui::insets({6, 0, 0, 12}));
         body.pushBack(notifications(state) | Ui::grow());
     } else {
         body.pushBack(expendedQuickSettings(state) | Ui::grow());

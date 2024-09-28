@@ -167,7 +167,7 @@ Ui::Child app() {
                             Ui::titleLarge(toStr(s.page)),
                             Ui::grow(NONE),
                             Ui::button(Ui::NOP, Ui::ButtonStyle::subtle(), Mdi::DOTS_HORIZONTAL)
-                        ) | Ui::insets({18, 18, 18, 0}),
+                        ) | Ui::insets({18, 18, 0, 18}),
                         appContent(s) | Ui::grow(),
                         navbar
                     );

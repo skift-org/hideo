@@ -111,7 +111,7 @@ Ui::Child addressBar(Mime::Url const &url) {
                Ui::button(Ui::NOP, Ui::ButtonStyle::subtle(), Mdi::BOOKMARK_OUTLINE)
            ) |
            Ui::box({
-               .padding = {12, 0, 0, 0},
+               .padding = {0, 0, 0, 12},
                .borderRadii = 4,
                .borderWidth = 1,
                .backgroundFill = Ui::GRAY800,

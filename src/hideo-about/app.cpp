@@ -35,7 +35,7 @@ Ui::Child app() {
                         Ui::bodySmall(wholesome(v))
                     );
 
-                    return body | Ui::insets({12, 6, 16, 6}) |
+                    return body | Ui::insets({6, 16, 6, 12}) |
                            Ui::minSize({Ui::UNCONSTRAINED, 36}) |
                            Ui::button(bind(v + 1), Ui::ButtonStyle::subtle());
                 });

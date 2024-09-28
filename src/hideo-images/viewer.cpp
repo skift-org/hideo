@@ -56,7 +56,7 @@ Ui::Child viewerControls(State const &) {
                Ui::button(Ui::NOP, Ui::ButtonStyle::subtle(), Mdi::ARROW_LEFT),
                Ui::button(Ui::NOP, Ui::ButtonStyle::subtle(), Mdi::ARROW_RIGHT)
            ) |
-           Ui::insets({0, 0, 0, 8}) |
+           Ui::insets({0, 0, 8, 0}) |
            Ui::center();
 }
 

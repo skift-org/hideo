@@ -4,7 +4,7 @@
     "type": "lib",
     "description": "Graphical user interface for desktop and mobile devices",
     "requires": [
-        "hideo-keyboard-base",
+        "hideo-keyboard",
         "karm-kira"
     ]
 }

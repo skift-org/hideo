@@ -7,9 +7,11 @@
     A modern desktop environment for Skift & Linux
 </p>
 <br/>
+<br/>
 
 ![](doc/assets/capture.jpg)
 
+<br/>
 <br/>
 
 ## License

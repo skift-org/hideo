@@ -90,7 +90,7 @@ Ui::Child screen(State const &state) {
                      : Ui::headlineMedium("{}", state.hasRhs ? state.rhs : state.lhs)) |
         Ui::align(Math::Align::VCENTER | Math::Align::END);
 
-    return Ui::vflow(8, /* debugExpr, */ currExpr, result) | Ui::insets({16, 8});
+    return Ui::vflow(8, /* debugExpr, */ currExpr, result) | Ui::insets({8, 16});
 }
 
 Ui::Child app() {

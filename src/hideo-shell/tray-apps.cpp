@@ -21,7 +21,7 @@ Ui::Child searchInput() {
                Ui::text(Ui::TextStyles::labelMedium().withColor(Ui::GRAY400), "Search…") | Ui::grow(),
                Ui::icon(Mdi::MAGNIFY, 24)
            ) |
-           Ui::insets({12, 8}) |
+           Ui::insets({8, 12}) |
            Ui::box({
                .borderRadii = 4,
                .borderWidth = 1,
@@ -139,7 +139,7 @@ Ui::Child apps(State const &state) {
         (state.isAppPanelThumbnails
              ? appsGrid(state)
              : appsList(state)) |
-            Ui::insets({0, 12}) | Ui::vscroll() | Ui::grow()
+            Ui::insets({12, 0}) | Ui::vscroll() | Ui::grow()
     );
 }
 
@@ -155,8 +155,8 @@ Ui::Child appsFlyout(State const &state) {
             apps(state) | Ui::grow()
         ) |
             Ui::box({
-                .margin = {8},
-                .padding = {12, 0},
+                .margin = 8,
+                .padding = {0, 12},
                 .borderRadii = 8,
                 .borderWidth = 1,
                 .borderFill = Ui::GRAY800,

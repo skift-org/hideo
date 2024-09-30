@@ -41,7 +41,7 @@ Ui::Child statusbar(State const &state) {
                36,
            }) |
            Ui::box({
-               .padding = {12, 0},
+               .padding = {0, 12},
                .backgroundFill = Ui::GRAY900,
            });
 }
@@ -101,7 +101,7 @@ Ui::Child taskbar(State const &state) {
         ) |
 
             Ui::center() |
-            Ui::insets({12, 6}) |
+            Ui::insets({6, 12}) |
             Ui::bound()
     );
 
@@ -225,7 +225,7 @@ Ui::Child desktopPanels(State const &state) {
                          Ui::slideIn(Ui::SlideFrom::TOP)
                    : Ui::empty()
            ) |
-           Ui::insets({8, 38});
+           Ui::insets({38, 8});
 }
 
 Ui::Child desktop(State const &state) {

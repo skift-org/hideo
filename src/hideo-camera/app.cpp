@@ -47,7 +47,7 @@ Ui::Child appContent() {
                 Mdi::TUNE
             )
         ) |
-        Ui::insets({24, 24});
+        Ui::insets(24);
 
     auto bottomBar =
         Ui::hflow(
@@ -70,7 +70,7 @@ Ui::Child appContent() {
             ) | Ui::center()
         ) |
         Ui::box({
-            .padding = {24, 16},
+            .padding = {16, 24},
             .backgroundFill = Gfx::BLACK.withOpacity(0.25),
         });
 

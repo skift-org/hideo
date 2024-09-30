@@ -108,9 +108,9 @@ Ui::Child app(Opt<Mime::Url> url, Res<String> str) {
                             0,
                             Math::Align::CENTER,
                             Ui::labelSmall("{}{}", s.url ? s.url->basename() : "Untitled", s.text->dirty() ? "*" : ""),
-                            Ui::icon(Mdi::CIRCLE_SMALL, Ui::GRAY700) | Ui::insets({-3, 0}),
+                            Ui::icon(Mdi::CIRCLE_SMALL, Ui::GRAY700) | Ui::insets({0, -3}),
                             Ui::text(Ui::TextStyles::labelSmall().withColor(Ui::GRAY500), "{}", s.url)
-                        ) | Ui::insets({16, 6}),
+                        ) | Ui::insets({6, 16}),
                         Ui::separator(),
 
                         s.error
@@ -128,7 +128,7 @@ Ui::Child app(Opt<Mime::Url> url, Res<String> str) {
                             Ui::separator(),
                             Ui::labelSmall("LF")
                         ) | Ui::box({
-                                .padding = {12, 6},
+                                .padding = {6, 12},
                                 .backgroundFill = Ui::GRAY900,
                             })
                     );

@@ -142,7 +142,7 @@ Ui::Child familyContent(State const &s) {
     auto &fontBook = s.fontBook;
     auto fontfaces = fontBook.queryFamily(s.fontFamily.unwrap());
 
-    auto header = Ui::labelSmall(s.fontFamily.unwrap()) | Ui::insets({16, 6});
+    auto header = Ui::labelSmall(s.fontFamily.unwrap()) | Ui::insets({6, 16});
 
     for (auto const &fontface : fontfaces) {
         children.pushBack(familyItem(s, fontface));
@@ -185,7 +185,7 @@ Ui::Child fontfaceContent(State const &s) {
             Math::Align::CENTER,
             Ui::labelSmall(attrs.normal() ? "{}" : "{}  · ", attrs.family),
             fontfaceTags(attrs)
-        ) | Ui::insets({16, 6}),
+        ) | Ui::insets({6, 16}),
         Ui::separator(),
         pangrams(fontface)
     );

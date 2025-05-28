@@ -5,8 +5,8 @@ import Hideo.Clock;
 import Karm.Ui;
 
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
-    Async::Cancelation c;
+    auto [cancelation, token] = Async::Cancelation::create();
     auto app = Hideo::Clock::app();
-    Async::detach(Hideo::Clock::timerTask(app, c.token()));
+    Async::detach(Hideo::Clock::timerTask(app, token));
     co_return co_await Ui::runAsync(ctx, app);
 }

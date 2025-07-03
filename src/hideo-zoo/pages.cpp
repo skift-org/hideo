@@ -2,14 +2,15 @@ module;
 
 #include <karm-logger/logger.h>
 #include <karm-math/align.h>
-#include <karm-print/page.h>
-#include <karm-print/printer.h>
+#include <karm-gfx/colors.h>
+#include <karm-text/prose.h>
 
 export module Hideo.Zoo:pages;
 
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Print;
 import Hideo.Files;
 import Hideo.Printers;
 import :model;

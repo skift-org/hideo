@@ -1,6 +1,5 @@
 module;
 
-#include <karm-app/form-factor.h>
 #include <karm-gfx/icon.h>
 #include <karm-image/picture.h>
 
@@ -8,6 +7,7 @@ export module Hideo.Shell:model;
 
 import Mdi;
 import Karm.Ui;
+import Karm.App;
 
 namespace Hideo::Shell {
 

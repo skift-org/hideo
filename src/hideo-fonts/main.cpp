@@ -11,7 +11,7 @@ namespace Hideo::Fonts {
 
 struct State {
     Text::FontBook fontBook;
-    Opt<String> fontFamily = NONE;
+    Opt<Symbol> fontFamily = NONE;
     Opt<Rc<Text::Fontface>> fontFace = NONE;
 
     State(Text::FontBook fontBook) : fontBook(fontBook) {}
@@ -24,7 +24,7 @@ struct State {
 struct GoBack {};
 
 struct SelectFamily {
-    String family;
+    Symbol family = ""_sym;
 };
 
 struct SelectFace {
@@ -59,10 +59,10 @@ static constexpr Str PANGRAM = "All beings born free, equal in dignity, rightsâ€
 
 // MARK: All Families ----------------------------------------------------------
 
-Ui::Child allFamiliesItem(State const& s, Str family) {
+Ui::Child allFamiliesItem(State const& s, Symbol family) {
     auto& fontBook = s.fontBook;
     auto nStyle = s.fontBook.queryFamily(family).len();
-    auto fontface = fontBook.queryClosest({.family = String{family}}).unwrap();
+    auto fontface = fontBook.queryClosest({.family = family}).unwrap();
 
     Text::Font font{
         .fontface = fontface,
@@ -143,7 +143,7 @@ Ui::Child familyContent(State const& s) {
     auto& fontBook = s.fontBook;
     auto fontfaces = fontBook.queryFamily(s.fontFamily.unwrap());
 
-    auto header = Ui::labelSmall(s.fontFamily.unwrap()) | Ui::insets({6, 16});
+    auto header = Ui::labelSmall("{}", s.fontFamily.unwrap()) | Ui::insets({6, 16});
 
     for (auto const& fontface : fontfaces) {
         children.pushBack(familyItem(s, fontface));

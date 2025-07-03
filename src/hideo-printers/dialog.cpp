@@ -1,16 +1,15 @@
 module;
 
-#include <karm-app/form-factor.h>
 #include <karm-base/func.h>
 #include <karm-math/align.h>
-#include <karm-print/file-printer.h>
-#include <karm-print/page.h>
-#include <karm-print/paper.h>
 #include <karm-sys/file.h>
 #include <karm-sys/proc.h>
+#include <karm-gfx/colors.h>
 
 export module Hideo.Printers:dialog;
 
+import Karm.App;
+import Karm.Print;
 import Karm.Kira;
 import Karm.Ui;
 

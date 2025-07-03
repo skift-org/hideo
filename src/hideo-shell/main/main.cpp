@@ -1,4 +1,3 @@
-#include <karm-app/form-factor.h>
 #include <karm-gfx/colors.h>
 #include <karm-image/loader.h>
 #include <karm-sys/entry.h>
@@ -6,6 +5,7 @@
 
 import Mdi;
 import Karm.Ui;
+import Karm.App;
 import Hideo.Shell;
 
 Async::Task<> entryPointAsync(Sys::Context& ctx) {

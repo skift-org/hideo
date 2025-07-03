@@ -1,6 +1,5 @@
 module;
 
-#include <karm-app/inputs.h>
 #include <karm-gfx/icon.h>
 #include <karm-math/align.h>
 #include <karm-mime/mime.h>
@@ -8,6 +7,7 @@ module;
 
 export module Hideo.Files:widgets;
 
+import Karm.App;
 import Karm.Ui;
 import Karm.Kira;
 import Mdi;

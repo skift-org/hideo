@@ -1,6 +1,5 @@
 module;
 
-#include <karm-app/form-factor.h>
 #include <karm-gfx/icon.h>
 #include <karm-sys/context.h>
 
@@ -8,6 +7,7 @@ export module Hideo.Settings:page_home;
 
 import Mdi;
 import Karm.Ui;
+import Karm.App;
 import :model;
 
 namespace Hideo::Settings {

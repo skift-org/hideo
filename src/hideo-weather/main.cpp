@@ -1,9 +1,9 @@
-#include <karm-image/loader.h>
 #include <karm-sys/entry.h>
 
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Image;
 
 namespace Hideo::Weather {
 

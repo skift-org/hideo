@@ -1,8 +1,8 @@
-#include <karm-image/loader.h>
 #include <karm-math/align.h>
 #include <karm-sys/entry.h>
 
 import Karm.Ui;
+import Karm.Image;
 
 namespace Hideo::Wear {
 

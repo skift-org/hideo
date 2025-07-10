@@ -1,12 +1,12 @@
 #include <karm-gfx/colors.h>
-#include <karm-image/loader.h>
 #include <karm-sys/entry.h>
 #include <karm-sys/time.h>
 
-import Mdi;
-import Karm.Ui;
-import Karm.App;
 import Hideo.Shell;
+import Karm.App;
+import Karm.Image;
+import Karm.Ui;
+import Mdi;
 
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
     auto args = useArgs(ctx);

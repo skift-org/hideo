@@ -1,10 +1,10 @@
 module;
 
 #include <karm-gfx/filters.h>
-#include <karm-image/picture.h>
 
 export module Hideo.Images:model;
 
+import Karm.Image;
 import Karm.Ui;
 
 namespace Hideo::Images {

@@ -6,6 +6,7 @@
         "cpp-excluded": true
     },
     "requires": [
+        "hideo-handheld",
         "karm-kira"
     ]
 }

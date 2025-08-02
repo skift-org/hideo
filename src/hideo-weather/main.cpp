@@ -5,6 +5,8 @@ import Karm.Ui;
 import Karm.Kira;
 import Karm.Image;
 
+using namespace Karm;
+
 namespace Hideo::Weather {
 
 Ui::Child app() {

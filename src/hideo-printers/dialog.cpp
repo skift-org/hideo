@@ -1,6 +1,5 @@
 module;
 
-#include <karm-base/func.h>
 #include <karm-math/align.h>
 #include <karm-sys/file.h>
 #include <karm-sys/proc.h>
@@ -8,10 +7,13 @@ module;
 
 export module Hideo.Printers:dialog;
 
+import Karm.Core;
 import Karm.App;
 import Karm.Print;
 import Karm.Kira;
 import Karm.Ui;
+
+using namespace Karm;
 
 namespace Hideo::Printers {
 

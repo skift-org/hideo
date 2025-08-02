@@ -3,7 +3,7 @@ module;
 #include <karm-gfx/colors.h>
 #include <karm-sys/info.h>
 
-export module Hideo.Settings:page_about;
+export module Hideo.Settings:pageAbout;
 
 import Mdi;
 import Karm.Kira;

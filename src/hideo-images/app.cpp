@@ -1,9 +1,6 @@
-module;
-
-#include <karm-base/string.h>
-
 export module Hideo.Images;
 
+import Karm.Core;
 import :editor;
 import :viewer;
 

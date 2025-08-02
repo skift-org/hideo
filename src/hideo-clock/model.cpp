@@ -6,6 +6,8 @@ export module Hideo.Clock:model;
 
 import Karm.Ui;
 
+using namespace Karm;
+
 namespace Hideo::Clock {
 
 export enum struct Page {

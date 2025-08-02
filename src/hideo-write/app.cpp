@@ -1,12 +1,13 @@
 module;
 
-#include <karm-base/string.h>
-
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Core;
 
 export module Hideo.Write;
+
+using namespace Karm;
 
 namespace Hideo::Write {
 

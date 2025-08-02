@@ -1,12 +1,11 @@
-module;
-
-#include <karm-base/string.h>
-
 export module Hideo.Peoples;
 
 import Mdi;
+import Karm.Core;
 import Karm.Ui;
 import Karm.Kira;
+
+using namespace Karm;
 
 namespace Hideo::Peoples {
 

@@ -1,12 +1,9 @@
-module;
-
-#include <karm-base/string.h>
-#include <karm-base/union.h>
-#include <karm-math/funcs.h>
-
 export module Hideo.Calculator:model;
 
+import Karm.Core;
 import Karm.Ui;
+
+using namespace Karm;
 
 namespace Hideo::Calculator {
 

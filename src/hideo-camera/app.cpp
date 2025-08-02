@@ -1,6 +1,5 @@
 module;
 
-#include <karm-base/string.h>
 #include <karm-gfx/canvas.h>
 
 export module Hideo.Camera;
@@ -8,6 +7,9 @@ export module Hideo.Camera;
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Core;
+
+using namespace Karm;
 
 namespace Hideo::Camera {
 

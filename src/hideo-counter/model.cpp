@@ -1,10 +1,9 @@
-module;
-
-#include <karm-base/union.h>
-
 export module Hideo.Counter:model;
 
+import Karm.Core;
 import Karm.Ui;
+
+using namespace Karm;
 
 namespace Hideo::Counter {
 

@@ -1,12 +1,12 @@
 module;
 
-#include <karm-base/string.h>
 #include <karm-math/align.h>
 
 export module Hideo.Counter;
 
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Core;
 import Mdi;
 import :model;
 

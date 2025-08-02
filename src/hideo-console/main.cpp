@@ -4,6 +4,8 @@ import Mdi;
 import Karm.Ui;
 import Karm.Kira;
 
+using namespace Karm;
+
 namespace Hideo::Console {
 
 Ui::Child app() {

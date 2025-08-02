@@ -1,15 +1,16 @@
 module;
 
 #include <karm-gfx/filters.h>
-#include <karm-io/fmt.h>
 #include <karm-math/align.h>
 
 export module Hideo.Shell:taskbar;
 
 import Mdi;
 import Karm.Ui;
+import Karm.Core;
 import Karm.Kira;
 import Hideo.Keyboard;
+
 import :model;
 
 using namespace Karm;

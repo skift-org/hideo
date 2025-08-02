@@ -1,15 +1,17 @@
 module;
 
-#include <karm-base/witty.h>
 #include <karm-math/align.h>
 #include <karm-sys/time.h>
 
 export module Hideo.About;
 
+import Karm.Core;
 import Karm.Image;
 import Karm.Kira;
 import Karm.Ui;
 import Mdi;
+
+using namespace Karm;
 
 namespace Hideo::About {
 

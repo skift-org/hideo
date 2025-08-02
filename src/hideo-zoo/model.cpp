@@ -6,6 +6,8 @@ export module Hideo.Zoo:model;
 
 import Karm.Ui;
 
+using namespace Karm;
+
 namespace Hideo::Zoo {
 
 struct Page {

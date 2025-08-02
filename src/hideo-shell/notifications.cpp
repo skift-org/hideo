@@ -1,12 +1,10 @@
-module;
-
-#include <karm-base/slice.h>
-
 export module Hideo.Shell:notifications;
 
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Core;
+
 import :model;
 
 using namespace Karm;

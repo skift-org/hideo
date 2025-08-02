@@ -1,6 +1,5 @@
 module;
 
-#include <karm-base/string.h>
 #include <karm-gfx/canvas.h>
 
 export module Hideo.Sysmon;
@@ -8,6 +7,8 @@ export module Hideo.Sysmon;
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Core;
+
 import :model;
 
 namespace Hideo::Sysmon {

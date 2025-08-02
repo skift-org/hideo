@@ -1,16 +1,13 @@
-module;
-
-#include <karm-base/string.h>
-
 export module Hideo.Settings:app;
 
 import Karm.Ui;
 
 import Mdi;
 import Karm.Kira;
+import Karm.Core;
 import :model;
-import :page_home;
-import :page_about;
+import :pageHome;
+import :pageAbout;
 
 namespace Hideo::Settings {
 

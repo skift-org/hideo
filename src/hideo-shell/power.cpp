@@ -1,12 +1,9 @@
-module;
-
-#include <karm-base/string.h>
-
 export module Hideo.Shell:power;
 
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Core;
 
 using namespace Karm;
 

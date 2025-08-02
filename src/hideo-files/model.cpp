@@ -7,6 +7,8 @@ export module Hideo.Files:model;
 
 import Karm.Ui;
 
+using namespace Karm;
+
 namespace Hideo::Files {
 
 struct State {

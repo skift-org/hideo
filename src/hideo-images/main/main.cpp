@@ -8,6 +8,8 @@ import Karm.Kira;
 import Karm.Ui;
 import Mdi;
 
+using namespace Karm;
+
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
     auto& args = useArgs(ctx);
     Res<Image::Picture> image = Error::invalidInput("No image provided");

@@ -3,7 +3,7 @@ module;
 #include <karm-gfx/icon.h>
 #include <karm-sys/context.h>
 
-export module Hideo.Settings:page_home;
+export module Hideo.Settings:pageHome;
 
 import Mdi;
 import Karm.Ui;

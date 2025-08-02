@@ -4,6 +4,8 @@
 import Karm.Ui;
 import Karm.Image;
 
+using namespace Karm;
+
 namespace Hideo::Wear {
 
 Ui::Child app() {

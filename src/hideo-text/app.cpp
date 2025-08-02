@@ -12,6 +12,8 @@ import Karm.Ui;
 import Karm.Kira;
 import Hideo.Files;
 
+using namespace Karm;
+
 namespace Hideo::Text {
 
 struct State {

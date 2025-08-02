@@ -4,6 +4,7 @@ module;
 #include <karm-math/align.h>
 #include <karm-gfx/colors.h>
 #include <karm-text/prose.h>
+#include <karm-mime/url.h>
 
 export module Hideo.Zoo:pages;
 
@@ -14,6 +15,8 @@ import Karm.Print;
 import Hideo.Files;
 import Hideo.Printers;
 import :model;
+
+using namespace Karm;
 
 namespace Hideo::Zoo {
 

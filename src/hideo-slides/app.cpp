@@ -1,12 +1,11 @@
-module;
-
-#include <karm-base/string.h>
-
 export module Hideo.Slides;
 
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Core;
+
+using namespace Karm;
 
 namespace Hideo::Slides {
 

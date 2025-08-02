@@ -9,6 +9,8 @@ import Karm.Ui;
 import Karm.App;
 import Karm.Image;
 
+using namespace Karm;
+
 namespace Hideo::Shell {
 
 export struct State;

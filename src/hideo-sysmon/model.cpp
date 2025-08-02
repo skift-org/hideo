@@ -1,10 +1,9 @@
-module;
-
-#include <karm-base/union.h>
-
 export module Hideo.Sysmon:model;
 
 import Karm.Ui;
+import Karm.Core;
+
+using namespace Karm;
 
 namespace Hideo::Sysmon {
 

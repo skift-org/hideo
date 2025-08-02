@@ -8,6 +8,8 @@ import Karm.Image;
 import Karm.Ui;
 import Mdi;
 
+using namespace Karm;
+
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
     auto args = useArgs(ctx);
     bool isMobile = App::formFactor == App::FormFactor::MOBILE;

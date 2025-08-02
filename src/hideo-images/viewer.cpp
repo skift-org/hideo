@@ -1,10 +1,7 @@
-module;
-
-#include <karm-base/string.h>
-
 export module Hideo.Images:viewer;
 
 import Mdi;
+import Karm.Core;
 import Karm.Kira;
 import Karm.Ui;
 import :model;

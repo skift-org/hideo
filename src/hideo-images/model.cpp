@@ -7,6 +7,8 @@ export module Hideo.Images:model;
 import Karm.Image;
 import Karm.Ui;
 
+using namespace Karm;
+
 namespace Hideo::Images {
 
 export using Hist = Array<Math::Vec3f, 64>;

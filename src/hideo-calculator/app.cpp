@@ -1,11 +1,11 @@
 module;
 
-#include <karm-base/string.h>
 #include <karm-math/align.h>
 
 export module Hideo.Calculator:app;
 
 import Mdi;
+import Karm.Core;
 import Karm.Kira;
 import Karm.Ui;
 

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <karm-base/map.h>
 #include <karm-text/font.h>
 
 import Karm.Ui;
+import Karm.Core;
+
+using namespace Karm;
 
 namespace Hideo::Spreadsheet {
 

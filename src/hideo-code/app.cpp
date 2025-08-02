@@ -1,12 +1,11 @@
-module;
-
-#include <karm-base/string.h>
-
 export module Hideo.Code;
 
 import Mdi;
+import Karm.Core;
 import Karm.Kira;
 import Karm.Ui;
+
+using namespace Karm;
 
 namespace Hideo::Code {
 

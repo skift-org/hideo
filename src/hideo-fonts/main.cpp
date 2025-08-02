@@ -7,6 +7,8 @@ import Karm.Kira;
 import Karm.Ui;
 import Mdi;
 
+using namespace Karm;
+
 namespace Hideo::Fonts {
 
 struct State {

@@ -1,12 +1,12 @@
 module;
 
-#include <karm-base/union.h>
 #include <karm-gfx/canvas.h>
 #include <karm-gfx/icon.h>
 
 export module Hideo.Images:editor;
 
 import Mdi;
+import Karm.Core;
 import Karm.Ui;
 import Karm.Kira;
 import :model;

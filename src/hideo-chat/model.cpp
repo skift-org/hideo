@@ -1,10 +1,9 @@
-module;
-
-#include <karm-base/base.h>
-
 export module Hideo.Chat:model;
 
 import Karm.Ui;
+import Karm.Core;
+
+using namespace Karm;
 
 namespace Hideo::Chat {
 

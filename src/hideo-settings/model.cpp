@@ -1,11 +1,9 @@
-module;
-
-#include <karm-base/union.h>
-#include <karm-base/vec.h>
-
 export module Hideo.Settings:model;
 
+import Karm.Core;
 import Karm.Ui;
+
+using namespace Karm;
 
 namespace Hideo::Settings {
 

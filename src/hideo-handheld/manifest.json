@@ -3,6 +3,6 @@
     "id": "hideo-handheld",
     "type": "lib",
     "requires": [
-        "karm-base"
+        "karm-core"
     ]
 }

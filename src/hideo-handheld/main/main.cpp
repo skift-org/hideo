@@ -4,15 +4,16 @@
 #include <karm-sys/entry.h>
 #include <karm-sys/time.h>
 #include <karm-text/font.h>
-
-#include "karm-text/loader.h"
-#include "karm-text/prose.h"
+#include <karm-text/loader.h>
+#include <karm-text/prose.h>
 
 import Karm.App;
 import Karm.Kira;
 import Karm.Ui;
 import Karm.Image;
 import Mdi;
+
+using namespace Karm;
 
 namespace Hideo::Handheld {
 

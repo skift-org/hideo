@@ -5,6 +5,8 @@
 import Hideo.Text;
 import Karm.Ui;
 
+using namespace Karm;
+
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
     auto& args = useArgs(ctx);
     Opt<Mime::Url> url;

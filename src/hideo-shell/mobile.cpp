@@ -1,10 +1,8 @@
-module;
-
-#include <karm-base/slice.h>
-
 export module Hideo.Shell:mobile;
 
+import Karm.Core;
 import Karm.Ui;
+
 import :model;
 import :navbar;
 import :background;

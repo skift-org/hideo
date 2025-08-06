@@ -1,10 +1,10 @@
 module;
 
+#include <karm-gfx/colors.h>
 #include <karm-logger/logger.h>
 #include <karm-math/align.h>
-#include <karm-gfx/colors.h>
-#include <karm-text/prose.h>
 #include <karm-mime/url.h>
+#include <karm-text/prose.h>
 
 export module Hideo.Zoo:pages;
 
@@ -20,7 +20,7 @@ using namespace Karm;
 
 namespace Hideo::Zoo {
 
-export Page PAGE_ALERT{
+Page PAGE_ALERT{
     Mdi::ALERT,
     "Alert",
     "A modal dialog that interrupts the user with important content and expects a response.",
@@ -47,7 +47,7 @@ export Page PAGE_ALERT{
     },
 };
 
-export Page PAGE_AVATAR{
+Page PAGE_AVATAR{
     Mdi::ACCOUNT_CIRCLE,
     "Avatar",
     "An image element with a fallback for representing the user.",
@@ -75,6 +75,28 @@ Page PAGE_BADGE{
                    Kr::badge(Kr::BadgeStyle::WARNING, "Warning"s),
                    Kr::badge(Kr::BadgeStyle::ERROR, "Error"s),
                    Kr::badge(Gfx::GREEN, "New"s)
+               ) |
+               Ui::center();
+    },
+};
+
+Page PAGE_BUTTON{
+    Mdi::BUTTON_POINTER,
+    "Button",
+    "Displays a badge or a component that looks like a badge.",
+    [] {
+        return Ui::vflow(
+                   16,
+                   Math::Align::CENTER,
+                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::regular(), "Regular button"),
+                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::primary(), "Primary button"),
+                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::secondary(), "Secondary button"),
+                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::outline(), "Outline button"),
+                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), "Subtle button"),
+                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::text(), "Text button"),
+
+                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::destructive(), "Destructive button"),
+                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::none(), "None button")
                ) |
                Ui::center();
     },
@@ -775,6 +797,7 @@ export Array PAGES = {
     &PAGE_ALERT,
     &PAGE_AVATAR,
     &PAGE_BADGE,
+    &PAGE_BUTTON,
     &PAGE_CARD,
     &PAGE_CHECKBOX,
     &PAGE_CLOCK,

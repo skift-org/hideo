@@ -1,9 +1,9 @@
 module;
 
+#include <karm-gfx/colors.h>
 #include <karm-math/align.h>
 #include <karm-sys/file.h>
 #include <karm-sys/proc.h>
-#include <karm-gfx/colors.h>
 
 export module Hideo.Printers:dialog;
 

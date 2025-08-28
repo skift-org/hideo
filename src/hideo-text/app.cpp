@@ -3,7 +3,6 @@ module;
 #include <karm-logger/logger.h>
 #include <karm-math/align.h>
 #include <karm-sys/file.h>
-#include <karm-text/edit.h>
 
 export module Hideo.Text;
 
@@ -19,7 +18,7 @@ namespace Hideo::Text {
 struct State {
     Opt<Mime::Url> url;
     Opt<Error> error;
-    Rc<Karm::Text::Model> text;
+    Rc<Ui::TextModel> text;
 };
 
 struct New {
@@ -29,17 +28,17 @@ struct Save {
     bool prompt = false;
 };
 
-using Action = Union<Karm::Text::Action, New, Save>;
+using Action = Union<Ui::TextAction, New, Save>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(::Visitor{
-        [&](Karm::Text::Action& t) {
+        [&](Ui::TextAction& t) {
             s.text->reduce(t);
         },
         [&](New&) {
             s.url = NONE;
             s.error = NONE;
-            s.text = makeRc<Karm::Text::Model>();
+            s.text = makeRc<Ui::TextModel>();
         },
         [&](Save&) {
 
@@ -51,7 +50,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
 
 using Model = Ui::Model<State, Action, reduce>;
 
-Ui::Child editor(Rc<Karm::Text::Model> text) {
+Ui::Child editor(Rc<Ui::TextModel> text) {
     return Ui::input(text, [](Ui::Node& n, Action a) {
                Model::bubble(n, a);
            }) |
@@ -59,7 +58,7 @@ Ui::Child editor(Rc<Karm::Text::Model> text) {
 }
 
 export Ui::Child app(Opt<Mime::Url> url, Res<String> str) {
-    auto text = makeRc<Karm::Text::Model>();
+    auto text = makeRc<Ui::TextModel>();
     Opt<Error> error = NONE;
 
     if (str) {
@@ -105,12 +104,12 @@ export Ui::Child app(Opt<Mime::Url> url, Res<String> str) {
                 .endTools = [&] -> Ui::Children {
                     return {
                         Ui::button(
-                            Model::bindIf<Karm::Text::Action>(s.text->canUndo(), Karm::Text::Action::UNDO),
+                            Model::bindIf<Ui::TextAction>(s.text->canUndo(), Ui::TextAction::UNDO),
                             Ui::ButtonStyle::subtle(),
                             Mdi::UNDO
                         ),
                         Ui::button(
-                            Model::bindIf<Karm::Text::Action>(s.text->canRedo(), Karm::Text::Action::REDO),
+                            Model::bindIf<Ui::TextAction>(s.text->canRedo(), Ui::TextAction::REDO),
                             Ui::ButtonStyle::subtle(),
                             Mdi::REDO
                         )

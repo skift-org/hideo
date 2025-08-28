@@ -1,7 +1,7 @@
+#include <karm-font/database.h>
+#include <karm-gfx/prose.h>
 #include <karm-math/align.h>
 #include <karm-sys/entry.h>
-#include <karm-text/book.h>
-#include <karm-text/prose.h>
 
 import Karm.Kira;
 import Karm.Ui;
@@ -12,11 +12,11 @@ using namespace Karm;
 namespace Hideo::Fonts {
 
 struct State {
-    Text::FontBook fontBook;
+    Font::Database fontBook;
     Opt<Symbol> fontFamily = NONE;
-    Opt<Rc<Text::Fontface>> fontFace = NONE;
+    Opt<Rc<Gfx::Fontface>> fontFace = NONE;
 
-    State(Text::FontBook fontBook) : fontBook(fontBook) {}
+    State(Font::Database fontBook) : fontBook(fontBook) {}
 
     bool canGoBack() const {
         return fontFace || fontFamily;
@@ -30,7 +30,7 @@ struct SelectFamily {
 };
 
 struct SelectFace {
-    Rc<Text::Fontface> id;
+    Rc<Gfx::Fontface> id;
 };
 
 using Action = Union<GoBack, SelectFamily, SelectFace>;
@@ -64,9 +64,9 @@ static constexpr Str PANGRAM = "All beings born free, equal in dignity, rightsâ€
 Ui::Child allFamiliesItem(State const& s, Symbol family) {
     auto& fontBook = s.fontBook;
     auto nStyle = s.fontBook.queryFamily(family).len();
-    auto fontface = fontBook.queryClosest({.family = family}).unwrap();
+    auto fontface = fontBook.queryClosest(family).unwrap();
 
-    Text::Font font{
+    Gfx::Font font{
         .fontface = fontface,
         .fontsize = 36,
     };
@@ -74,7 +74,7 @@ Ui::Child allFamiliesItem(State const& s, Symbol family) {
     return Ui::vflow(
                8,
                Ui::labelMedium(Ui::GRAY500, "{} Â· {} {}", family, nStyle, nStyle == 1 ? "Style" : "Styles"),
-               Ui::text(Text::ProseStyle{font}, PANGRAM)
+               Ui::text(Gfx::ProseStyle{font}, PANGRAM)
            ) |
            Ui::insets({8, 0, 8, 12}) |
            Ui::hclip() |
@@ -100,31 +100,31 @@ Ui::Child fontfaceTag(Str str) {
     return Kr::badge(Ui::GRAY400, Io::toParamCase(str).unwrap());
 }
 
-Ui::Child fontfaceTags(Text::FontAttrs const& attrs) {
+Ui::Child fontfaceTags(Gfx::FontAttrs const& attrs) {
     Ui::Children children;
-    if (attrs.monospace == Text::Monospace::YES) {
+    if (attrs.monospace == Gfx::Monospace::YES) {
         children.pushBack(fontfaceTag("monospace"s));
     }
 
-    if (attrs.style != Text::FontStyle::NORMAL) {
+    if (attrs.style != Gfx::FontStyle::NORMAL) {
         children.pushBack(fontfaceTag(Io::toStr(attrs.style)));
     }
 
-    if (attrs.stretch != Text::FontStretch::NORMAL) {
+    if (attrs.stretch != Gfx::FontStretch::NORMAL) {
         children.pushBack(fontfaceTag(Io::toStr(attrs.stretch)));
     }
 
-    if (attrs.weight != Text::FontWeight::REGULAR) {
+    if (attrs.weight != Gfx::FontWeight::REGULAR) {
         children.pushBack(fontfaceTag(Io::toStr(attrs.weight)));
     }
 
     return Ui::hflow(4, children);
 }
 
-Ui::Child familyItem(State const&, Rc<Text::Fontface> fontface) {
+Ui::Child familyItem(State const&, Rc<Gfx::Fontface> fontface) {
     auto attrs = fontface->attrs();
 
-    Text::Font font{
+    Gfx::Font font{
         .fontface = fontface,
         .fontsize = 36,
     };
@@ -132,7 +132,7 @@ Ui::Child familyItem(State const&, Rc<Text::Fontface> fontface) {
     return Ui::vflow(
                8,
                Ui::labelMedium(Ui::GRAY500, "{}", attrs.family),
-               Ui::text(Text::ProseStyle{font}, PANGRAM),
+               Ui::text(Gfx::ProseStyle{font}, PANGRAM),
                fontfaceTags(attrs)
            ) |
            Ui::insets({8, 0, 8, 12}) |
@@ -160,16 +160,16 @@ Ui::Child familyContent(State const& s) {
 
 // MARK: Fontface --------------------------------------------------------------
 
-Ui::Child pangrams(Rc<Text::Fontface> fontface) {
+Ui::Child pangrams(Rc<Gfx::Fontface> fontface) {
     f64 size = 12;
     Ui::Children children;
 
     for (isize i = 0; i < 12; i++) {
-        Text::Font font{
+        Gfx::Font font{
             .fontface = fontface,
             .fontsize = size,
         };
-        children.pushBack(Ui::text(Text::ProseStyle{font}, PANGRAM));
+        children.pushBack(Ui::text(Gfx::ProseStyle{font}, PANGRAM));
         size *= 1.2;
     }
 
@@ -204,8 +204,8 @@ Ui::Child appContent(State const& s) {
     }
 }
 
-Ui::Child app(Text::FontBook book) {
-    return Ui::reducer<Model>(book, [](State const& s) {
+Ui::Child app(Font::Database db) {
+    return Ui::reducer<Model>(db, [](State const& s) {
         return Kr::scaffold({
             .icon = Mdi::FORMAT_FONT,
             .title = "Fonts"s,
@@ -226,7 +226,7 @@ Ui::Child app(Text::FontBook book) {
 } // namespace Hideo::Fonts
 
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
-    Text::FontBook book;
-    co_try$(book.loadAll());
-    co_return co_await Ui::runAsync(ctx, Hideo::Fonts::app(book));
+    Font::Database db;
+    co_try$(db.loadAll());
+    co_return co_await Ui::runAsync(ctx, Hideo::Fonts::app(db));
 }

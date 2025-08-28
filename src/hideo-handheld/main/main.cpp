@@ -1,11 +1,11 @@
+#include <karm-font/loader.h>
 #include <karm-gfx/colors.h>
+#include <karm-gfx/font.h>
 #include <karm-gfx/icon.h>
+#include <karm-gfx/prose.h>
 #include <karm-gfx/shadow.h>
 #include <karm-math/align.h>
 #include <karm-sys/entry.h>
-#include <karm-text/font.h>
-#include <karm-text/loader.h>
-#include <karm-text/prose.h>
 
 import Karm.App;
 import Karm.Kira;
@@ -36,18 +36,18 @@ struct State {
 
 using Model = Ui::Model<State, State::Action>;
 
-static Opt<Rc<Text::Fontface>> _inputFontface = NONE;
+static Opt<Rc<Gfx::Fontface>> _inputFontface = NONE;
 
-Rc<Text::Fontface> inputFontface() {
+Rc<Gfx::Fontface> inputFontface() {
     if (not _inputFontface) {
-        _inputFontface = Text::loadFontfaceOrFallback("bundle://hideo-handheld/fonts/BPreplayBold.ttf"_url).unwrap();
+        _inputFontface = Font::loadFontfaceOrFallback("bundle://hideo-handheld/fonts/BPreplayBold.ttf"_url).unwrap();
     }
     return *_inputFontface;
 }
 
-Text::ProseStyle inputMedium() {
+Gfx::ProseStyle inputMedium() {
     return {
-        .font = Text::Font{
+        .font = Gfx::Font{
             inputFontface(),
             16,
         },

@@ -1,7 +1,7 @@
 module;
 
+#include <karm-font/loader.h>
 #include <karm-math/align.h>
-#include <karm-text/loader.h>
 
 export module Hideo.Shell:lock;
 
@@ -12,11 +12,11 @@ import :background;
 
 namespace Hideo::Shell {
 
-static Opt<Rc<Text::Fontface>> _blackFontface = NONE;
+static Opt<Rc<Gfx::Fontface>> _blackFontface = NONE;
 
-static Rc<Text::Fontface> blackFontface() {
+static Rc<Gfx::Fontface> blackFontface() {
     if (not _blackFontface) {
-        _blackFontface = Text::loadFontfaceOrFallback("bundle://fonts-inter/fonts/Inter-Bold.ttf"_url).unwrap();
+        _blackFontface = Font::loadFontfaceOrFallback("bundle://fonts-inter/fonts/Inter-Bold.ttf"_url).unwrap();
     }
     return *_blackFontface;
 }
@@ -36,7 +36,7 @@ Ui::Child lock(State const& state) {
         Math::Align::CENTER,
         Ui::text(
             {
-                .font = Text::Font{
+                .font = Gfx::Font{
                     blackFontface(),
                     16,
                 },
@@ -44,7 +44,7 @@ Ui::Child lock(State const& state) {
             dateTime
         ),
         Ui::text({
-                     .font = Text::Font{
+                     .font = Gfx::Font{
                          blackFontface(),
                          72,
                      },

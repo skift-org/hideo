@@ -1,10 +1,10 @@
 module;
 
 #include <karm-gfx/colors.h>
+#include <karm-gfx/prose.h>
 #include <karm-logger/logger.h>
 #include <karm-math/align.h>
 #include <karm-mime/url.h>
-#include <karm-text/prose.h>
 
 export module Hideo.Zoo:pages;
 
@@ -478,7 +478,7 @@ Page PAGE_RICHTEXT{
     "Rich Text"s,
     "An area that displays text with various styles and formatting options.",
     [] {
-        auto prose = makeRc<Karm::Text::Prose>(Ui::TextStyles::bodyMedium());
+        auto prose = makeRc<Gfx::Prose>(Ui::TextStyles::bodyMedium());
 
         prose->append("This is a simple text with no formatting.\n"s);
 

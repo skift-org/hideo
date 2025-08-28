@@ -84,7 +84,7 @@ Ui::Child menu() {
 Ui::Child app() {
     return Ui::reducer<Model>({}, [](State const& s) {
                return Ui::stack(
-                          digitalWatchface(s.dateTime),
+                          analogWatchface(s.dateTime),
                           menu() | Ui::box({.backgroundFill = Ui::GRAY900}) | Ui::slideIn(Ui::SlideFrom::END) | Ui::cond(s.page == Page::APPS)
                       ) |
                       Ui::keyboardShortcut(App::Key::M, Model::bind<Page>(Page::APPS)) |

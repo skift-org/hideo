@@ -1,6 +1,7 @@
 #pragma once
 
-#include <karm-text/font.h>
+#include <karm-gfx/canvas.h>
+#include <karm-gfx/font.h>
 
 import Karm.Ui;
 import Karm.Core;
@@ -50,7 +51,7 @@ struct Style {
     Gfx::Color bg = Gfx::WHITE;
     Align halign;
     Align valign;
-    Opt<Text::Font> font;
+    Opt<Gfx::Font> font;
     Borders borders{};
 };
 
@@ -220,7 +221,7 @@ using UpdateStyleFg = UpdateStyleField<struct UpdateStyleFgTag, Gfx::Color>;
 using UpdateStyleBg = UpdateStyleField<struct UpdateStyleBgTag, Gfx::Color>;
 using UpdateStyleHalign = UpdateStyleField<struct UpdateStyleHalignTag, Align>;
 using UpdateStyleValign = UpdateStyleField<struct UpdateStyleValignTag, Align>;
-using UpdateStyleFont = UpdateStyleField<struct UpdateStyleFontTag, Opt<Text::Font>>;
+using UpdateStyleFont = UpdateStyleField<struct UpdateStyleFontTag, Opt<Gfx::Font>>;
 using UpdateStyleBorders = UpdateStyleField<struct UpdateStyleBordersTag, Borders>;
 
 // Sheets

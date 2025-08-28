@@ -2,17 +2,49 @@
 #include <karm-sys/entry.h>
 
 import Karm.Ui;
+import Karm.App;
 import Karm.Image;
+import Karm.Kira;
+import Mdi;
 
 using namespace Karm;
 
 namespace Hideo::Wear {
 
-Ui::Child app() {
-    auto [date, time] = DateTime{
+enum struct Page {
+    WATCH,
+    APPS,
+    NOTI
+};
+
+struct State {
+    Page page = Page::WATCH;
+    DateTime dateTime{
         .date = {1, Month::APRIL, 2024},
         .time = {56, 34, 12},
     };
+
+    using Action = Union<Page>;
+
+    Ui::Task<Action> reduce(Action const& action) {
+        return action.visit(Visitor{
+            [&](Page p) {
+                page = p;
+                return NONE;
+            },
+        });
+    }
+};
+
+using Model = Ui::Model<State, State::Action>;
+
+Ui::Child analogWatchface(DateTime dt) {
+    auto [date, time] = dt;
+    return Kr::clock(time);
+}
+
+Ui::Child digitalWatchface(DateTime dt) {
+    auto [date, time] = dt;
 
     auto dateTime = Io::format(
         // Mon. 28 Jul
@@ -30,7 +62,35 @@ Ui::Child app() {
     );
 
     return clock |
-           Ui::center() |
+           Ui::center();
+}
+
+Ui::Child menu() {
+    return Ui::vflow(
+               6,
+               Ui::titleMedium("Applications") | Ui::center() | Ui::bound() | Ui::minSize({Ui::UNCONSTRAINED, 96}),
+               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
+               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
+               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
+               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
+               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
+               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
+               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s)
+           ) |
+           Ui::insets(16) |
+           Ui::vscroll();
+}
+
+Ui::Child app() {
+    return Ui::reducer<Model>({}, [](State const& s) {
+               return Ui::stack(
+                          digitalWatchface(s.dateTime),
+                          menu() | Ui::box({.backgroundFill = Ui::GRAY900}) | Ui::slideIn(Ui::SlideFrom::END) | Ui::cond(s.page == Page::APPS)
+                      ) |
+                      Ui::keyboardShortcut(App::Key::M, Model::bind<Page>(Page::APPS)) |
+                      Ui::keyboardShortcut(App::Key::ESC, Model::bind<Page>(Page::WATCH));
+               ;
+           }) |
            Ui::pinSize(192);
 }
 

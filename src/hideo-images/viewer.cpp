@@ -46,11 +46,33 @@ Ui::Child viewerControls(State const&) {
 }
 
 export Ui::Child viewerApp(State const& state) {
-    return Ui::vflow(
-        viewerToolbar(state),
-        viewerPreview(state) | Ui::grow(),
-        viewerControls(state)
-    );
+    return Kr::scaffold({
+        .icon = Mdi::IMAGE,
+        .title = "Images"s,
+        .startTools = [&] -> Ui::Children {
+            return {
+                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::MAGNIFY_PLUS),
+                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::MAGNIFY_MINUS),
+                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::FULLSCREEN),
+            };
+        },
+        .endTools = [&] -> Ui::Children {
+            return {
+                Ui::button(
+                    Model::bindIf<ToggleEditor>(state.image.has()),
+                    Ui::ButtonStyle::subtle(),
+                    Mdi::PENCIL,
+                    "Edit"
+                ),
+            };
+        },
+        .body = [&] {
+            return Ui::vflow(
+                viewerPreview(state) | Ui::grow(),
+                viewerControls(state)
+            );
+        },
+    });
 }
 
 } // namespace Hideo::Images

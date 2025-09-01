@@ -1,10 +1,10 @@
-#include <karm-font/database.h>
 #include <karm-gfx/prose.h>
 #include <karm-math/align.h>
 #include <karm-sys/entry.h>
 
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Font;
 import Mdi;
 
 using namespace Karm;
@@ -227,6 +227,6 @@ Ui::Child app(Font::Database db) {
 
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
     Font::Database db;
-    co_try$(db.loadAll());
+    co_try$(db.loadSystemFonts());
     co_return co_await Ui::runAsync(ctx, Hideo::Fonts::app(db));
 }

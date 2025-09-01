@@ -276,7 +276,7 @@ Ui::Child appMenu() {
 Ui::Child app() {
     return Ui::reducer<Model>({}, [](State const& s) {
         return Ui::stack(
-                   Ui::image(Image::loadOrFallback("bundle://hideo-handheld/covers/celeste.qoi"_url).take()) | Ui::foregroundFilter(Gfx::OverlayFilter{Ui::GRAY950.withOpacity(0.6)}) | Ui::cover(),
+                   Ui::image("bundle://hideo-handheld/covers/celeste.qoi"_url) | Ui::foregroundFilter(Gfx::OverlayFilter{Ui::GRAY950.withOpacity(0.6)}) | Ui::cover(),
                    Ui::vflow(
                        topBar() |
                            Ui::box({

@@ -17,9 +17,7 @@ namespace Hideo::Avplayer {
 
 Ui::Child player() {
     auto mediaContent =
-        Ui::image(
-            Image::load("bundle://hideo-avplayer/images/bunny.qoi"_url).unwrap()
-        ) |
+        Ui::image("bundle://hideo-avplayer/images/bunny.qoi"_url) |
         Ui::cover() |
         Ui::vhclip();
 

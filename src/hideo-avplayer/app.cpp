@@ -2,7 +2,6 @@ module;
 
 #include <karm-gfx/filters.h>
 #include <karm-math/align.h>
-#include <karm-mime/url.h>
 
 export module Hideo.Avplayer;
 
@@ -10,6 +9,7 @@ import Mdi;
 import Karm.Ui;
 import Karm.Kira;
 import Karm.Image;
+import Karm.Ref;
 
 using namespace Karm;
 

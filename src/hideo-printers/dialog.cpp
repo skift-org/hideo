@@ -192,7 +192,7 @@ Ui::Child _printPreview(State const& s) {
 }
 
 void _printPDF(State const& s) {
-    auto printer = Print::FilePrinter::create(Mime::Uti::PUBLIC_PDF).unwrap();
+    auto printer = Print::FilePrinter::create(Ref::Uti::PUBLIC_PDF).unwrap();
     for (usize i = 0; i < s.pages.len(); ++i) {
         auto page = s.pages[i];
         page.print(
@@ -202,7 +202,7 @@ void _printPDF(State const& s) {
             }
         );
     }
-    printer->save(Mime::parseUrlOrPath("./output.pdf", Sys::pwd().unwrap())).unwrap();
+    printer->save(Ref::parseUrlOrPath("./output.pdf", Sys::pwd().unwrap())).unwrap();
 }
 
 Ui::Child _destinationSelect() {

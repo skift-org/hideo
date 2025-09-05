@@ -110,7 +110,7 @@ Ui::Child statusWidget(Gfx::Icon icon, Str description) {
            });
 }
 
-Ui::Child tileGameCover(Mime::Url image) {
+Ui::Child tileGameCover(Ref::Url image) {
     return Ui::image(image, 6);
 }
 

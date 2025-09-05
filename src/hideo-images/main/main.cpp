@@ -15,7 +15,7 @@ Async::Task<> entryPointAsync(Sys::Context& ctx) {
     Res<Image::Picture> image = Error::invalidInput("No image provided");
 
     if (args.len()) {
-        auto url = Mime::parseUrlOrPath(args[0], co_try$(Sys::pwd()));
+        auto url = Ref::parseUrlOrPath(args[0], co_try$(Sys::pwd()));
         image = Image::load(url);
 
         if (not image) {

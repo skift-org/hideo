@@ -4,7 +4,6 @@ module;
 #include <karm-gfx/prose.h>
 #include <karm-logger/logger.h>
 #include <karm-math/align.h>
-#include <karm-mime/url.h>
 
 export module Hideo.Zoo:pages;
 
@@ -12,6 +11,8 @@ import Mdi;
 import Karm.Kira;
 import Karm.Ui;
 import Karm.Print;
+import Karm.Ref;
+
 import Hideo.Files;
 import Hideo.Printers;
 import :model;

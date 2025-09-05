@@ -12,14 +12,14 @@ using namespace Karm;
 namespace Hideo::Files {
 
 struct State {
-    Vec<Mime::Url> history;
+    Vec<Ref::Url> history;
     usize currentIndex = 0;
     bool showHidden = false;
 
-    State(Mime::Url path)
+    State(Ref::Url path)
         : history({path}) {}
 
-    Mime::Url currentUrl() const {
+    Ref::Url currentUrl() const {
         return history[currentIndex];
     }
 
@@ -49,7 +49,7 @@ struct GoParent {
 };
 
 struct GoTo {
-    Mime::Url url;
+    Ref::Url url;
 };
 
 struct Navigate {
@@ -100,7 +100,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             auto stat = Sys::stat(dest).unwrap();
             if (stat.type == Sys::Type::FILE) {
                 (void)Sys::launch({
-                    .action = Mime::Uti::PUBLIC_PREVIEW,
+                    .action = Ref::Uti::PUBLIC_PREVIEW,
                     .objects = {dest},
                 });
             } else {

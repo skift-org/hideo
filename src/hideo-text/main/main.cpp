@@ -9,10 +9,10 @@ using namespace Karm;
 
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
     auto& args = useArgs(ctx);
-    Opt<Mime::Url> url;
+    Opt<Ref::Url> url;
     Res<String> text = Ok(""s);
     if (args.len()) {
-        url = Mime::parseUrlOrPath(args[0], co_try$(Sys::pwd()));
+        url = Ref::parseUrlOrPath(args[0], co_try$(Sys::pwd()));
         text = Sys::readAllUtf8(*url);
     }
     co_return co_await Ui::runAsync(ctx, Hideo::Text::app(url, text));

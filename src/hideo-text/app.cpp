@@ -16,7 +16,7 @@ using namespace Karm;
 namespace Hideo::Text {
 
 struct State {
-    Opt<Mime::Url> url;
+    Opt<Ref::Url> url;
     Opt<Error> error;
     Rc<Ui::TextModel> text;
 };
@@ -57,7 +57,7 @@ Ui::Child editor(Rc<Ui::TextModel> text) {
            Ui::insets(16) | Ui::vscroll() | Ui::grow();
 }
 
-export Ui::Child app(Opt<Mime::Url> url, Res<String> str) {
+export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
     auto text = makeRc<Ui::TextModel>();
     Opt<Error> error = NONE;
 

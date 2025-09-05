@@ -2,13 +2,14 @@ module;
 
 #include <karm-gfx/font.h>
 #include <karm-math/align.h>
-#include <karm-mime/url.h>
 
 export module Hideo.Shell:lock;
 
 import Mdi;
 import Karm.Ui;
 import Karm.Font;
+import Karm.Ref;
+
 import :model;
 import :background;
 

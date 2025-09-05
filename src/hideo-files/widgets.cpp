@@ -2,7 +2,6 @@ module;
 
 #include <karm-gfx/icon.h>
 #include <karm-math/align.h>
-#include <karm-mime/mime.h>
 #include <karm-sys/dir.h>
 
 export module Hideo.Files:widgets;
@@ -10,6 +9,7 @@ export module Hideo.Files:widgets;
 import Karm.App;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Ref;
 import Mdi;
 import :model;
 
@@ -48,7 +48,7 @@ static Array MIME2ICON = {
     Mime2Icon{"application", "x-msdownload", Mdi::COG_BOX},
 };
 
-Gfx::Icon iconFor(Mime::Mime const& mime) {
+Gfx::Icon iconFor(Ref::Mime const& mime) {
     Gfx::Icon icon = Mdi::FILE;
 
     for (auto const& m : MIME2ICON) {
@@ -120,7 +120,7 @@ Ui::Child directorEntry(Sys::DirEntry const& entry, bool odd) {
                itemStyle(odd),
                entry.type == Sys::Type::DIR
                    ? Mdi::FOLDER
-                   : iconFor(Mime::sniffSuffix(Mime::suffixOf(entry.name)).unwrapOr("file"s)),
+                   : iconFor(Ref::sniffSuffix(Ref::suffixOf(entry.name)).unwrapOr("file"s)),
                entry.name
            ) |
            Kr::contextMenu(directoryContextMenu);
@@ -175,7 +175,7 @@ Gfx::Icon iconForLocation(Str loc) {
     return Mdi::FOLDER;
 }
 
-Gfx::Icon iconForUrl(Mime::Url const& url) {
+Gfx::Icon iconForUrl(Ref::Url const& url) {
     if (url.scheme == "location")
         return iconForLocation(url.host);
 
@@ -185,7 +185,7 @@ Gfx::Icon iconForUrl(Mime::Url const& url) {
     return Mdi::LAPTOP;
 }
 
-String textForUrl(Mime::Url const& url) {
+String textForUrl(Ref::Url const& url) {
     if (url.scheme == "location")
         return Io::toTitleCase(url.host).unwrap();
 
@@ -195,7 +195,7 @@ String textForUrl(Mime::Url const& url) {
     return "This Device"s;
 }
 
-Ui::Child breadcrumbRoot(Mime::Url const& url) {
+Ui::Child breadcrumbRoot(Ref::Url const& url) {
     return Ui::button(
         Model::bind<GoRoot>(),
         Ui::ButtonStyle::text(),

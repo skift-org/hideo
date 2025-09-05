@@ -11,7 +11,7 @@ import :widgets;
 
 namespace Hideo::Files {
 
-export Ui::Child openDialog(Ui::Send<Mime::Url> onFile) {
+export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {
     return Ui::reducer<Model>(
         {"location://home"_url},
         [onFile](State const& s) {
@@ -44,7 +44,7 @@ export Ui::Child openDialog(Ui::Send<Mime::Url> onFile) {
     );
 }
 
-export Ui::Child saveDialog(Ui::Send<Mime::Url> onFile) {
+export Ui::Child saveDialog(Ui::Send<Ref::Url> onFile) {
     return Ui::reducer<Model>(
         {"location://home"_url},
         [onFile](State const& s) {
@@ -77,7 +77,7 @@ export Ui::Child saveDialog(Ui::Send<Mime::Url> onFile) {
     );
 }
 
-export Ui::Child directoryDialog(Ui::Send<Mime::Url> onFile) {
+export Ui::Child directoryDialog(Ui::Send<Ref::Url> onFile) {
     return Ui::reducer<Model>(
         {"location://home"_url},
         [onFile](auto const& d) {

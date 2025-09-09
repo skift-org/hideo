@@ -177,7 +177,7 @@ Gfx::Icon iconForLocation(Str loc) {
 
 Gfx::Icon iconForUrl(Ref::Url const& url) {
     if (url.scheme == "location")
-        return iconForLocation(url.host);
+        return iconForLocation(url.host.str());
 
     if (url.scheme == "device")
         return Mdi::HARDDISK;
@@ -187,10 +187,10 @@ Gfx::Icon iconForUrl(Ref::Url const& url) {
 
 String textForUrl(Ref::Url const& url) {
     if (url.scheme == "location")
-        return Io::toTitleCase(url.host).unwrap();
+        return Io::toTitleCase(url.host.str()).unwrap();
 
     if (url.scheme == "device")
-        return url.host;
+        return url.host.str();
 
     return "This Device"s;
 }

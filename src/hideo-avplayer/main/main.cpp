@@ -15,8 +15,9 @@ Async::Task<> entryPointAsync(Sys::Context& ctx) {
     device->play(player);
     device->pause(false);
 
-    co_return co_await Ui::runAsync(
-        ctx,
-        Hideo::Avplayer::app(player)
-    );
+    auto [cancelation, token] = Async::Cancellation::create();
+    auto app = Hideo::Avplayer::app(player);
+    Async::detach(Hideo::Avplayer::updatePlayback(app, token));
+
+    co_return co_await Ui::runAsync(ctx, app);
 }

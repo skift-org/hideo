@@ -44,12 +44,14 @@ export struct TimeTick {};
 using Action = Union<Page, TimeTick>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{[&](Page p) {
-                        s.page = p;
-                    },
-                    [&](TimeTick) {
-                        s.dateTime = Sys::dateTime();
-                    }});
+    a.visit(Visitor{
+        [&](Page p) {
+            s.page = p;
+        },
+        [&](TimeTick) {
+            s.dateTime = Sys::dateTime();
+        },
+    });
 
     return NONE;
 }

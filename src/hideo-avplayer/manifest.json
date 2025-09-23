@@ -4,6 +4,8 @@
     "type": "lib",
     "description": "Play audio and video",
     "requires": [
-        "karm-kira"
+        "karm-kira",
+        "karm-av",
+        "karm-gfx"
     ]
 }

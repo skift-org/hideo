@@ -10,16 +10,56 @@ import Karm.Ui;
 import Karm.Kira;
 import Karm.Image;
 import Karm.Ref;
+import Karm.Av;
 
 using namespace Karm;
 
 namespace Hideo::Avplayer {
 
-Ui::Child player() {
-    auto mediaContent =
-        Ui::image("bundle://hideo-avplayer/images/bunny.qoi"_url) |
-        Ui::cover() |
-        Ui::vhclip();
+struct State {
+    Rc<Av::Player> player;
+};
+
+export struct TogglePause {};
+
+using Action = Union<TogglePause>;
+
+Ui::Task<Action> reduce(State& s, Action a) {
+    a.visit(Visitor{
+        [&](TogglePause) {
+            s.player->pause(not s.player->pause());
+        },
+    });
+
+    return NONE;
+}
+
+export using Model = Ui::Model<State, Action, reduce>;
+
+Ui::Child videoContent() {
+    return Ui::image("bundle://hideo-avplayer/images/bunny.qoi"_url) |
+           Ui::cover() |
+           Ui::vhclip();
+}
+
+Ui::Child audioContent() {
+    auto cover = Image::load("bundle://hideo-avplayer/images/cover.png"_url).unwrap();
+    return Ui::stack(
+               Ui::image(cover) |
+                   Ui::foregroundFilter(Gfx::FilterChain{
+                       .filters = {
+                           makeBox<Gfx::Filter>(Gfx::BlurFilter{16}),
+                           makeBox<Gfx::Filter>(Gfx::BrightnessFilter{0.5}),
+                       },
+                   }) |
+                   Ui::cover(),
+               Ui::image(cover, 8) | Ui::pinSize(256) | Ui::center()
+           ) |
+           Ui::vhclip();
+}
+
+Ui::Child player(State const& s) {
+    auto mediaContent = audioContent();
 
     auto mediaControls =
         Ui::hflow(
@@ -28,7 +68,7 @@ Ui::Child player() {
             Ui::hflow(
                 Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::SKIP_PREVIOUS),
                 Kr::separator(),
-                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::PLAY),
+                Ui::button(Model::bind<TogglePause>(), Ui::ButtonStyle::subtle(), s.player->pause() ? Mdi::PLAY : Mdi::PAUSE),
                 Kr::separator(),
                 Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::SKIP_NEXT)
             ) | Ui::box({
@@ -37,15 +77,10 @@ Ui::Child player() {
                     .backgroundFill = Ui::GRAY800,
                 }),
             Ui::empty(4),
-            Ui::labelMedium("00:00"),
-            Ui::empty(8) |
-                Ui::box({
-                    .margin = {0, 8},
-                    .borderRadii = 99,
-                    .backgroundFill = Ui::ACCENT500,
-                }) |
+            Ui::labelMedium("{}", s.player->tell()),
+            Kr::slider(s.player->tell().toMSecs() / static_cast<f64>(s.player->duration().toMSecs()), NONE) |
                 Ui::grow(),
-            Ui::labelMedium("00:00"),
+            Ui::labelMedium("{}", s.player->duration()),
             Ui::empty(4),
             Ui::button(Ui::SINK<>, Ui::ButtonStyle::regular(), Mdi::VOLUME_HIGH),
             Ui::button(Ui::SINK<>, Ui::ButtonStyle::regular(), Mdi::FULLSCREEN),
@@ -67,13 +102,15 @@ Ui::Child player() {
            Ui::grow();
 }
 
-export Ui::Child app() {
-    return Kr::scaffold({
-        .icon = Mdi::PLAY_CIRCLE,
-        .title = "Media Player"s,
-        .body = [] {
-            return player();
-        },
+export Ui::Child app(Rc<Av::Player> p) {
+    return Ui::reducer<Model>(State{p}, [](State const& s) {
+        return Kr::scaffold({
+            .icon = Mdi::PLAY_CIRCLE,
+            .title = "Media Player"s,
+            .body = [&] {
+                return player(s);
+            },
+        });
     });
 }
 

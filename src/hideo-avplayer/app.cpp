@@ -15,57 +15,11 @@ import Karm.Ref;
 import Karm.Av;
 import Karm.App;
 
+export import :model;
+
 using namespace Karm;
 
 namespace Hideo::Avplayer {
-
-struct State {
-    Rc<Av::Player> player;
-};
-
-export struct Update {};
-
-export struct TogglePause {};
-
-export struct ToggleMute {};
-
-export struct Previous {};
-
-export struct ChangeVolume {
-    f64 value;
-};
-
-export struct Scrub {
-    Duration duration;
-};
-
-using Action = Union<Update, TogglePause, ToggleMute, Previous, ChangeVolume, Scrub>;
-
-Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
-        [&](Update) {
-        },
-        [&](TogglePause) {
-            s.player->pause(not s.player->pause());
-        },
-        [&](ToggleMute) {
-            s.player->mute(not s.player->mute());
-        },
-        [&](Previous) {
-            s.player->seek(Duration::fromSecs(0));
-        },
-        [&](ChangeVolume c) {
-            s.player->volume(c.value);
-        },
-        [&](Scrub m) {
-            s.player->seek(m.duration);
-        },
-    });
-
-    return NONE;
-}
-
-export using Model = Ui::Model<State, Action, reduce>;
 
 Ui::Child videoContent() {
     return Ui::image("bundle://hideo-avplayer/images/bunny.qoi"_url) |
@@ -74,7 +28,7 @@ Ui::Child videoContent() {
 }
 
 Ui::Child audioContent() {
-    auto image = Image::load("bundle://hideo-avplayer/images/cover.png"_url).unwrap();
+    auto image = Image::load("bundle://hideo-avplayer/images/missing.png"_url).unwrap();
     auto background = Ui::image(image) |
                       Ui::foregroundFilter(Gfx::BrightnessFilter{0.2}) |
                       Ui::cover();
@@ -107,65 +61,85 @@ Ui::Child nomedia(Error err) {
     return Kr::errorPage(Mdi::ALERT_CIRCLE_OUTLINE, "Could not start media playback"s, Str{err.msg()});
 }
 
+Ui::Child transportControls(State const& s) {
+    return Ui::hflow(
+               Ui::button(Model::bind<Previous>(), Ui::ButtonStyle::subtle(), Mdi::SKIP_PREVIOUS),
+               Kr::separator(),
+               Ui::button(Model::bind<TogglePause>(), Ui::ButtonStyle::primary(), s.player->status() == Av::Player::PLAYING ? Mdi::PAUSE : Mdi::PLAY),
+               Kr::separator(),
+               Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::SKIP_NEXT)
+           ) |
+           Ui::box({
+               .borderRadii = 4,
+               .backgroundFill = Ui::GRAY800,
+           });
+}
+
 Ui::Child duration(Duration dur) {
     return Ui::text(Ui::TextStyles::codeSmall(), "{:02}:{:02}", dur.toMinutes(), dur.toSecs() % 60);
 }
 
-Ui::Child player(State const& s) {
-    auto mediaContent = audioContent();
-
-    auto mediaControls =
-        Ui::hflow(
-            6,
-            Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
-            Ui::hflow(
-                Ui::button(Model::bind<Previous>(), Ui::ButtonStyle::subtle(), Mdi::SKIP_PREVIOUS),
-                Kr::separator(),
-                Ui::button(Model::bind<TogglePause>(), Ui::ButtonStyle::primary(), s.player->status() == Av::Player::PLAYING ? Mdi::PAUSE : Mdi::PLAY),
-                Kr::separator(),
-                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::SKIP_NEXT)
-            ) | Ui::box({
-                    .borderRadii = 4,
-                    .backgroundFill = Ui::GRAY800,
-                }),
-            Ui::empty(4),
-            duration(s.player->tell()),
-            Kr::slider(
-                s.player->tell().toMSecs() / static_cast<f64>(s.player->duration().toMSecs()),
-                [&](auto& n, f64 v) {
-                    auto durr = Duration::fromMSecs(s.player->duration().toMSecs() * v);
-                    Model::bubble<Scrub>(n, Scrub{durr});
-                }
-            ) |
-                Ui::grow(),
-            duration(s.player->duration()),
-            Ui::empty(4),
-            Ui::hflow(
-                Ui::button(
-                    Model::bind<ToggleMute>(),
-                    Ui::ButtonStyle::subtle(),
-                    s.player->mute() ? Mdi::VOLUME_MUTE : Mdi::VOLUME_HIGH
-                ),
-                Kr::slider(s.player->volume(), [](auto& n, f64 v) {
-                    Model::bubble<ChangeVolume>(n, ChangeVolume{v});
-                })
-            ) | Ui::box({
-                    .padding = {0, 6, 0, 0},
-                    .borderRadii = 4,
-                    .backgroundFill = Ui::GRAY800,
-                }),
-            Ui::button(Ui::bindBubble<App::RequestMaximizeEvent>(), Ui::ButtonStyle::regular(), Mdi::FULLSCREEN)
+Ui::Child scrubberControls(State const& s) {
+    return Ui::hflow(
+        6,
+        Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
+        duration(s.player->tell()),
+        Kr::slider(
+            s.player->tell().toMSecs() / static_cast<f64>(s.player->duration().toMSecs()),
+            [&](auto& n, f64 v) {
+                auto durr = Duration::fromMSecs(s.player->duration().toMSecs() * v);
+                Model::bubble<Scrub>(n, Scrub{durr});
+            }
         ) |
-        Ui::insets(8) | Ui::box({
-                            .backgroundFill = Ui::GRAY900.withOpacity(0.6),
-                        }) |
-        Ui::backgroundFilter(Gfx::BlurFilter{16});
+            Ui::grow(),
+        duration(s.player->duration())
+    );
+}
 
+Ui::Child volumeControls(State const& s) {
+    return Ui::hflow(
+               6,
+               Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
+               Ui::button(
+                   Model::bind<ToggleMute>(),
+                   Ui::ButtonStyle::subtle(),
+                   s.player->mute() ? Mdi::VOLUME_MUTE : Mdi::VOLUME_HIGH
+               ),
+               Kr::slider(s.player->volume(), [](auto& n, f64 v) {
+                   Model::bubble<ChangeVolume>(n, ChangeVolume{v});
+               })
+           ) |
+           Ui::box({
+               .padding = {0, 6, 0, 0},
+               .borderRadii = 4,
+               .backgroundFill = Ui::GRAY800,
+           });
+}
+
+Ui::Child mediaControls(State const& s) {
+    return Ui::hflow(
+               6,
+               Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
+               transportControls(s),
+               Ui::empty(4),
+               scrubberControls(s) | Ui::grow(),
+               Ui::empty(4),
+               volumeControls(s),
+               Ui::button(Ui::bindBubble<App::RequestMaximizeEvent>(), Ui::ButtonStyle::regular(), Mdi::FULLSCREEN)
+           ) |
+           Ui::insets(8) |
+           Ui::box({
+               .backgroundFill = Ui::GRAY900.withOpacity(0.6),
+           }) |
+           Ui::backgroundFilter(Gfx::BlurFilter{16});
+}
+
+Ui::Child player(State const& s) {
     return Ui::stack(
-               mediaContent,
+               audioContent(),
                Ui::vflow(
                    Ui::grow(NONE),
-                   mediaControls
+                   mediaControls(s)
                )
            ) |
            Ui::grow();

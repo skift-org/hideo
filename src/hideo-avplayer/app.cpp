@@ -34,7 +34,8 @@ Ui::Child audioContent() {
                       Ui::cover();
 
     auto cover = Ui::image(
-                     image, 8
+                     image,
+                     8
                  ) |
                  Ui::box({
                      .borderRadii = 8,
@@ -50,8 +51,8 @@ Ui::Child audioContent() {
                    Math::Align::CENTER,
                    cover,
                    Ui::empty(4),
-                   Ui::titleLarge("Free Software Song"),
-                   Ui::labelMedium("Richard Stallman")
+                   Ui::titleLarge("Unknown Title"),
+                   Ui::labelMedium("Unknown Artist")
                ) | Ui::center()
            ) |
            Ui::vhclip();
@@ -98,7 +99,7 @@ Ui::Child scrubberControls(State const& s) {
 
 Ui::Child volumeControls(State const& s) {
     return Ui::hflow(
-               6,
+               0,
                Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
                Ui::button(
                    Model::bind<ToggleMute>(),

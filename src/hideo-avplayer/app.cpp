@@ -29,6 +29,7 @@ Ui::Child videoContent() {
 Ui::Child audioContent() {
     auto image = Image::load("bundle://hideo-avplayer/images/missing.png"_url).unwrap();
     auto background = Ui::image(image) |
+                      Ui::foregroundFilter(Gfx::BlurFilter{8}) |
                       Ui::foregroundFilter(Gfx::BrightnessFilter{0.2}) |
                       Ui::cover();
 
@@ -131,7 +132,7 @@ Ui::Child mediaControls(State const& s) {
 
 Ui::Child player(State const& s) {
     return Ui::stack(
-               audioContent(),
+               s.audio ? audioContent() : nomedia(s.audio.none()),
                Ui::vflow(
                    Ui::grow(NONE),
                    mediaControls(s)
@@ -140,8 +141,8 @@ Ui::Child player(State const& s) {
            Ui::grow();
 }
 
-export Ui::Child app(Rc<Av::Player> p) {
-    return Ui::reducer<Model>(State{p}, [](State const& s) {
+export Ui::Child app(Rc<Av::Player> p, Res<Rc<Av::Audio>> a) {
+    return Ui::reducer<Model>(State{p, a}, [](State const& s) {
         return Kr::scaffold({
             .icon = Mdi::PLAY_CIRCLE,
             .title = "Media Player"s,

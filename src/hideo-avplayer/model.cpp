@@ -10,6 +10,7 @@ namespace Hideo::Avplayer {
 
 struct State {
     Rc<Av::Player> player;
+    Res<Rc<Av::Audio>> audio;
 };
 
 export struct Update {};

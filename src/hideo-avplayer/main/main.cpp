@@ -1,3 +1,4 @@
+#include <karm-logger/logger.h>
 #include <karm-sys/entry.h>
 
 import Hideo.Avplayer;
@@ -7,16 +8,27 @@ import Karm.Av;
 using namespace Karm;
 
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
-    auto url = "bundle://hideo-avplayer/audio/free-software.wav"_url;
+    auto& args = useArgs(ctx);
+    Res<Rc<Av::Audio>> audio = Error::invalidInput("No media provided");
+
+    if (args.len()) {
+        auto url = Ref::parseUrlOrPath(args[0], co_try$(Sys::pwd()));
+        audio = Av::load(url);
+
+        if (not audio) {
+            logError("Failed to load image: {}", audio.none());
+        }
+    }
+
     auto device = co_try$(Av::Device::create());
     auto player = makeRc<Av::Player>();
-    auto audio = co_try$(Av::load(url));
-    player->play(audio);
+    if (audio)
+        player->play(audio.unwrap());
     device->play(player);
     device->pause(false);
 
     auto [cancelation, token] = Async::Cancellation::create();
-    auto app = Hideo::Avplayer::app(player);
+    auto app = Hideo::Avplayer::app(player, audio);
     Async::detach(Hideo::Avplayer::updatePlayback(app, token));
 
     co_return co_await Ui::runAsync(ctx, app);

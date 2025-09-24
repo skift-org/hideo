@@ -2,15 +2,15 @@ module;
 
 #include <karm-gfx/colors.h>
 #include <karm-math/align.h>
-#include <karm-sys/file.h>
-#include <karm-sys/proc.h>
 
 export module Hideo.Printers:dialog;
 
-import Karm.Core;
 import Karm.App;
-import Karm.Print;
+import Karm.Core;
 import Karm.Kira;
+import Karm.Print;
+import Karm.Ref;
+import Karm.Sys;
 import Karm.Ui;
 
 using namespace Karm;

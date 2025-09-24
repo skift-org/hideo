@@ -1,11 +1,8 @@
-module;
-
-#include <karm-sys/dir.h>
-
 export module Hideo.Files:dialogs;
 
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Sys;
 
 import :widgets;
 

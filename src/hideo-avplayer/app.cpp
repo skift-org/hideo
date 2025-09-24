@@ -2,8 +2,6 @@ module;
 
 #include <karm-gfx/filters.h>
 #include <karm-math/align.h>
-#include <karm-sys/async.h>
-#include <karm-sys/time.h>
 
 export module Hideo.Avplayer;
 
@@ -14,6 +12,7 @@ import Karm.Image;
 import Karm.Ref;
 import Karm.Av;
 import Karm.App;
+import Karm.Sys;
 
 export import :model;
 
@@ -76,7 +75,7 @@ Ui::Child transportControls(State const& s) {
 }
 
 Ui::Child duration(Duration dur) {
-    return Ui::text(Ui::TextStyles::codeSmall(), "{:02}:{:02}", dur.toMinutes(), dur.toSecs() % 60);
+    return Ui::text(Ui::TextStyles::codeSmall().withColor(Ui::GRAY300), "{:02}:{:02}", dur.toMinutes(), dur.toSecs() % 60);
 }
 
 Ui::Child scrubberControls(State const& s) {
@@ -127,11 +126,7 @@ Ui::Child mediaControls(State const& s) {
                volumeControls(s),
                Ui::button(Ui::bindBubble<App::RequestMaximizeEvent>(), Ui::ButtonStyle::regular(), Mdi::FULLSCREEN)
            ) |
-           Ui::insets(8) |
-           Ui::box({
-               .backgroundFill = Ui::GRAY900.withOpacity(0.6),
-           }) |
-           Ui::backgroundFilter(Gfx::BlurFilter{16});
+           Ui::insets(8);
 }
 
 Ui::Child player(State const& s) {

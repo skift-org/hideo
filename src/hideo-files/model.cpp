@@ -1,11 +1,9 @@
-module;
-
-#include <karm-sys/info.h>
-#include <karm-sys/launch.h>
-
 export module Hideo.Files:model;
 
+import Karm.Core;
 import Karm.Ui;
+import Karm.Ref;
+import Karm.Sys;
 
 using namespace Karm;
 

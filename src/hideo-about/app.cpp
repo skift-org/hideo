@@ -1,13 +1,14 @@
 module;
 
 #include <karm-math/align.h>
-#include <karm-sys/time.h>
 
 export module Hideo.About;
 
 import Karm.Core;
 import Karm.Image;
 import Karm.Kira;
+import Karm.Ref;
+import Karm.Sys;
 import Karm.Ui;
 import Mdi;
 

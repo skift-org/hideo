@@ -1,13 +1,13 @@
 module;
 
 #include <karm-gfx/icon.h>
-#include <karm-sys/dir.h>
 
 export module Hideo.Files:app;
 
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Sys;
 import :model;
 import :widgets;
 

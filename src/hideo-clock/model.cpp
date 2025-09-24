@@ -1,10 +1,8 @@
-module;
-
-#include <karm-sys/time.h>
-
 export module Hideo.Clock:model;
 
+import Karm.Core;
 import Karm.Ui;
+import Karm.Sys;
 
 using namespace Karm;
 

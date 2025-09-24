@@ -1,13 +1,13 @@
 module;
 
 #include <karm-gfx/colors.h>
-#include <karm-sys/info.h>
 
 export module Hideo.Settings:pageAbout;
 
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Sys;
 import :model;
 import :common;
 

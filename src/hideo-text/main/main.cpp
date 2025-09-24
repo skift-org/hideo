@@ -1,9 +1,8 @@
 #include <karm-sys/entry.h>
-#include <karm-sys/file.h>
-#include <karm-sys/proc.h>
 
 import Hideo.Text;
 import Karm.Ui;
+import Karm.Sys;
 
 using namespace Karm;
 

@@ -2,13 +2,14 @@ module;
 
 #include <karm-logger/logger.h>
 #include <karm-math/align.h>
-#include <karm-sys/file.h>
 
 export module Hideo.Text;
 
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Sys;
+import Karm.Ref;
 import Hideo.Files;
 
 using namespace Karm;

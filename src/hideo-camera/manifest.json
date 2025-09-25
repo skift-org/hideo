@@ -4,6 +4,7 @@
     "type": "lib",
     "description": "Take photos and videos",
     "requires": [
-        "karm-kira"
+        "karm-kira",
+        "karm-av"
     ]
 }

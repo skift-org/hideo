@@ -19,7 +19,7 @@ struct State {
     State(Font::Database fontBook) : fontBook(fontBook) {}
 
     bool canGoBack() const {
-        return fontFace || fontFamily;
+        return fontFace or fontFamily;
     }
 };
 

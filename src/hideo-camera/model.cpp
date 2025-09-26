@@ -57,13 +57,13 @@ Ui::Task<Action> reduce(State& s, Action a) {
                 auto now = Sys::now();
                 auto dt = DateTime::fromInstant(now);
                 auto filename = Io::format(
-                    "Photo-{:04}{:02}{:02}_{:02}{:02}{:02}_{:05}.bmp",
+                    "Photo-{:04}{:02}{:02}_{:02}{:02}{:02}_{:05}.jpg",
                     dt.date.year.val(), dt.date.month.val() + 1, dt.date.day.val() + 1,
                     dt.time.hour, dt.time.minute, dt.time.second,
                     now.val() % 100000
                 );
                 s.lastImageUrl = "location://pictures/Camera"_url / filename;
-                Image::save(videoFrame->surface->pixels(), s.lastImageUrl).unwrap("could not save picture");
+                Image::save(videoFrame->surface->pixels(), s.lastImageUrl, {.format = Ref::Uti::PUBLIC_JPEG}).unwrap("could not save picture");
             }
         },
         [&](OpenLast) {

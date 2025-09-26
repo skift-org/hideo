@@ -10,6 +10,7 @@ import Karm.Av;
 import Karm.Ui;
 import Karm.Ref;
 import Karm.Image;
+import Karm.Sys;
 
 using namespace Karm;
 
@@ -22,8 +23,10 @@ struct Guidelines {
 };
 
 struct State {
+    Rc<Av::Camera> camera;
     Rc<Av::VideoStream> stream;
     Opt<Rc<Gfx::Surface>> lastImage = NONE;
+    Ref::Url lastImageUrl = ""_url;
     Guidelines guidelines = {};
 };
 
@@ -39,8 +42,11 @@ Rc<Gfx::Surface> _generateThumbnail(Rc<Gfx::Surface> src) {
 
 export struct Capture {};
 
+export struct OpenLast {};
+
 using Action = Union<
-    Capture>;
+    Capture,
+    OpenLast>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(Visitor{
@@ -48,8 +54,26 @@ Ui::Task<Action> reduce(State& s, Action a) {
             auto videoFrame = s.stream->next();
             if (videoFrame) {
                 s.lastImage = _generateThumbnail(videoFrame->surface);
-                Image::save(videoFrame->surface->pixels(), "file:./output.bmp"_url).unwrap("could not save picture");
+                auto now = Sys::now();
+                auto dt = DateTime::fromInstant(now);
+                auto filename = Io::format(
+                    "Photo-{:04}{:02}{:02}_{:02}{:02}{:02}_{:05}.bmp",
+                    dt.date.year.val(), dt.date.month.val() + 1, dt.date.day.val() + 1,
+                    dt.time.hour, dt.time.minute, dt.time.second,
+                    now.val() % 100000
+                );
+                s.lastImageUrl = "location://pictures/Camera"_url / filename;
+                Image::save(videoFrame->surface->pixels(), s.lastImageUrl).unwrap("could not save picture");
             }
+        },
+        [&](OpenLast) {
+            Sys::launch(
+                {
+                    .action = Ref::Uti::PUBLIC_PREVIEW,
+                    .objects = {s.lastImageUrl},
+                }
+            )
+                .unwrap("could not launch intent");
         },
     });
 

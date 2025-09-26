@@ -12,6 +12,6 @@ Async::Task<> entryPointAsync(Sys::Context& ctx) {
 
     co_return co_await Ui::runAsync(
         ctx,
-        Hideo::Camera::app(cap)
+        Hideo::Camera::app(cam, cap)
     );
 }

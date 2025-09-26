@@ -51,6 +51,23 @@ struct VideoSurface : Ui::View<VideoSurface> {
     }
 };
 
+Ui::Child cameraInfoDialog(State const& s) {
+    auto infos = s.camera->info();
+    Vec<Ui::Child> els;
+    els.pushBack(Ui::labelMedium("name: {}\n", infos.name));
+    els.pushBack(Ui::labelMedium("driver: {}\n", infos.driver));
+
+    auto formats = s.camera->formats();
+    for (auto& f : formats) {
+        els.pushBack(Ui::labelMedium("{}x{} {}fps", f.resolution.width, f.resolution.height, f.framerate));
+    }
+
+    return Kr::dialogContent({
+        Kr::dialogTitleBar("Camera Debug"s),
+        Kr::dialogBody(els) | Ui::vscroll() | Ui::maxSize({Ui::UNCONSTRAINED, 256}),
+    });
+}
+
 Ui::Child appContent(State const& s) {
     auto viewport =
         Ui::stack(
@@ -87,7 +104,15 @@ Ui::Child appContent(State const& s) {
         Ui::fit();
 
     auto topBar =
-        Ui::hflow(
+        Ui::vflow(
+            8,
+            Ui::button(
+                [&](auto& n) {
+                    Ui::showDialog(n, cameraInfoDialog(s));
+                },
+                Ui::ButtonStyle::regular().withForegroundFill(Gfx::WHITE).withRadii(999),
+                Mdi::BUG
+            ),
             Ui::button(
                 Ui::SINK<>,
                 Ui::ButtonStyle::regular().withForegroundFill(Gfx::WHITE).withRadii(999),
@@ -105,7 +130,7 @@ Ui::Child appContent(State const& s) {
         Ui::insets(24);
 
     auto bottomBar =
-        Ui::hflow(
+        Ui::vflow(
             Ui::button(
                 Ui::SINK<>,
                 Ui::ButtonStyle::regular().withRadii(999).withPadding(12),
@@ -118,28 +143,29 @@ Ui::Child appContent(State const& s) {
                 Ui::icon(Mdi::CAMERA, 38)
             ) | Ui::center() |
                 Ui::grow(),
+
             Ui::button(
-                Ui::SINK<>,
-                Ui::ButtonStyle::outline().withRadii(999),
-                (s.lastImage ? Ui::image(s.lastImage.unwrap(), 999) | Ui::cover() : Ui::empty()) | Ui::pinSize(48)
+                Model::bindIf<OpenLast>(s.lastImage.has()),
+                Ui::ButtonStyle::regular().withRadii(999),
+                (s.lastImage
+                     ? Ui::image(s.lastImage.unwrap(), 999) | Ui::cover()
+                     : Ui::empty()) |
+                    Ui::pinSize(48)
             ) | Ui::center()
         ) |
         Ui::box({
-            .padding = {16, 24},
-            .backgroundFill = Gfx::BLACK.withOpacity(0.25),
+            .padding = {32, 8},
+            .backgroundFill = Ui::GRAY950.withOpacity(0.6),
         });
 
-    return Ui::vflow(
-        Ui::stack(
-            viewport,
-            Ui::vflow(topBar)
-        ) | Ui::grow(),
-        bottomBar
+    return Ui::stack(
+        viewport,
+        Ui::hflow(topBar, Ui::grow(NONE), bottomBar)
     );
 }
 
-export Ui::Child app(Rc<Av::VideoStream> stream) {
-    return Ui::reducer<Model>({stream}, [](State const& s) {
+export Ui::Child app(Rc<Av::Camera> cam, Rc<Av::VideoStream> stream) {
+    return Ui::reducer<Model>({cam, stream}, [](State const& s) {
         return Kr::scaffold({
             .icon = Mdi::CAMERA,
             .title = "Camera"s,

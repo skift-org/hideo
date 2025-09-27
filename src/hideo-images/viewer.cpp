@@ -9,31 +9,14 @@ import :model;
 namespace Hideo::Images {
 
 Ui::Child viewerPreview(State const& state) {
-    if (not state.image)
-        return Kr::errorPage(Mdi::ALERT_DECAGRAM, "Unable to display this image."s, Str{state.image.none().msg()});
-
-    return Ui::image(state.image.unwrap()) |
+    return Ui::image(state.mode.unwrap<Viewer>().image) |
            Ui::box({
                .borderWidth = 1,
                .borderFill = Ui::GRAY50.withOpacity(0.1),
+               .backgroundFill = Ui::GRAY50,
            }) |
            Ui::insets(8) |
            Ui::fit();
-}
-
-Ui::Child viewerToolbar(State const& state) {
-    return Kr::toolbar({
-        Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::MAGNIFY_PLUS),
-        Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::MAGNIFY_MINUS),
-        Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::FULLSCREEN),
-        Ui::grow(NONE),
-        Ui::button(
-            Model::bindIf<ToggleEditor>(state.image.has()),
-            Ui::ButtonStyle::subtle(),
-            Mdi::PENCIL,
-            "Edit"
-        ),
-    });
 }
 
 Ui::Child viewerControls(State const&) {
@@ -59,7 +42,7 @@ export Ui::Child viewerApp(State const& state) {
         .endTools = [&] -> Ui::Children {
             return {
                 Ui::button(
-                    Model::bindIf<ToggleEditor>(state.image.has()),
+                    Model::bind<Edit>(),
                     Ui::ButtonStyle::subtle(),
                     Mdi::PENCIL,
                     "Edit"

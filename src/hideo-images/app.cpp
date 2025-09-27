@@ -1,3 +1,7 @@
+module;
+
+#include <karm-gfx/buffer.h>
+
 export module Hideo.Images;
 
 import Karm.Core;
@@ -6,13 +10,18 @@ import :viewer;
 
 namespace Hideo::Images {
 
-export Ui::Child app(State initial) {
+export Ui::Child app(Rc<Gfx::Surface> initial) {
     return Ui::reducer<Model>(
-        initial,
-        [](auto const& s) {
-            return s.isEditor
-                       ? editorApp(s)
-                       : viewerApp(s);
+        State{Viewer{initial}},
+        [](State const& s) {
+            return s.mode.visit(Visitor{
+                [&](Editor const&) {
+                    return editorApp(s);
+                },
+                [&](Viewer const&) {
+                    return viewerApp(s);
+                },
+            });
         }
     );
 }

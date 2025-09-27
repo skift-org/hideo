@@ -238,7 +238,6 @@ Ui::Child editorProperties(Editor const& editor) {
                 ),
 
                 Kr::separator(),
-                Kr::separator(),
                 adjustmentGroup(
                     "Vignet"s,
                     {
@@ -246,6 +245,21 @@ Ui::Child editorProperties(Editor const& editor) {
                         adjustmentSlider(editor, Adjustment::VIGNETTE_FEATHER, Kr::Slider::HALF),
                         adjustmentSlider(editor, Adjustment::VIGNETTE_MIDPOINT, Kr::Slider::HALF),
                         adjustmentSlider(editor, Adjustment::VIGNETTE_ROUNDNESS, Kr::Slider::ZERO),
+                    }
+                ),
+
+                Kr::separator(),
+                adjustmentGroup(
+                    "Lens Correction"s,
+                    {
+                        adjustmentSlider(editor, Adjustment::LENS_RADIAL1, Kr::Slider::HALF),
+                        adjustmentSlider(editor, Adjustment::LENS_RADIAL2, Kr::Slider::HALF),
+                        adjustmentSlider(editor, Adjustment::LENS_RADIAL3, Kr::Slider::HALF),
+                        adjustmentSlider(editor, Adjustment::LENS_TANGENT_X, Kr::Slider::HALF),
+                        adjustmentSlider(editor, Adjustment::LENS_TANGENT_Y, Kr::Slider::ZERO),
+                        adjustmentSlider(editor, Adjustment::LENS_CENTER_X, Kr::Slider::ZERO),
+                        adjustmentSlider(editor, Adjustment::LENS_CENTER_Y, Kr::Slider::ZERO),
+                        adjustmentSlider(editor, Adjustment::LENS_SCALE, Kr::Slider::ZERO),
                     }
                 )
             )

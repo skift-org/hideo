@@ -111,7 +111,7 @@ struct Editor {
             computeHistogram(histogram, *in);
             computeWaveform(graph, *in, *waveform);
         } else {
-            kernel.apply(*in, *out, flags);
+            kernel.applyWithLens(*in, *out, flags);
             computeHistogram(histogram, *out);
             computeWaveform(graph, *out, *waveform);
         }

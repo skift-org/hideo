@@ -86,8 +86,7 @@ static f32 mapRangeTo01(f32 v, f32 minV, f32 maxV) {
         return 0.0f;
     return (v - minV) / span;
 }
-
-// MARK: Adjustments -----------------------------------------------------------
+// ---- Adjustments ------------------------------------------------------------
 
 enum struct Adjustment {
     EXPOSURE,
@@ -105,15 +104,28 @@ enum struct Adjustment {
     VIGNETTE_ROUNDNESS,
     VIGNETTE_FEATHER,
 
+    // Lens distortion
+    LENS_RADIAL1,
+    LENS_RADIAL2,
+    LENS_RADIAL3,
+    LENS_TANGENT_X,
+    LENS_TANGENT_Y,
+    LENS_CENTER_X,
+    LENS_CENTER_Y,
+    LENS_SCALE,
+
     _LEN,
 };
 
 enum struct KernelFlags {
-    HIGHLIGHT_CLIP = 1 << 0, // red overlay where any channel > 1
-    SHADOW_CLIP = 1 << 1,    // blue overlay where any channel < 0
+    HIGHLIGHT_CLIP = 1 << 0,
+    SHADOW_CLIP = 1 << 1,
 };
 
+// ---- Kernel -----------------------------------------------------------------
+
 struct Kernel {
+    // Tone/color
     f32 exposure = 0.0f;
     f32 contrast = 0.0f;
     f32 highlights = 0.0f;
@@ -125,12 +137,19 @@ struct Kernel {
     f32 vibrance = 0.0f;
     f32 saturation = 0.0f;
 
+    // Vignette
     f32 vignetteAmount = 0.0f;
     f32 vignetteMidpoint = 0.5f;
     f32 vignetteRoundness = 0.0f;
     f32 vignetteFeather = 0.5f;
 
-    // MARK: Configuration -----------------------------------------------------
+    // Lens distortion (Brown–Conrady), off by default
+    f32 lensK1 = 0.0f, lensK2 = 0.0f, lensK3 = 0.0f; // radial
+    f32 lensP1 = 0.0f, lensP2 = 0.0f;                // tangential
+    f32 lensCx = 0.5f, lensCy = 0.5f;                // normalized principal point
+    f32 lensScale = 1.0f;                            // normalization scale (1 = baseline)
+
+    // ---- Configuration ------------------------------------------------------
 
     void reset(Adjustment a) {
         switch (a) {
@@ -176,6 +195,32 @@ struct Kernel {
         case Adjustment::VIGNETTE_FEATHER:
             vignetteFeather = 0.5f;
             break;
+
+        case Adjustment::LENS_RADIAL1:
+            lensK1 = 0.0f;
+            break;
+        case Adjustment::LENS_RADIAL2:
+            lensK2 = 0.0f;
+            break;
+        case Adjustment::LENS_RADIAL3:
+            lensK3 = 0.0f;
+            break;
+        case Adjustment::LENS_TANGENT_X:
+            lensP1 = 0.0f;
+            break;
+        case Adjustment::LENS_TANGENT_Y:
+            lensP2 = 0.0f;
+            break;
+        case Adjustment::LENS_CENTER_X:
+            lensCx = 0.5f;
+            break;
+        case Adjustment::LENS_CENTER_Y:
+            lensCy = 0.5f;
+            break;
+        case Adjustment::LENS_SCALE:
+            lensScale = 1.0f;
+            break;
+
         default:
             unreachable();
         }
@@ -225,6 +270,33 @@ struct Kernel {
         case Adjustment::VIGNETTE_FEATHER:
             vignetteFeather = clamp01(v);
             break;
+
+        // Lens ranges chosen to be useful, not chaotic
+        case Adjustment::LENS_RADIAL1:
+            lensK1 = map01ToRange(v, -0.1f, +0.1f);
+            break;
+        case Adjustment::LENS_RADIAL2:
+            lensK2 = map01ToRange(v, -0.1f, +0.1f);
+            break;
+        case Adjustment::LENS_RADIAL3:
+            lensK3 = map01ToRange(v, -0.1f, +0.1f);
+            break;
+        case Adjustment::LENS_TANGENT_X:
+            lensP1 = map01ToRange(v, -0.01f, +0.01f);
+            break;
+        case Adjustment::LENS_TANGENT_Y:
+            lensP2 = map01ToRange(v, -0.01f, +0.01f);
+            break;
+        case Adjustment::LENS_CENTER_X:
+            lensCx = clamp01(v);
+            break;
+        case Adjustment::LENS_CENTER_Y:
+            lensCy = clamp01(v);
+            break;
+        case Adjustment::LENS_SCALE:
+            lensScale = map01ToRange(v, 0.5f, 2.0f);
+            break;
+
         default:
             unreachable();
         }
@@ -260,10 +332,27 @@ struct Kernel {
             return clamp01(vignetteRoundness);
         case Adjustment::VIGNETTE_FEATHER:
             return clamp01(vignetteFeather);
+
+        case Adjustment::LENS_RADIAL1:
+            return clamp01(mapRangeTo01(lensK1, -0.1f, +0.1f));
+        case Adjustment::LENS_RADIAL2:
+            return clamp01(mapRangeTo01(lensK2, -0.1f, +0.1f));
+        case Adjustment::LENS_RADIAL3:
+            return clamp01(mapRangeTo01(lensK3, -0.1f, +0.1f));
+        case Adjustment::LENS_TANGENT_X:
+            return clamp01(mapRangeTo01(lensP1, -0.01f, +0.01f));
+        case Adjustment::LENS_TANGENT_Y:
+            return clamp01(mapRangeTo01(lensP2, -0.01f, +0.01f));
+        case Adjustment::LENS_CENTER_X:
+            return clamp01(lensCx);
+        case Adjustment::LENS_CENTER_Y:
+            return clamp01(lensCy);
+        case Adjustment::LENS_SCALE:
+            return clamp01(mapRangeTo01(lensScale, 0.5f, 2.0f));
+
         default:
             unreachable();
         }
-        return 0.0f;
     }
 
     f32 value(Adjustment a) const {
@@ -296,13 +385,30 @@ struct Kernel {
             return vignetteRoundness;
         case Adjustment::VIGNETTE_FEATHER:
             return vignetteFeather;
+
+        case Adjustment::LENS_RADIAL1:
+            return lensK1;
+        case Adjustment::LENS_RADIAL2:
+            return lensK2;
+        case Adjustment::LENS_RADIAL3:
+            return lensK3;
+        case Adjustment::LENS_TANGENT_X:
+            return lensP1;
+        case Adjustment::LENS_TANGENT_Y:
+            return lensP2;
+        case Adjustment::LENS_CENTER_X:
+            return lensCx;
+        case Adjustment::LENS_CENTER_Y:
+            return lensCy;
+        case Adjustment::LENS_SCALE:
+            return lensScale;
+
         default:
             unreachable();
         }
-        return 0.0f;
     }
 
-    // MARK: Adjustment --------------------------------------------------------
+    // ---- Tone/color pipeline ------------------------------------------------
 
     Linear exposureApply(Linear v) const {
         if (exposure == 0.0f)
@@ -335,10 +441,10 @@ struct Kernel {
             return v;
         constexpr f32 PIVOT = 0.18f;
         f32 slope = Math::pow(2.0f, contrast);
-        auto apply = [&](f32 c) {
+        auto applyC = [&](f32 c) {
             return (c - PIVOT) * slope + PIVOT;
         };
-        return {apply(v.x), apply(v.y), apply(v.z), v.w};
+        return {applyC(v.x), applyC(v.y), applyC(v.z), v.w};
     }
 
     Linear whitesBlacksApply(Linear v) const {
@@ -416,21 +522,16 @@ struct Kernel {
         if (vignetteAmount == 0.0f)
             return v;
 
-        // Normalize to [0,1], center, and scale to [-1,1]
-        f32 nx = (x + 0.5f) / w; // pixel center
+        f32 nx = (x + 0.5f) / w;
         f32 ny = (y + 0.5f) / h;
-        f32 cx = nx - 0.5f;
-        f32 cy = ny - 0.5f;
-        cx *= 2.0f;
-        cy *= 2.0f;
+        f32 cx = (nx - 0.5f) * 2.0f;
+        f32 cy = (ny - 0.5f) * 2.0f;
 
-        // Aspect correction so circle looks like a circle
         f32 aspect = h / max(1.0f, w);
 
-        // Roundness shaping similar to shader: 0 round, 1 more rectangular
         f32 rExp = 1.0f - clamp01(vignetteRoundness);
-        auto shape = [&](f32 v) {
-            return __builtin_copysign(Math::pow(Math::abs(v), rExp), v);
+        auto shape = [&](f32 q) {
+            return __builtin_copysign(Math::pow(Math::abs(q), rExp), q);
         };
         f32 sx = shape(cx);
         f32 sy = shape(cy);
@@ -459,14 +560,15 @@ struct Kernel {
         bool hi = (v.x > 1.0f) or (v.y > 1.0f) or (v.z > 1.0f);
         bool sh = (v.x < 0.0f) or (v.y < 0.0f) or (v.z < 0.0f);
 
-        if ((flags.has(KernelFlags::HIGHLIGHT_CLIP) and hi) and (flags.has(KernelFlags::SHADOW_CLIP) and sh))
-            return {1.0f, 0.0f, 1.0f, v.w}; // magenta: highlight + shadow
+        if ((flags.has(KernelFlags::HIGHLIGHT_CLIP) and hi) and
+            (flags.has(KernelFlags::SHADOW_CLIP) and sh))
+            return {1.0f, 0.0f, 1.0f, v.w};
 
         if (flags.has(KernelFlags::HIGHLIGHT_CLIP) and hi)
-            return {1.0f, 0.0f, 0.0f, v.w}; // red: highlights blown
+            return {1.0f, 0.0f, 0.0f, v.w};
 
         if (flags.has(KernelFlags::SHADOW_CLIP) and sh)
-            return {0.0f, 0.0f, 1.0f, v.w}; // blue: shadows crushed
+            return {0.0f, 0.0f, 1.0f, v.w};
 
         return v;
     }
@@ -483,7 +585,122 @@ struct Kernel {
         return v;
     }
 
+    // ---- Lens warp path -----------------------------------------------------
+
+    bool hasLensCorrection() const {
+        // lensScale != 1.0 should NOT force a warp if all coeffs are zero
+        bool anyCoeff = lensK1 or lensK2 or lensK3 or lensP1 or lensP2;
+        bool centerMoved = (lensCx != 0.5f) or (lensCy != 0.5f);
+        return anyCoeff or centerMoved;
+    }
+
+    static inline Linear sampleBilinear(Gfx::Pixels src, f32 xs, f32 ys) {
+        f32 x = clamp(xs, 0.0f, (f32)src.width() - 1.001f);
+        f32 y = clamp(ys, 0.0f, (f32)src.height() - 1.001f);
+
+        isize x0 = (isize)Math::floor(x);
+        isize y0 = (isize)Math::floor(y);
+        isize x1 = min(x0 + 1, src.width() - 1);
+        isize y1 = min(y0 + 1, src.height() - 1);
+
+        f32 tx = x - (f32)x0;
+        f32 ty = y - (f32)y0;
+
+        auto c00 = toLinear(src.loadUnsafe({x0, y0}));
+        auto c10 = toLinear(src.loadUnsafe({x1, y0}));
+        auto c01 = toLinear(src.loadUnsafe({x0, y1}));
+        auto c11 = toLinear(src.loadUnsafe({x1, y1}));
+
+        auto lerp = [](Linear a, Linear b, f32 t) {
+            return Linear{
+                mix(a.x, b.x, t),
+                mix(a.y, b.y, t),
+                mix(a.z, b.z, t),
+                mix(a.w, b.w, t),
+            };
+        };
+
+        Linear cx0 = lerp(c00, c10, tx);
+        Linear cx1 = lerp(c01, c11, tx);
+        return lerp(cx0, cx1, ty);
+    }
+
+    inline void distortUv(f32 u, f32 v, f32& ud, f32& vd) const {
+        f32 r2 = u * u + v * v;
+        f32 r4 = r2 * r2;
+        f32 r6 = r4 * r2;
+
+        f32 radial = 1.0f + lensK1 * r2 + lensK2 * r4 + lensK3 * r6;
+
+        f32 two_uv = 2.0f * u * v;
+        f32 r2p2u2 = r2 + 2.0f * u * u;
+        f32 r2p2v2 = r2 + 2.0f * v * v;
+
+        ud = u * radial + lensP1 * r2p2u2 + lensP2 * two_uv;
+        vd = v * radial + lensP1 * two_uv + lensP2 * r2p2v2;
+    }
+
+    void applyWithLens(Gfx::Pixels in, Gfx::MutPixels out, Flags<KernelFlags> flags) const {
+        isize w = in.width();
+        isize h = in.height();
+
+        // Focal length in pixels: edge of the shorter side ~ 1.0 radius when lensScale == 1
+        f32 fPix = max(1.0f, 0.5f * (f32)min(w, h) / max(1e-6f, lensScale));
+
+        // Principal point in pixels
+        f32 cxPix = clamp(lensCx, 0.0f, 1.0f) * (f32)w;
+        f32 cyPix = clamp(lensCy, 0.0f, 1.0f) * (f32)h;
+
+        for (isize y : range(h)) {
+            for (isize x : range(w)) {
+                // 1) undistorted camera coords (in pixels -> normalized by fPix)
+                f32 dx = (x + 0.5f) - cxPix;
+                f32 dy = (y + 0.5f) - cyPix;
+                f32 u = dx / fPix;
+                f32 v = dy / fPix;
+
+                // 2) forward distort (Brown–Conrady)
+                f32 r2 = u * u + v * v;
+                // Bail early if absurd radius to avoid NaNs and edge clamping soup
+                if (r2 > 1e6f) {
+                    // fall back to identity sample to keep output sane
+                    auto lin = toLinear(in.loadUnsafe({x, y}));
+                    auto adj = apply(lin, x, y, w, h, flags);
+                    out.storeUnsafe({x, y}, toSrgb(adj));
+                    continue;
+                }
+
+                f32 r4 = r2 * r2;
+                f32 r6 = r4 * r2;
+                f32 radial = 1.0f + lensK1 * r2 + lensK2 * r4 + lensK3 * r6;
+
+                f32 two_uv = 2.0f * u * v;
+                f32 r2p2u2 = r2 + 2.0f * u * u;
+                f32 r2p2v2 = r2 + 2.0f * v * v;
+
+                f32 ud = u * radial + lensP1 * r2p2u2 + lensP2 * two_uv;
+                f32 vd = v * radial + lensP1 * two_uv + lensP2 * r2p2v2;
+
+                // 3) back to source pixels
+                f32 sx = ud * fPix + cxPix - 0.5f;
+                f32 sy = vd * fPix + cyPix - 0.5f;
+
+                // 4) sample + color pipeline
+                Linear lin = sampleBilinear(in, sx, sy);
+                Linear adj = apply(lin, x, y, w, h, flags);
+                out.storeUnsafe({x, y}, toSrgb(adj));
+            }
+        }
+    }
+
+    // ---- Dispatch -----------------------------------------------------------
+
     void apply(Gfx::Pixels in, Gfx::MutPixels out, Flags<KernelFlags> flags) const {
+        if (hasLensCorrection()) {
+            applyWithLens(in, out, flags);
+            return;
+        }
+
         isize w = in.width();
         isize h = in.height();
         for (isize y : range(h)) {

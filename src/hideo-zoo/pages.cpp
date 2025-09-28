@@ -753,7 +753,7 @@ Page PAGE_TOGGLE{
     },
 };
 
-static inline Page PAGE_TYPOGRAPHY{
+static Page PAGE_TYPOGRAPHY{
     Mdi::TEXT,
     "Typography",
     "A set of different typography level",

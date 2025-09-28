@@ -50,16 +50,16 @@ static Gfx::Color toSrgb(Linear l) {
 // Rec.709 luma for scene-linear
 static constexpr Math::Vec3<f32> LUMA_COEFF{0.2126f, 0.7152f, 0.0722f};
 
-static inline f32 dot3(Math::Vec3<f32> a, Math::Vec3<f32> b) {
+static f32 dot3(Math::Vec3<f32> a, Math::Vec3<f32> b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-static inline f32 mix(f32 a, f32 b, f32 t) {
+static f32 mix(f32 a, f32 b, f32 t) {
     return a * (1.0f - t) + b * t;
 }
 
 // Simple component-wise mix for Vec3 since we don't support vector ops here
-static inline Math::Vec3<f32> mix3(Math::Vec3<f32> a, Math::Vec3<f32> b, f32 t) {
+static Math::Vec3<f32> mix3(Math::Vec3<f32> a, Math::Vec3<f32> b, f32 t) {
     return {
         a.x * (1.0f - t) + b.x * t,
         a.y * (1.0f - t) + b.y * t,
@@ -67,11 +67,11 @@ static inline Math::Vec3<f32> mix3(Math::Vec3<f32> a, Math::Vec3<f32> b, f32 t) 
     };
 }
 
-static inline f32 getLuma(Linear v) {
+static f32 getLuma(Linear v) {
     return dot3({v.x, v.y, v.z}, LUMA_COEFF);
 }
 
-static inline f32 smoothstep01(f32 a, f32 b, f32 x) {
+static f32 smoothstep01(f32 a, f32 b, f32 x) {
     f32 t = clamp01((x - a) / (b - a));
     return t * t * (3.0f - 2.0f * t);
 }
@@ -594,7 +594,7 @@ struct Kernel {
         return anyCoeff or centerMoved;
     }
 
-    static inline Linear sampleBilinear(Gfx::Pixels src, f32 xs, f32 ys) {
+    static Linear sampleBilinear(Gfx::Pixels src, f32 xs, f32 ys) {
         f32 x = clamp(xs, 0.0f, (f32)src.width() - 1.001f);
         f32 y = clamp(ys, 0.0f, (f32)src.height() - 1.001f);
 

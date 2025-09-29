@@ -71,7 +71,7 @@ export struct State : Meta::NoCopy {
 
     DateTime dateTime;
 
-    Image::Picture background;
+    Rc<Gfx::Surface> background;
     Vec<Noti> noti;
     Vec<Rc<Launcher>> launchers;
     Vec<Rc<Instance>> instances;

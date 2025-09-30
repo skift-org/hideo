@@ -1,10 +1,12 @@
 #pragma once
 
-#include <karm-gfx/canvas.h>
-#include <karm-gfx/font.h>
-
 import Karm.Ui;
 import Karm.Core;
+import Karm.Gfx;
+
+#include <karm-math/rect.h>
+#include <karm-math/edge.h>
+#include <karm-math/ellipse.h>
 
 using namespace Karm;
 

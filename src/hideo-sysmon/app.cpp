@@ -1,13 +1,10 @@
-module;
-
-#include <karm-gfx/canvas.h>
-
 export module Hideo.Sysmon;
 
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
 import Karm.Core;
+import Karm.Gfx;
 
 import :model;
 

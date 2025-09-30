@@ -1,8 +1,3 @@
-#include <karm-gfx/colors.h>
-#include <karm-gfx/font.h>
-#include <karm-gfx/icon.h>
-#include <karm-gfx/prose.h>
-#include <karm-gfx/shadow.h>
 #include <karm-math/align.h>
 #include <karm-sys/entry.h>
 
@@ -11,6 +6,7 @@ import Karm.Kira;
 import Karm.Ui;
 import Karm.Image;
 import Karm.Font;
+import Karm.Gfx;
 import Mdi;
 
 using namespace Karm;

@@ -1,8 +1,3 @@
-module;
-
-#include <karm-gfx/buffer.h>
-#include <karm-gfx/cpu/canvas.h>
-
 export module Hideo.Camera:model;
 
 import Karm.Core;
@@ -11,6 +6,7 @@ import Karm.Ui;
 import Karm.Ref;
 import Karm.Image;
 import Karm.Sys;
+import Karm.Gfx;
 
 using namespace Karm;
 

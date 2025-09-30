@@ -1,8 +1,10 @@
 module;
 
-#include <karm-gfx/buffer.h>
+#include <karm-math/vec.h>
 
 export module Hideo.Images:kernel;
+
+import Karm.Gfx;
 
 using namespace Karm;
 

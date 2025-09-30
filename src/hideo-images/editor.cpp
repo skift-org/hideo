@@ -1,8 +1,5 @@
 module;
 
-#include <karm-gfx/canvas.h>
-#include <karm-gfx/colors.h>
-#include <karm-gfx/icon.h>
 #include <karm-math/align.h>
 
 export module Hideo.Images:editor;
@@ -11,6 +8,7 @@ import Mdi;
 import Karm.Core;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Gfx;
 import :model;
 import :kernel;
 

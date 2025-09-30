@@ -1,4 +1,3 @@
-#include <karm-gfx/colors.h>
 #include <karm-sys/entry.h>
 
 import Hideo.Shell;
@@ -6,6 +5,7 @@ import Karm.App;
 import Karm.Image;
 import Karm.Ui;
 import Karm.Sys;
+import Karm.Gfx;
 import Mdi;
 
 using namespace Karm;

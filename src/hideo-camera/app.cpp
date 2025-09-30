@@ -1,6 +1,8 @@
 module;
 
-#include <karm-gfx/canvas.h>
+#include <karm-math/rect.h>
+#include <karm-math/edge.h>
+#include <karm-math/ellipse.h>
 
 export module Hideo.Camera;
 
@@ -10,6 +12,8 @@ import Karm.Kira;
 import Karm.Core;
 import Karm.Av;
 import Karm.App;
+import Karm.Gfx;
+
 import :model;
 
 using namespace Karm;

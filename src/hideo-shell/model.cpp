@@ -1,13 +1,15 @@
 module;
 
-#include <karm-gfx/icon.h>
+#include <karm-math/rect.h>
 
 export module Hideo.Shell:model;
 
 import Mdi;
 import Karm.Ui;
+import Karm.Core;
 import Karm.App;
 import Karm.Image;
+import Karm.Gfx;
 
 using namespace Karm;
 

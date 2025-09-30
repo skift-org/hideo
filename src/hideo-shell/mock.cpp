@@ -1,11 +1,8 @@
-module;
-
-#include <karm-gfx/icon.h>
-
 export module Hideo.Shell:mock;
 
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Gfx;
 import :model;
 
 namespace Hideo::Shell {

@@ -1,7 +1,5 @@
 module;
 
-#include <karm-gfx/colors.h>
-#include <karm-gfx/prose.h>
 #include <karm-logger/logger.h>
 #include <karm-math/align.h>
 
@@ -12,6 +10,7 @@ import Karm.Kira;
 import Karm.Ui;
 import Karm.Print;
 import Karm.Ref;
+import Karm.Gfx;
 
 import Hideo.Files;
 import Hideo.Printers;

@@ -1,12 +1,12 @@
 module;
 
-#include <karm-gfx/cpu/canvas.h>
-#include <karm-gfx/filters.h>
+#include <karm-math/rect.h>
 
 export module Hideo.Images:model;
 
 import Karm.Image;
 import Karm.Ui;
+import Karm.Gfx;
 import :kernel;
 
 using namespace Karm;

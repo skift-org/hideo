@@ -1,6 +1,5 @@
 module;
 
-#include <karm-gfx/icon.h>
 #include <karm-math/align.h>
 
 export module Hideo.Files:widgets;
@@ -10,6 +9,7 @@ import Karm.Ui;
 import Karm.Kira;
 import Karm.Ref;
 import Karm.Sys;
+import Karm.Gfx;
 import Mdi;
 import :model;
 

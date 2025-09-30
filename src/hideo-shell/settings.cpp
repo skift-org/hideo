@@ -1,12 +1,10 @@
-module;
-
-#include <karm-gfx/icon.h>
-
 export module Hideo.Shell:settings;
 
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Gfx;
+
 import :model;
 import :power;
 import :notifications;

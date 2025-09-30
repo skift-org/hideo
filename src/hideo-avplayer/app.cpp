@@ -1,6 +1,5 @@
 module;
 
-#include <karm-gfx/filters.h>
 #include <karm-math/align.h>
 
 export module Hideo.Avplayer;
@@ -13,6 +12,7 @@ import Karm.Ref;
 import Karm.Av;
 import Karm.App;
 import Karm.Sys;
+import Karm.Gfx;
 
 export import :model;
 

@@ -1,9 +1,6 @@
-module;
-
-#include <karm-gfx/buffer.h>
-
 export module Hideo.Images;
 
+import Karm.Gfx;
 import Karm.Core;
 import :editor;
 import :viewer;

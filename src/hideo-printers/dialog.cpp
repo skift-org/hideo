@@ -1,6 +1,5 @@
 module;
 
-#include <karm-gfx/colors.h>
 #include <karm-math/align.h>
 
 export module Hideo.Printers:dialog;
@@ -12,6 +11,7 @@ import Karm.Print;
 import Karm.Ref;
 import Karm.Sys;
 import Karm.Ui;
+import Karm.Gfx;
 
 using namespace Karm;
 

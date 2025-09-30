@@ -1,10 +1,8 @@
-module;
-
-#include <karm-gfx/icon.h>
-
 export module Hideo.Zoo:model;
 
+import Karm.Core;
 import Karm.Ui;
+import Karm.Gfx;
 
 using namespace Karm;
 

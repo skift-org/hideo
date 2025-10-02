@@ -42,7 +42,6 @@ export struct Launcher {
 };
 
 export struct Instance {
-    usize id;
     Math::Recti bound = {100, 100, 600, 400};
 
     Instance() = default;
@@ -50,6 +49,10 @@ export struct Instance {
     virtual ~Instance() = default;
 
     virtual Ui::Child build() const = 0;
+
+    bool operator==(Instance const& other) const {
+        return this == &other;
+    }
 };
 
 // MARK: Model -----------------------------------------------------------------
@@ -107,6 +110,10 @@ export struct AddInstance {
     Rc<Instance> instance;
 };
 
+export struct RemoveInstance {
+    Rc<Instance> instance;
+};
+
 export struct MoveInstance {
     usize index;
     Math::Vec2i off;
@@ -140,6 +147,7 @@ export using Action = Union<
     DimisNoti,
     StartInstance,
     AddInstance,
+    RemoveInstance,
     MoveInstance,
     CloseInstance,
     FocusInstance,
@@ -178,7 +186,10 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.activePanel = Panel::NIL;
         },
         [&](AddInstance add) {
-            s.instances.pushBack(add.instance);
+            s.instances.pushFront(add.instance);
+        },
+        [&](RemoveInstance rem) {
+            s.instances.removeAll(rem.instance);
         },
         [&](MoveInstance move) {
             s.activePanel = Panel::NIL;

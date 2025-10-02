@@ -7,7 +7,7 @@ import :model;
 
 namespace Hideo::Shell {
 
-export struct MockInstance : public Instance {
+export struct MockInstance : Instance {
     Gfx::Icon icon;
     String name;
     Gfx::ColorRamp ramp;
@@ -29,7 +29,7 @@ export struct MockInstance : public Instance {
     }
 };
 
-export struct MockLauncher : public Launcher {
+export struct MockLauncher : Launcher {
     using Launcher::Launcher;
 
     void launch(State& s) override {

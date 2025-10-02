@@ -5,7 +5,7 @@ import Karm.App;
 
 namespace Hideo::Spreadsheet {
 
-struct Table : public Ui::View<Table> {
+struct Table : Ui::View<Table> {
     State const* _state;
     Math::Vec2i _scroll;
     Ui::MouseListener _mouseListener;

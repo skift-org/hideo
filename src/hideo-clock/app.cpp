@@ -88,7 +88,6 @@ export Ui::Child app() {
             return Kr::scaffold({
                 .icon = Mdi::CLOCK,
                 .title = "Clock"s,
-                .titlebar = Kr::TitlebarStyle::DIALOG,
                 .body = [&] {
                     auto navbar = Kr::navbarContent({
                         Kr::navbarItem(

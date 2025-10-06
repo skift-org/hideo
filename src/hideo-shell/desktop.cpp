@@ -1,12 +1,10 @@
-module;
-
-#include <karm-math/align.h>
-
 export module Hideo.Shell:desktop;
 
 import Karm.Ui;
 import Karm.App;
 import Karm.Gfx;
+import Karm.Math;
+
 import :model;
 import :applications;
 import :settings;

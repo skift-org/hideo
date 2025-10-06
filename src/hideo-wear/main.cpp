@@ -1,10 +1,10 @@
-#include <karm-math/align.h>
 #include <karm-sys/entry.h>
 
 import Karm.Ui;
 import Karm.App;
 import Karm.Image;
 import Karm.Kira;
+import Karm.Math;
 import Mdi;
 
 using namespace Karm;

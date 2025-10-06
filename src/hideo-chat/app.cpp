@@ -1,13 +1,10 @@
-module;
-
-#include <karm-math/align.h>
-
 export module Hideo.Chat;
 
 import Mdi;
 import Karm.Core;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Math;
 
 using namespace Karm;
 

@@ -1,4 +1,3 @@
-#include <karm-logger/logger.h>
 #include <karm-sys/entry.h>
 
 import Hideo.Images;
@@ -7,6 +6,8 @@ import Karm.Kira;
 import Karm.Ui;
 import Karm.Sys;
 import Karm.Gfx;
+import Karm.Logger;
+
 import Mdi;
 
 using namespace Karm;

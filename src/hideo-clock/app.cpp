@@ -1,6 +1,6 @@
 module;
 
-#include <karm-math/align.h>
+#include <karm-core/macros.h>
 
 export module Hideo.Clock:app;
 
@@ -9,6 +9,7 @@ import Karm.Core;
 import Karm.Kira;
 import Karm.Ui;
 import Karm.Sys;
+import Karm.Math;
 
 import :model;
 

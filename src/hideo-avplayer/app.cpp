@@ -1,6 +1,6 @@
 module;
 
-#include <karm-math/align.h>
+#include <karm-core/macros.h>
 
 export module Hideo.Avplayer;
 
@@ -13,6 +13,7 @@ import Karm.Av;
 import Karm.App;
 import Karm.Sys;
 import Karm.Gfx;
+import Karm.Math;
 
 export import :model;
 

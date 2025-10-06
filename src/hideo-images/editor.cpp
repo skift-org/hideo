@@ -1,7 +1,3 @@
-module;
-
-#include <karm-math/align.h>
-
 export module Hideo.Images:editor;
 
 import Mdi;
@@ -9,6 +5,8 @@ import Karm.Core;
 import Karm.Ui;
 import Karm.Kira;
 import Karm.Gfx;
+import Karm.Math;
+
 import :model;
 import :kernel;
 

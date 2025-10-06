@@ -1,7 +1,3 @@
-module;
-
-#include <karm-math/align.h>
-
 export module Hideo.Shell:taskbar;
 
 import Mdi;
@@ -9,6 +5,7 @@ import Karm.Ui;
 import Karm.Core;
 import Karm.Kira;
 import Karm.Gfx;
+import Karm.Math;
 import Hideo.Keyboard;
 
 import :model;

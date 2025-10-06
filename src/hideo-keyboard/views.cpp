@@ -1,12 +1,10 @@
-module;
-
-#include <karm-math/align.h>
-
 export module Hideo.Keyboard;
 
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
+import Karm.Math;
+
 import :model;
 
 namespace Hideo::Keyboard {

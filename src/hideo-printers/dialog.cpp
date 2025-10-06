@@ -1,7 +1,3 @@
-module;
-
-#include <karm-math/align.h>
-
 export module Hideo.Printers:dialog;
 
 import Karm.App;
@@ -12,6 +8,7 @@ import Karm.Ref;
 import Karm.Sys;
 import Karm.Ui;
 import Karm.Gfx;
+import Karm.Math;
 
 using namespace Karm;
 

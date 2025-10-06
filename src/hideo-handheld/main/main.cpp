@@ -1,4 +1,3 @@
-#include <karm-math/align.h>
 #include <karm-sys/entry.h>
 
 import Karm.App;
@@ -7,6 +6,7 @@ import Karm.Ui;
 import Karm.Image;
 import Karm.Font;
 import Karm.Gfx;
+import Karm.Math;
 import Mdi;
 
 using namespace Karm;

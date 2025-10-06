@@ -1,7 +1,3 @@
-module;
-
-#include <karm-math/rect.h>
-
 export module Hideo.Shell:model;
 
 import Mdi;
@@ -10,6 +6,7 @@ import Karm.Core;
 import Karm.App;
 import Karm.Image;
 import Karm.Gfx;
+import Karm.Math;
 
 using namespace Karm;
 

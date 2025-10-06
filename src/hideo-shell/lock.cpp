@@ -1,7 +1,3 @@
-module;
-
-#include <karm-math/align.h>
-
 export module Hideo.Shell:lock;
 
 import Mdi;
@@ -9,6 +5,7 @@ import Karm.Ui;
 import Karm.Font;
 import Karm.Ref;
 import Karm.Gfx;
+import Karm.Math;
 
 import :model;
 import :background;
@@ -46,13 +43,15 @@ Ui::Child lock(State const& state) {
             },
             dateTime
         ),
-        Ui::text({
-                     .font = Gfx::Font{
-                         blackFontface(),
-                         72,
-                     },
-                 },
-                 "{02}:{02}", time.hour, time.minute)
+        Ui::text(
+            {
+                .font = Gfx::Font{
+                    blackFontface(),
+                    72,
+                },
+            },
+            "{02}:{02}", 
+            time.hour, time.minute)
     );
 
     auto hintText = Ui::vflow(

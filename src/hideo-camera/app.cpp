@@ -1,9 +1,3 @@
-module;
-
-#include <karm-math/rect.h>
-#include <karm-math/edge.h>
-#include <karm-math/ellipse.h>
-
 export module Hideo.Camera;
 
 import Mdi;
@@ -13,6 +7,7 @@ import Karm.Core;
 import Karm.Av;
 import Karm.App;
 import Karm.Gfx;
+import Karm.Math;
 
 import :model;
 

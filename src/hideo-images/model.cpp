@@ -1,12 +1,10 @@
-module;
-
-#include <karm-math/rect.h>
-
 export module Hideo.Images:model;
 
 import Karm.Image;
 import Karm.Ui;
 import Karm.Gfx;
+import Karm.Math;
+
 import :kernel;
 
 using namespace Karm;

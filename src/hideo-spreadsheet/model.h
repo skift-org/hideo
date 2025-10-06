@@ -3,10 +3,7 @@
 import Karm.Ui;
 import Karm.Core;
 import Karm.Gfx;
-
-#include <karm-math/rect.h>
-#include <karm-math/edge.h>
-#include <karm-math/ellipse.h>
+import Karm.Math;
 
 using namespace Karm;
 

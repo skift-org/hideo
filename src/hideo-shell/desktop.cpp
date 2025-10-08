@@ -43,10 +43,13 @@ Ui::Child appStack(State const& state) {
             Ui::intent([=](Ui::Node& n, App::Event& e) {
                 if (auto m = e.is<Ui::DragEvent>()) {
                     e.accept();
-                    Model::bubble<MoveInstance>(n, {zindex, m->delta});
+                    Model::bubble<DragInstance>(n, {zindex, m->delta});
                 } else if (auto c = e.is<App::RequestExitEvent>()) {
                     e.accept();
                     Model::bubble<CloseInstance>(n, {zindex});
+                } else if (auto it = e.is<App::MouseEvent>();
+                           it and n.bound().contains(it->pos) and it->type == App::MouseEvent::PRESS and not i->focused) {
+                    Model::bubble<FocusInstance>(n, {zindex});
                 }
             })
         );
@@ -100,9 +103,10 @@ Ui::Child desktop(State const& state) {
     return Ui::stack(
         background(state),
         Ui::vflow(
-            taskbar(state) | Ui::slideIn(Ui::SlideFrom::TOP),
-            appStack(state) | Ui::grow()
-        )
+            taskbar(state) | Ui::slideIn(Ui::SlideFrom::TOP)
+        ),
+        appStack(state) |
+            Ui::grow()
     );
 }
 

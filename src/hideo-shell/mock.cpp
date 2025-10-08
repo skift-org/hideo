@@ -27,6 +27,10 @@ export struct MockInstance : Instance {
                    .backgroundFill = Ui::GRAY950,
                });
     }
+
+    Rc<Gfx::Surface> thumbnail() const override {
+        return Gfx::Surface::fallback();
+    }
 };
 
 export struct MockLauncher : Launcher {

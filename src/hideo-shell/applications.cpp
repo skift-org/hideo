@@ -71,10 +71,13 @@ Ui::Child appsGrid(State const& state) {
     );
 }
 
-Ui::Child runningApp(Instance const&, usize i) {
+Ui::Child runningApp(Instance const& instance, usize i) {
     return Ui::stack(
-               Ui::empty() |
-                   Ui::bound() |
+               Ui::image(instance.thumbnail()) |
+                   Ui::box({
+                       .borderWidth = 1,
+                       .borderFill = Ui::GRAY800,
+                   }) |
                    Ui::button(Model::bind<FocusInstance>(i)),
                Ui::button(Model::bind<CloseInstance>(i), Ui::ButtonStyle::secondary(), Mdi::CLOSE) |
                    Ui::align(Math::Align::TOP_END) |
@@ -128,27 +131,28 @@ export Ui::Child apps(State const& state) {
 
 export Ui::Child appsFlyout(State const& state) {
     return Ui::vflow(
-        runningApps(state),
-        Ui::vflow(
-            Kr::dragHandle(),
-            apps(state) | Ui::grow()
-        ) |
-            Ui::box({
-                .margin = 8,
-                .padding = {0, 12},
-                .borderRadii = 8,
-                .borderWidth = 1,
-                .borderFill = Ui::GRAY800,
-                .backgroundFill = Ui::GRAY950,
-            }) |
-            Ui::bound() |
-            Ui::dismisable(
-                Model::bind<Activate>(Panel::NIL),
-                Ui::DismisDir::DOWN,
-                0.3
-            ) |
-            Ui::slideIn(Ui::SlideFrom::BOTTOM) | Ui::grow()
-    );
+               runningApps(state),
+               Ui::vflow(
+                   Kr::dragHandle(),
+                   apps(state) | Ui::grow()
+               ) |
+                   Ui::box({
+                       .margin = 8,
+                       .padding = {0, 12},
+                       .borderRadii = 8,
+                       .borderWidth = 1,
+                       .borderFill = Ui::GRAY800,
+                       .backgroundFill = Ui::GRAY950,
+                   }) |
+                   Ui::bound() |
+                   Ui::dismisable(
+                       Model::bind<Activate>(Panel::NIL),
+                       Ui::DismisDir::DOWN,
+                       0.3
+                   ) |
+                   Ui::slideIn(Ui::SlideFrom::BOTTOM) | Ui::grow()
+           ) |
+           Ui::backgroundFilter(Gfx::BlurFilter{8});
 }
 
 } // namespace Hideo::Shell

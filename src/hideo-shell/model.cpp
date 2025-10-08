@@ -40,12 +40,16 @@ export struct Launcher {
 
 export struct Instance {
     Math::Recti bound = {100, 100, 600, 400};
+    bool dragged = false;
+    bool focused = false;
 
     Instance() = default;
 
     virtual ~Instance() = default;
 
     virtual Ui::Child build() const = 0;
+
+    virtual Rc<Gfx::Surface> thumbnail() const = 0;
 
     bool operator==(Instance const& other) const {
         return this == &other;
@@ -77,6 +81,16 @@ export struct State : Meta::NoCopy {
     Vec<Noti> noti;
     Vec<Rc<Launcher>> launchers;
     Vec<Rc<Instance>> instances;
+
+    void updateFocus() {
+        if (not instances)
+            return;
+
+        for (auto& i : instances)
+            i->focused = false;
+
+        first(instances)->focused = true;
+    }
 };
 
 export struct ToggleTablet {};
@@ -111,10 +125,12 @@ export struct RemoveInstance {
     Rc<Instance> instance;
 };
 
-export struct MoveInstance {
+export struct DragInstance {
     usize index;
     Math::Vec2i off;
 };
+
+export struct InstanceDragEnd {};
 
 export struct CloseInstance {
     usize index;
@@ -145,7 +161,8 @@ export using Action = Union<
     StartInstance,
     AddInstance,
     RemoveInstance,
-    MoveInstance,
+    DragInstance,
+    InstanceDragEnd,
     CloseInstance,
     FocusInstance,
     Activate,
@@ -184,23 +201,30 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](AddInstance add) {
             s.instances.pushFront(add.instance);
+            s.updateFocus();
         },
         [&](RemoveInstance rem) {
             s.instances.removeAll(rem.instance);
+            s.updateFocus();
         },
-        [&](MoveInstance move) {
+        [&](DragInstance move) {
             s.activePanel = Panel::NIL;
             auto bound = s.instances[move.index]->bound;
             bound.xy = bound.xy + move.off;
             s.instances[move.index]->bound = bound;
         },
+        [&](InstanceDragEnd) {
+            first(s.instances)->dragged = false;
+        },
         [&](CloseInstance close) {
             s.instances.removeAt(close.index);
+            s.updateFocus();
         },
         [&](FocusInstance focus) {
-            auto surface = s.instances.removeAt(focus.index);
-            s.instances.pushFront(surface);
+            auto instance = s.instances.removeAt(focus.index);
+            s.instances.pushFront(instance);
             s.activePanel = Panel::NIL;
+            s.updateFocus();
         },
         [&](Activate panel) {
             if (s.activePanel != panel.panel) {

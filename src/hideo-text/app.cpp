@@ -75,7 +75,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
         },
         [](State const& s) {
             return Kr::scaffold({
-                .icon = Mdi::TEXT,
+                .icon = Mdi::PEN,
                 .title = "Text"s,
                 .startTools = [&] -> Ui::Children {
                     return {

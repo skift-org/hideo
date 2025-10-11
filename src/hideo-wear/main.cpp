@@ -20,7 +20,7 @@ enum struct Page {
 struct State {
     Page page = Page::WATCH;
     DateTime dateTime{
-        .date = {1, Month::APRIL, 2024},
+        .date = {1, Month::APRIL, 2025},
         .time = {56, 34, 12},
     };
 

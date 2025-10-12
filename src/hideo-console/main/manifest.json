@@ -1,9 +1,10 @@
 {
     "$schema": "https://schemas.cute.engineering/stable/cutekit.manifest.component.v1",
-    "id": "hideo-console",
+    "id": "hideo-console.main",
     "type": "exe",
     "description": "System console",
     "requires": [
-        "karm-kira"
+        "karm-kira",
+        "karm-vte"
     ]
 }

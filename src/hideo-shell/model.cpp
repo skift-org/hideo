@@ -67,7 +67,7 @@ export enum struct Panel {
 
 export struct State : Meta::NoCopy {
     bool locked = true;
-    bool isMobile = true;
+    bool keyboard = false;
     bool nightLight = false;
     f64 brightness = 1;
     f64 volume = 0.5;
@@ -94,6 +94,8 @@ export struct State : Meta::NoCopy {
 };
 
 export struct ToggleTablet {};
+
+export struct ToggleKeyboard {};
 
 export struct ToggleNightLight {};
 
@@ -153,6 +155,7 @@ export struct Activate {
 export using Action = Union<
     ToggleTablet,
     ToggleNightLight,
+    ToggleKeyboard,
     ChangeBrightness,
     ChangeVolume,
     Lock,
@@ -172,12 +175,19 @@ export using Action = Union<
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(Visitor{
         [&](ToggleTablet) {
-            s.isMobile = not s.isMobile;
+            if (App::formFactor == App::FormFactor::MOBILE){
+                App::formFactor = App::FormFactor::DESKTOP;
+            } else {
+                App::formFactor = App::FormFactor::MOBILE;
+            }
             s.activePanel = Panel::NIL;
             s.isSysPanelColapsed = true;
         },
         [&](ToggleNightLight) {
             s.nightLight = not s.nightLight;
+        },
+        [&](ToggleKeyboard) {
+            s.keyboard = not s.keyboard;
         },
         [&](ChangeBrightness m) {
             s.brightness = m.value;

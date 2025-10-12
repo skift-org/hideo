@@ -12,10 +12,8 @@ using namespace Karm;
 
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
     auto args = useArgs(ctx);
-    bool isMobile = App::formFactor == App::FormFactor::MOBILE;
 
     Hideo::Shell::State state = {
-        .isMobile = isMobile,
         .dateTime = Sys::dateTime(),
         .background = co_try$(Image::loadOrFallback("bundle://hideo-shell/wallpapers/abstract.qoi"_url)),
         .noti = {},

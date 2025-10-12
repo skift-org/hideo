@@ -39,7 +39,6 @@ Ui::Child appStack(State const& state) {
                 .borderFill = Ui::GRAY800,
                 .shadowStyle = Gfx::BoxShadow::elevated(zindex ? 4 : 16),
             }) |
-            Ui::placed(i->bound) |
             Ui::intent([=](Ui::Node& n, App::Event& e) {
                 if (auto m = e.is<Ui::DragEvent>()) {
                     e.accept();
@@ -51,7 +50,8 @@ Ui::Child appStack(State const& state) {
                            it and n.bound().contains(it->pos) and it->type == App::MouseEvent::PRESS and not i->focused) {
                     Model::bubble<FocusInstance>(n, {zindex});
                 }
-            })
+            }) |
+            Ui::placed(i->bound)
         );
         zindex--;
     }
@@ -101,7 +101,14 @@ Ui::Child desktopPanels(State const& s) {
 
 Ui::Child desktop(State const& state) {
     return Ui::stack(
-        background(state),
+        background(state) |
+            Kr::contextMenu([] {
+                return Kr::contextMenuContent({
+                    Kr::contextMenuItem(Ui::SINK<>, Mdi::PALETTE, "Personalize..."),
+                    Kr::separator(),
+                    Kr::contextMenuItem(Ui::SINK<>, Mdi::COG, "Settings"),
+                });
+            }),
         Ui::vflow(
             taskbar(state) | Ui::slideIn(Ui::SlideFrom::TOP)
         ),

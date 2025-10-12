@@ -27,17 +27,19 @@ export Ui::Child app(State state) {
                 Ui::stack(
                     state.locked
                         ? lock(state)
-                        : (state.isMobile ? mobile(state)
+                        : (App::formFactor == App::FormFactor::MOBILE ? mobile(state)
                                           : desktop(state)),
 
-                    state.isMobile
-                        ? mobilePanels(state)
+                    App::formFactor == App::FormFactor::MOBILE
+                        ? Ui::empty()
                         : desktopPanels(state)
                 ) |
                 Ui::dialogLayer() |
+                Ui::popoverLayer() |
                 Ui::pinSize(
-                    state.isMobile ? Math::Vec2i{411, 731}
-                                   : Math::Vec2i{1280, 720}
+                    App::formFactor == App::FormFactor::MOBILE 
+                        ? Math::Vec2i{411, 731}
+                        : Math::Vec2i{1280, 720}
                 );
 
             if (state.nightLight) {

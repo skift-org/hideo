@@ -206,9 +206,9 @@ Ui::Child expendedQuickSettings(State const& s) {
             .press = Ui::SINK<>,
         }),
         quickSetting({
-            .icon = s.isMobile ? Mdi::LAPTOP : Mdi::CELLPHONE,
+            .icon = App::formFactor == App::FormFactor::MOBILE ? Mdi::LAPTOP : Mdi::CELLPHONE,
             .name = "Tablet Mode",
-            .state = s.isMobile,
+            .state = App::formFactor == App::FormFactor::MOBILE,
             .press = Model::bind<ToggleTablet>(),
         }),
         quickSetting({

@@ -6,7 +6,6 @@ import Karm.Core;
 import Karm.Kira;
 import Karm.Gfx;
 import Karm.Math;
-import Hideo.Keyboard;
 
 import :model;
 
@@ -70,11 +69,6 @@ Ui::Child taskbar(State const& s) {
                    taskbarCalendarButton(s) |
                        Ui::center() |
                        Ui::grow(),
-                   Ui::button(
-                       Keyboard::show,
-                       Ui::ButtonStyle::subtle(),
-                       Mdi::KEYBOARD
-                   ),
                    taskbarStatusButton()
                ) |
                    Ui::box({

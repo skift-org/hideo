@@ -39,7 +39,8 @@ Ui::Child mobile(State const& s) {
             : Ui::empty(),
         Ui::vflow(
             statusbarButton(s) | Ui::slideIn(Ui::SlideFrom::TOP),
-            mobileAppHost(s) | Ui::grow(),
+            Ui::stack(mobileAppHost(s), mobilePanels(s)) | Ui::grow(),
+            s.keyboard ? Keyboard::flyout() : Ui::empty(),
             navbar(s)
         )
     );

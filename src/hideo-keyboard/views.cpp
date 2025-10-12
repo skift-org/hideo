@@ -12,13 +12,7 @@ namespace Hideo::Keyboard {
 static Ui::Child toolbar() {
     return Ui::hflow(
                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::EMOTICON),
-               Ui::empty({128, 4}) |
-                   Ui::box({
-                       .borderRadii = 999,
-                       .backgroundFill = Ui::GRAY50,
-                   }) |
-                   Ui::center() |
-                   Ui::grow(),
+               Ui::grow(NONE),
                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::COG_OUTLINE)
            ) |
            Ui::dragRegion();
@@ -115,17 +109,8 @@ export Ui::Child flyout() {
                        })
                ) |
                Ui::align(Math::Align::HSTRETCH | Math::Align::BOTTOM) |
-               Ui::slideIn(Ui::SlideFrom::BOTTOM) |
-               Ui::dismisable(
-                   Ui::closeDialog,
-                   Ui::DismisDir::DOWN,
-                   0.15
-               );
+               Ui::slideIn(Ui::SlideFrom::BOTTOM);
     });
-}
-
-export void show(Ui::Node& n) {
-    Ui::showDialog(n, flyout());
 }
 
 } // namespace Hideo::Keyboard

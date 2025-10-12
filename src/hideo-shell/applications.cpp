@@ -87,8 +87,12 @@ Ui::Child runningApp(Instance const& instance, usize i) {
 }
 
 Ui::Child runningApps(State const& state) {
+    if (state.keyboard)
+        return Ui::empty();
+
     if (state.instances.len() == 0)
         return Ui::empty(64);
+
     return Ui::hflow(
                8,
                iter(state.instances)

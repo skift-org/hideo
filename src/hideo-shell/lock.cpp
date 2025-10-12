@@ -43,27 +43,26 @@ Ui::Child lock(State const& state) {
             },
             dateTime
         ),
-        Ui::text(
-            {
-                .font = Gfx::Font{
-                    blackFontface(),
-                    72,
-                },
-            },
-            "{02}:{02}", 
-            time.hour, time.minute)
+        Ui::text({
+                     .font = Gfx::Font{
+                         blackFontface(),
+                         72,
+                     },
+                 },
+                 "{02}:{02}", time.hour, time.minute)
     );
 
     auto hintText = Ui::vflow(
         Ui::center(Ui::icon(Mdi::CHEVRON_UP, 48)),
-        Ui::center(Ui::labelLarge(state.isMobile ? "Swipe up to unlock" : "Swipe up or press any key to unlock"))
+        Ui::center(Ui::labelLarge(App::formFactor == App::FormFactor::MOBILE ? "Swipe up to unlock" : "Swipe up or press the space key to unlock"))
     );
 
     return Ui::stack(
         background(state),
         Ui::vflow(clock, Ui::grow(NONE), hintText | Ui::slideIn(Ui::SlideFrom::BOTTOM)) |
-            Ui::insets(state.isMobile ? 64 : 128) |
+            Ui::insets(App::formFactor == App::FormFactor::MOBILE ? 64 : 128) |
             Ui::dragRegion() |
+            Ui::keyboardShortcut(App::Key::SPACE, Model::bind<Unlock>()) |
             Ui::dismisable(Model::bind<Unlock>(), Ui::DismisDir::TOP, 0.3) |
             Ui::align(Math::Align::VFILL | Math::Align::HCENTER)
     );

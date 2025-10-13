@@ -7,7 +7,7 @@ import :model;
 
 namespace Hideo::Shell {
 
-export struct MockInstance : Instance {
+export struct MockInstance : Window {
     Gfx::Icon icon;
     String name;
     Gfx::ColorRamp ramp;
@@ -15,22 +15,11 @@ export struct MockInstance : Instance {
     MockInstance(Gfx::Icon icon, String name, Gfx::ColorRamp ramp)
         : icon(icon), name(name), ramp(ramp) {}
 
-    Ui::Child build() const override {
-        return Kr::scaffold({
-                   .icon = icon,
-                   .title = name,
-                   .body = [name = this->name] {
-                       return Ui::labelMedium(name) | Ui::center();
-                   },
-               }) |
-               Ui::box({
-                   .backgroundFill = Ui::GRAY950,
-               });
-    }
-
-    Rc<Gfx::Surface> thumbnail() const override {
+    Rc<Gfx::Surface> surface() const override {
         return Gfx::Surface::fallback();
     }
+
+    void event(App::Event&) override {}
 };
 
 export struct MockLauncher : Launcher {

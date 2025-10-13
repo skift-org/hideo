@@ -29,31 +29,19 @@ auto panel(Math::Vec2i size = {500, 400}) {
 
 Ui::Child appStack(State const& state) {
     Ui::Children apps;
-    usize zindex = state.instances.len() - 1;
+    bool topLevel = true;
     for (auto& i : iterRev(state.instances)) {
         apps.pushBack(
-            i->build() |
+            makeRc<Viewport>(i, 8) |
             Ui::box({
-                .borderRadii = 6,
+                .borderRadii = 8,
                 .borderWidth = 1,
                 .borderFill = Ui::GRAY800,
-                .shadowStyle = Gfx::BoxShadow::elevated(zindex ? 4 : 16),
-            }) |
-            Ui::intent([=](Ui::Node& n, App::Event& e) {
-                if (auto m = e.is<Ui::DragEvent>()) {
-                    e.accept();
-                    Model::bubble<DragInstance>(n, {zindex, m->delta});
-                } else if (auto c = e.is<App::RequestExitEvent>()) {
-                    e.accept();
-                    Model::bubble<CloseInstance>(n, {zindex});
-                } else if (auto it = e.is<App::MouseEvent>();
-                           it and n.bound().contains(it->pos) and it->type == App::MouseEvent::PRESS and not i->focused) {
-                    Model::bubble<FocusInstance>(n, {zindex});
-                }
+                .shadowStyle = Gfx::BoxShadow::elevated(topLevel ? 16 : 4),
             }) |
             Ui::placed(i->bound)
         );
-        zindex--;
+        topLevel = false;
     }
 
     return Ui::stack(apps);

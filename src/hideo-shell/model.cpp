@@ -38,20 +38,20 @@ export struct Launcher {
     virtual void launch(State&) = 0;
 };
 
-export struct Instance {
+export struct Window {
     Math::Recti bound = {100, 100, 600, 400};
     bool dragged = false;
     bool focused = false;
 
-    Instance() = default;
+    Window() = default;
 
-    virtual ~Instance() = default;
+    virtual ~Window() = default;
 
-    virtual Ui::Child build() const = 0;
+    virtual Rc<Gfx::Surface> surface() const = 0;
 
-    virtual Rc<Gfx::Surface> thumbnail() const = 0;
+    virtual void event(App::Event&) = 0;
 
-    bool operator==(Instance const& other) const {
+    bool operator==(Window const& other) const {
         return this == &other;
     }
 };
@@ -80,7 +80,7 @@ export struct State : Meta::NoCopy {
     Rc<Gfx::Surface> background;
     Vec<Noti> noti;
     Vec<Rc<Launcher>> launchers;
-    Vec<Rc<Instance>> instances;
+    Vec<Rc<Window>> instances;
 
     void updateFocus() {
         if (not instances)
@@ -120,26 +120,22 @@ export struct StartInstance {
 };
 
 export struct AddInstance {
-    Rc<Instance> instance;
+    Rc<Window> instance;
 };
 
 export struct RemoveInstance {
-    Rc<Instance> instance;
+    Rc<Window> instance;
 };
 
 export struct DragInstance {
-    usize index;
+    Rc<Window> window;
     Math::Vec2i off;
 };
 
 export struct InstanceDragEnd {};
 
-export struct CloseInstance {
-    usize index;
-};
-
 export struct FocusInstance {
-    usize index;
+    Rc<Window> window;
 };
 
 export struct ToggleSysPanel {};
@@ -166,7 +162,6 @@ export using Action = Union<
     RemoveInstance,
     DragInstance,
     InstanceDragEnd,
-    CloseInstance,
     FocusInstance,
     Activate,
     ToggleSysPanel,
@@ -175,7 +170,7 @@ export using Action = Union<
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(Visitor{
         [&](ToggleTablet) {
-            if (App::formFactor == App::FormFactor::MOBILE){
+            if (App::formFactor == App::FormFactor::MOBILE) {
                 App::formFactor = App::FormFactor::DESKTOP;
             } else {
                 App::formFactor = App::FormFactor::MOBILE;
@@ -219,20 +214,16 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](DragInstance move) {
             s.activePanel = Panel::NIL;
-            auto bound = s.instances[move.index]->bound;
+            auto bound = move.window->bound;
             bound.xy = bound.xy + move.off;
-            s.instances[move.index]->bound = bound;
+            move.window->bound = bound;
         },
         [&](InstanceDragEnd) {
             first(s.instances)->dragged = false;
         },
-        [&](CloseInstance close) {
-            s.instances.removeAt(close.index);
-            s.updateFocus();
-        },
         [&](FocusInstance focus) {
-            auto instance = s.instances.removeAt(focus.index);
-            s.instances.pushFront(instance);
+            s.instances.removeAll(focus.window);
+            s.instances.pushFront(focus.window);
             s.activePanel = Panel::NIL;
             s.updateFocus();
         },
@@ -255,5 +246,67 @@ Ui::Task<Action> reduce(State& s, Action a) {
 }
 
 export using Model = Ui::Model<State, Action, reduce>;
+
+export struct Viewport : Ui::View<Viewport> {
+    Rc<Window> _window;
+    Math::Radiif _radii;
+
+    Viewport(Rc<Window> window, Math::Radiif radii = {})
+        : _window(window), _radii(radii) {}
+
+    void reconcile(Viewport& o) override {
+        _window = o._window;
+        _radii = o._radii;
+    }
+
+    void paint(Gfx::Canvas& g, Math::Recti) override {
+        auto surface = _window->surface();
+        g.push();
+        if (not _radii.zero()) {
+            g.fillStyle(surface->pixels());
+            g.fill(bound(), _radii);
+        } else {
+            g.blit(_bound.cast<isize>(), surface->pixels());
+        }
+        g.pop();
+    }
+
+    void layout(Math::Recti rect) override {
+        View::layout(rect);
+    }
+
+    Math::Vec2i size(Math::Vec2i, Ui::Hint) override {
+        return _window->bound.size();
+    }
+
+    void event(App::Event& e) override {
+        if (auto c = e.is<App::RequestExitEvent>()) {
+            e.accept();
+            Model::bubble<RemoveInstance>(*this, {_window});
+        } else if (auto it = e.is<App::MouseEvent>(); it) {
+            if (_window->dragged) {
+                if (it->type == App::MouseEvent::RELEASE) {
+                    Model::bubble<InstanceDragEnd>(*this);
+                } else if (it->type == App::MouseEvent::MOVE) {
+                    Model::bubble<DragInstance>(*this, {_window, it->delta});
+                    e.accept();
+                    return;
+                }
+            }
+
+            if (bound().contains(it->pos)) {
+                if (_window->focused) {
+                    auto transformedEvent = *it;
+                    transformedEvent.pos = transformedEvent.pos - bound().xy;
+                    auto ee = App::makeEvent<App::MouseEvent>(transformedEvent);
+                    _window->event(ee);
+                } else if (it->type == App::MouseEvent::PRESS and not _window->focused) {
+                    Model::bubble<FocusInstance>(*this, {_window});
+                }
+                e.accept();
+            }
+        }
+    }
+};
 
 } // namespace Hideo::Shell

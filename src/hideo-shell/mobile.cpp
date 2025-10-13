@@ -29,7 +29,7 @@ Ui::Child mobileAppHost(State const& s) {
     if (isEmpty(s.instances))
         return Ui::grow(NONE);
 
-    return first(s.instances)->build();
+    return makeRc<Viewport>(first(s.instances));
 }
 
 Ui::Child mobile(State const& s) {

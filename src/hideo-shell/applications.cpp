@@ -71,15 +71,15 @@ Ui::Child appsGrid(State const& state) {
     );
 }
 
-Ui::Child runningApp(Instance const& instance, usize i) {
+Ui::Child runningApp(Rc<Window> instance) {
     return Ui::stack(
-               Ui::image(instance.thumbnail()) |
+               Ui::image(instance->surface()) |
                    Ui::box({
                        .borderWidth = 1,
                        .borderFill = Ui::GRAY800,
                    }) |
-                   Ui::button(Model::bind<FocusInstance>(i)),
-               Ui::button(Model::bind<CloseInstance>(i), Ui::ButtonStyle::secondary(), Mdi::CLOSE) |
+                   Ui::button(Model::bind<FocusInstance>(instance)),
+               Ui::button(Model::bind<RemoveInstance>(instance), Ui::ButtonStyle::secondary(), Mdi::CLOSE) |
                    Ui::align(Math::Align::TOP_END) |
                    Ui::insets({6, 6, 0, 0})
            ) |
@@ -96,8 +96,8 @@ Ui::Child runningApps(State const& state) {
     return Ui::hflow(
                8,
                iter(state.instances)
-                   .mapi([](auto& instance, usize i) {
-                       return runningApp(*instance, i);
+                   .map([](auto& instance) {
+                       return runningApp(instance);
                    })
                    .collect<Ui::Children>()
            ) |

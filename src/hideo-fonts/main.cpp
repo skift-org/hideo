@@ -16,7 +16,7 @@ struct State {
     Opt<Symbol> fontFamily = NONE;
     Opt<Rc<Gfx::Fontface>> fontFace = NONE;
 
-    State(Font::Database fontBook) : fontBook(fontBook) {}
+    State(Font::Database fontBook) : fontBook(std::move(fontBook)) {}
 
     bool canGoBack() const {
         return fontFace or fontFamily;
@@ -205,7 +205,7 @@ Ui::Child appContent(State const& s) {
 }
 
 Ui::Child app(Font::Database db) {
-    return Ui::reducer<Model>(db, [](State const& s) {
+    return Ui::reducer<Model>(std::move(db), [](State const& s) {
         return Kr::scaffold({
             .icon = Mdi::FORMAT_FONT,
             .title = "Fonts"s,
@@ -228,5 +228,5 @@ Ui::Child app(Font::Database db) {
 Async::Task<> entryPointAsync(Sys::Context& ctx) {
     Font::Database db;
     co_try$(db.loadSystemFonts());
-    co_return co_await Ui::runAsync(ctx, Hideo::Fonts::app(db));
+    co_return co_await Ui::runAsync(ctx, Hideo::Fonts::app(std::move(db)));
 }

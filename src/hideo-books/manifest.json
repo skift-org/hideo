@@ -1,0 +1,11 @@
+{
+    "$schema": "https://schemas.cute.engineering/stable/cutekit.manifest.component.v1",
+    "id": "hideo-books",
+    "type": "lib",
+    "description": "Read books in various formats",
+    "requires": [
+        "karm-kira",
+        "karm-gfx",
+        "vaev-view"
+    ]
+}

@@ -14,16 +14,40 @@ using namespace Karm;
 namespace Hideo::Handheld {
 
 struct State {
-    bool quickMenuVisible;
+    bool quickMenuVisible = false;
+    bool inGame = false;
+    bool inMenu = true;
 
     struct QuickMenuToggle {};
 
-    using Action = Union<QuickMenuToggle>;
+    struct LaunchGame {};
+
+    struct QuitGame {};
+
+    struct LaunchHome {};
+
+    using Action = Union<QuickMenuToggle, LaunchGame, QuitGame, LaunchHome>;
 
     Ui::Task<Action> reduce(Action const& action) {
         return action.visit(Visitor{
             [&](QuickMenuToggle) {
                 quickMenuVisible = not quickMenuVisible;
+                return NONE;
+            },
+            [&](LaunchGame) {
+                inGame = true;
+                inMenu = false;
+                return NONE;
+            },
+            [&](QuitGame) {
+                inGame = false;
+                inMenu = true;
+                quickMenuVisible = false;
+                return NONE;
+            },
+            [&](LaunchHome) {
+                inMenu = true;
+                quickMenuVisible = false;
                 return NONE;
             },
         });
@@ -33,6 +57,8 @@ struct State {
 using Model = Ui::Model<State, State::Action>;
 
 static Opt<Rc<Gfx::Fontface>> _inputFontface = NONE;
+
+Ui::Child appMenu();
 
 Rc<Gfx::Fontface> inputFontface() {
     if (not _inputFontface) {
@@ -50,10 +76,6 @@ Gfx::ProseStyle inputMedium() {
     };
 }
 
-Ui::Child logo(Str text) {
-    return Ui::titleMedium(text) | Ui::vcenter();
-}
-
 Ui::Child buttonHint(Str button, Str description, Gfx::Color color) {
     return Ui::hflow(
         Ui::text(inputMedium(), button) | Ui::center() | Ui::minSize(26) |
@@ -63,8 +85,22 @@ Ui::Child buttonHint(Str button, Str description, Gfx::Color color) {
                 .backgroundFill = color,
                 .foregroundFill = color.luminance() > 0.6 ? Gfx::BLACK : Gfx::WHITE,
             }),
-        Ui::labelLarge(description) | Ui::center() | Ui::insets({0, 12, 0, 2})
+        Ui::labelLarge(description) |
+            Ui::center() |
+            Ui::insets({0, 12, 0, 2})
     );
+}
+
+Ui::Child buttonHints(Ui::Children children) {
+    return Ui::hflow(
+               6,
+               std::move(children)
+           ) |
+           Ui::insets(8);
+}
+
+Ui::Child logo(Str text) {
+    return Ui::titleMedium(text) | Ui::vcenter();
 }
 
 Ui::Child statusWidget(Gfx::Icon icon) {
@@ -76,8 +112,7 @@ Ui::Child statusWidget(Gfx::Icon icon) {
                .padding = 8,
                .borderRadii = 999,
                .borderWidth = 1,
-               .borderFill = Ui::GRAY700,
-               .backgroundFill = Ui::GRAY800,
+               .backgroundFill = Ui::GRAY900,
            });
 }
 
@@ -87,8 +122,7 @@ Ui::Child statusWidget(Str description) {
                .padding = {8, 16},
                .borderRadii = 999,
                .borderWidth = 1,
-               .borderFill = Ui::GRAY700,
-               .backgroundFill = Ui::GRAY800,
+               .backgroundFill = Ui::GRAY900,
            });
 }
 
@@ -101,9 +135,18 @@ Ui::Child statusWidget(Gfx::Icon icon, Str description) {
                .padding = {8, 16, 8, 8},
                .borderRadii = 999,
                .borderWidth = 1,
-               .borderFill = Ui::GRAY700,
-               .backgroundFill = Ui::GRAY800,
+               .backgroundFill = Ui::GRAY900,
            });
+}
+
+Ui::Child status() {
+    return Ui::hflow(
+               6,
+               statusWidget(Mdi::BROADCAST),
+               statusWidget(Mdi::BATTERY_50, "50%"),
+               statusWidget("11:29")
+           ) |
+           Ui::insets({12, 0});
 }
 
 Ui::Child tileGameCover(Ref::Url image) {
@@ -160,12 +203,12 @@ Ui::Child appList() {
                    Ui::insets({0, 48, 16}),
                Ui::hflow(
                    26,
-                   tileButton(Ui::SINK<>, tileContent(tileGameCover("bundle://hideo-handheld/tiles/celeste.qoi"_url))),
-                   tileButton(Ui::SINK<>, tileContent(tileGameCover("bundle://hideo-handheld/tiles/doom.qoi"_url))),
-                   tileButton(Ui::SINK<>, tileContent(tileGameCover("bundle://hideo-handheld/tiles/minicraft.qoi"_url))),
-                   tileButton(Ui::SINK<>, tileContent(tileGameCover("bundle://hideo-handheld/tiles/vvvvvv.qoi"_url))),
-                   tileButton(Ui::SINK<>, tileContent(tileGameCover("bundle://hideo-handheld/tiles/lego-island.qoi"_url))),
-                   tileButton(Ui::SINK<>, tileContent(tileAppCover(Mdi::FOLDER, Gfx::EMERALD_RAMP))),
+                   tileButton(Model::bind<State::LaunchGame>(), tileContent(tileGameCover("bundle://hideo-handheld/tiles/celeste.qoi"_url))),
+                   tileButton(Model::bind<State::LaunchGame>(), tileContent(tileGameCover("bundle://hideo-handheld/tiles/doom.qoi"_url))),
+                   tileButton(Model::bind<State::LaunchGame>(), tileContent(tileGameCover("bundle://hideo-handheld/tiles/minicraft.qoi"_url))),
+                   tileButton(Model::bind<State::LaunchGame>(), tileContent(tileGameCover("bundle://hideo-handheld/tiles/vvvvvv.qoi"_url))),
+                   tileButton(Model::bind<State::LaunchGame>(), tileContent(tileGameCover("bundle://hideo-handheld/tiles/lego-island.qoi"_url))),
+                   tileButton(Model::bind<State::LaunchGame>(), tileContent(tileAppCover(Mdi::FOLDER, Gfx::EMERALD_RAMP))),
 
                    Kr::separator(Gfx::GRAY500),
                    tileButton(Ui::SINK<>, tileContent(tileAppCover(Mdi::APPS, Gfx::ZINC_RAMP)))
@@ -175,44 +218,129 @@ Ui::Child appList() {
            Ui::grow();
 }
 
-Ui::Child quickSettings() {
+Ui::Child runningAppItem() {
+    return Ui::hflow(
+        6,
+        Ui::hflow(
+            12,
+            Ui::image("bundle://hideo-handheld/tiles/celeste.qoi"_url, 6) |
+                Ui::box({
+                    .borderRadii = 6,
+                    .borderWidth = 1,
+                    .borderFill = Ui::GRAY50.withOpacity(0.4),
+                }) |
+                Ui::pinSize(48) | Ui::vcenter(),
+            Ui::vflow(
+                Ui::titleMedium("Celeste"s),
+                Ui::bodySmall("Version: v0.1"s)
+            ) | Ui::grow()
+        ) | Ui::grow(),
+        Ui::button(
+            [&](auto& n) {
+                Ui::showDialog(n, appMenu() | Ui::center());
+            },
+            Mdi::DOTS_HORIZONTAL
+        ) | Ui::vcenter(),
+        Ui::button(
+            Model::bind<State::QuitGame>(),
+            Mdi::CLOSE
+        ) | Ui::vcenter()
+    );
+}
+
+Ui::Child quickSettings(State const& s) {
+    Ui::Children items;
+
+    items.pushBack(
+        Ui::hflow(Ui::grow(NONE), status())
+    );
+
+    if (s.inGame) {
+        items.pushBack(Kr::rowContent(Ui::button(Model::bind<State::LaunchHome>(), "Open home")));
+        items.pushBack(Kr::titleRow("Running"s));
+        items.pushBack(
+            Ui::vflow(
+                Kr::rowContent(runningAppItem()),
+                Kr::separator(),
+                Kr::rowContent(runningAppItem()),
+                Kr::separator(),
+                Kr::rowContent(runningAppItem())
+            ) |
+            Kr::card()
+        );
+    }
+
+    items.pushBack(Kr::titleRow("Sound"s));
+    items.pushBack(
+        Ui::vflow(
+            Kr::sliderRow(0.5, Ui::SINK<f64>, "Volume"s)
+        ) |
+        Kr::card()
+    );
+
+    items.pushBack(Kr::titleRow("Display"s));
+    items.pushBack(
+        Ui::vflow(
+            Kr::sliderRow(0.5, Ui::SINK<f64>, "Brightness"s),
+            Kr::toggleRow(true, Ui::SINK<bool>, "Night Mode"s)
+        ) |
+        Kr::card()
+    );
+
+    items.pushBack(Kr::titleRow("Wireless"s));
+    items.pushBack(
+        Ui::vflow(
+            Kr::toggleRow(true, Ui::SINK<bool>, "NFC"s),
+            Kr::toggleRow(true, Ui::SINK<bool>, "RaftShare™"s),
+            Kr::rowContent(Ui::text(Ui::TextStyles::bodyMedium().withColor(Ui::GRAY400), "RaftShare™ keeps consoles together like otters in a raft, letting you share games and apps with the ones around you, wirelessly."))
+        ) |
+        Kr::card()
+    );
+
+    items.pushBack(Kr::titleRow("Appearance"s));
+    items.pushBack(
+        Ui::vflow(
+            Kr::toggleRow(true, Ui::SINK<bool>, "Dark Mode"s)
+        ) |
+        Kr::card()
+    );
+
+    items.pushBack(Kr::titleRow("About"s));
+    items.pushBack(
+        Ui::vflow(
+            Kr::rowContent(
+                Ui::button(
+                    [](auto& n) {
+                        Ui::showDialog(n, Kr::aboutDialog("Ottercat"s));
+                    },
+                    "About Ottercat"
+                )
+            )
+        ) |
+        Kr::card()
+    );
+
     return Ui::hflow(
                Ui::grow(NONE),
                Ui::hflow(
                    Kr::separator(),
                    Ui::vflow(
-                       Kr::titleRow("Sound"s),
-                       Kr::sliderRow(0.5, Ui::SINK<f64>, "Volume"s),
-
+                       Ui::vflow(
+                           8,
+                           std::move(items)
+                       ) |
+                           Ui::insets({8, 16, 8, 16}) |
+                           Ui::vscroll() | Ui::grow(),
                        Kr::separator(),
-                       Kr::titleRow("Display"s),
-                       Kr::sliderRow(0.5, Ui::SINK<f64>, "Brightness"s),
-                       Kr::toggleRow(true, Ui::SINK<bool>, "Night Mode"s),
-
-                       Kr::separator(),
-                       Kr::titleRow("Wireless"s),
-                       Kr::toggleRow(true, Ui::SINK<bool>, "NFC"s),
-                       Kr::toggleRow(true, Ui::SINK<bool>, "RaftShare™"s),
-                       Kr::rowContent(Ui::text(Ui::TextStyles::bodyMedium().withColor(Ui::GRAY400), "RaftShare™ keeps consoles together like otters in a raft, letting you share games and apps with the ones around you, wirelessly.")),
-
-                       Kr::separator(),
-                       Kr::titleRow("Appearance"s),
-                       Kr::toggleRow(true, Ui::SINK<bool>, "Dark Mode"s),
-
-                       Kr::separator(),
-                       Kr::titleRow("About"s),
-                       Kr::rowContent(
-                           Ui::button(
-                               [](auto& n) {
-                                   Ui::showDialog(n, Kr::aboutDialog("Ottercat"s));
-                               },
-                               "About Ottercat"
-                           )
-                       )
-                   ) | Ui::vscroll() |
-                       Ui::box({.backgroundFill = Ui::GRAY900}) | Ui::grow()
-               ) | Ui::pinSize(280) |
-                   Ui::slideIn(Ui::SlideFrom::END)
+                       buttonHints({
+                           Ui::grow(NONE),
+                           buttonHint("A", "SELECT", Ui::GRAY50),
+                           buttonHint("B", "BACK", Ui::GRAY50) | Ui::cond(s.quickMenuVisible),
+                       })
+                   ) |
+                       Ui::box({.backgroundFill = Ui::GRAY950}) | Ui::grow()
+               ) |
+                   Ui::slideIn(Ui::SlideFrom::END) | Ui::pinSize(320)
            ) |
            Ui::box({.backgroundFill = Gfx::BLACK.withOpacity(0.4)});
 }
@@ -220,25 +348,10 @@ Ui::Child quickSettings() {
 Ui::Child topBar() {
     return Ui::hflow(
                6,
-               logo("Applications"),
                Ui::grow(NONE),
-               statusWidget(Mdi::BROADCAST),
-               statusWidget(Mdi::BATTERY_50, "50%"),
-               statusWidget("11:29")
+               status()
            ) |
-           Ui::insets(12);
-}
-
-Ui::Child bottomBar(State const& s) {
-    return Ui::hflow(
-               6,
-               buttonHint("  MENU  ", "SETTINGS", Ui::ACCENT500),
-               Ui::grow(NONE),
-               buttonHint("Y", "OPTIONS", Ui::GRAY50) | Ui::cond(not s.quickMenuVisible),
-               buttonHint("A", "SELECT", Ui::GRAY50),
-               buttonHint("B", "BACK", Ui::GRAY50)
-           ) |
-           Ui::insets(8);
+           Ui::insets({8, 16, 8, 16});
 }
 
 Ui::Child appMenu() {
@@ -269,32 +382,61 @@ Ui::Child appMenu() {
     });
 }
 
+Ui::Child homeMenu(State const& s) {
+    return Ui::vflow(
+               topBar(),
+               appList(),
+               buttonHints({
+                   buttonHint("  MENU  ", "SETTINGS", Ui::ACCENT500),
+                   Ui::grow(NONE),
+                   buttonHint("X", "QUIT GAME", Ui::GRAY50) | Ui::cond(s.inGame),
+                   buttonHint("Y", "OPTIONS", Ui::GRAY50) | Ui::cond(not s.quickMenuVisible),
+                   buttonHint("A", "LAUCN", Ui::GRAY50),
+                   buttonHint("B", "BACK", Ui::GRAY50) | Ui::cond(s.quickMenuVisible),
+               })
+           ) |
+           Ui::keyboardShortcut(App::Key::Y, [&](auto& n) {
+               if (not s.quickMenuVisible)
+                   Ui::showDialog(n, appMenu() | Ui::center());
+           });
+}
+
+Ui::Child stacking(State const& s) {
+    Ui::Children items;
+    if (s.inGame) {
+        items.pushBack(
+            Ui::image(
+                "bundle://hideo-handheld/gameplay/celeste.qoi"_url
+            ) |
+            Ui::cover()
+        );
+    } else {
+        items.pushBack(
+            Ui::image(
+                "bundle://hideo-handheld/covers/celeste.qoi"_url
+            ) |
+            Ui::cover()
+        );
+    }
+
+    if (s.inMenu) {
+        items.pushBack(
+            homeMenu(s) |
+            Ui::backgroundFilter(Gfx::OverlayFilter{Ui::GRAY950.withOpacity(0.7)})
+        );
+    }
+
+    if (s.quickMenuVisible) {
+        items.pushBack(quickSettings(s));
+    }
+
+    return Ui::stack(std::move(items));
+}
+
 Ui::Child app() {
     return Ui::reducer<Model>({}, [](State const& s) {
-        return Ui::stack(
-                   Ui::image("bundle://hideo-handheld/covers/celeste.qoi"_url) | Ui::foregroundFilter(Gfx::OverlayFilter{Ui::GRAY950.withOpacity(0.6)}) | Ui::cover(),
-                   Ui::vflow(
-                       topBar() |
-                           Ui::box({
-                               .backgroundFill = Ui::GRAY950.withOpacity(0.7),
-                           }) |
-                           Ui::backgroundFilter(Gfx::BlurFilter{8}),
-                       Kr::separator(),
-                       Ui::stack(appList(), s.quickMenuVisible ? quickSettings() : Ui::empty()) | Ui::grow(),
-                       Kr::separator(),
-                       bottomBar(s) |
-                           Ui::box({
-                               .backgroundFill = Ui::GRAY950.withOpacity(0.7),
-                           }) |
-                           Ui::backgroundFilter(Gfx::BlurFilter{8})
-                   )
-               ) |
+        return stacking(s) |
                Ui::keyboardShortcut(App::Key::M, Model::bind<State::QuickMenuToggle>()) |
-               Ui::keyboardShortcut(App::Key::ESC, Model::bind<State::QuickMenuToggle>()) |
-               Ui::keyboardShortcut(App::Key::Y, [&](auto& n) {
-                   if (not s.quickMenuVisible)
-                       Ui::showDialog(n, appMenu() | Ui::center());
-               }) |
                Ui::dialogLayer();
     });
 }

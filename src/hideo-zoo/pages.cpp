@@ -514,6 +514,7 @@ Page PAGE_ROWS{
                 Ui::showDialog(n, Kr::alertDialog("Message"s, "This is a message"s));
             },
             "Cool duck app"s,
+            "Version 1.1.0"s,
             "Install"s
         );
 

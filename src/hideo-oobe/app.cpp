@@ -476,14 +476,23 @@ Ui::Child stepContainer(Ui::Child child) {
            Ui::center();
 }
 
+Ui::Child appContent(State const& s) {
+    if (App::formFactor == App::FormFactor::MOBILE) {
+        return stepContent(s) |
+               Ui::insets(16);
+    }
+
+    return Ui::stack(
+        Ui::image("bundle://hideo-shell/wallpapers/abstract.qoi"_url) |
+            Ui::cover() |
+            Ui::grow(),
+        stepContainer(stepContent(s))
+    );
+}
+
 export Ui::Child app() {
     return Ui::reducer<Model>({Step::WELCOME}, [](State const& s) {
-        return Ui::stack(
-                   Ui::image("bundle://hideo-shell/wallpapers/abstract.qoi"_url) |
-                       Ui::cover() |
-                       Ui::grow(),
-                   stepContainer(stepContent(s))
-               ) |
+        return appContent(s) |
                Ui::pinSize(
                    App::formFactor == App::FormFactor::MOBILE
                        ? Math::Vec2i{411, 731}

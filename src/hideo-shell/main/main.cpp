@@ -10,7 +10,7 @@ import Mdi;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx) {
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     auto args = useArgs(ctx);
 
     Hideo::Shell::State state = {
@@ -34,5 +34,5 @@ Async::Task<> entryPointAsync(Sys::Context& ctx) {
         .instances = {}
     };
 
-    co_return co_await Ui::runAsync(ctx, Hideo::Shell::app(std::move(state)));
+    co_return co_await Ui::runAsync(ctx, Hideo::Shell::app(std::move(state)), ct);
 }

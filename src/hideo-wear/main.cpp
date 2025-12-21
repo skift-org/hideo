@@ -96,9 +96,10 @@ Ui::Child app() {
 
 } // namespace Hideo::Wear
 
-Async::Task<> entryPointAsync(Sys::Context& ctx) {
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     co_return co_await Ui::runAsync(
         ctx,
-        Hideo::Wear::app()
+        Hideo::Wear::app(),
+        ct
     );
 }

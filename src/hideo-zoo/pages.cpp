@@ -52,8 +52,8 @@ Page PAGE_AVATAR{
         return Ui::hflow(
                    16,
                    Kr::avatar(),
-                   Kr::avatar("CV"s),
-                   Kr::avatar(Mdi::CAT)
+                   Kr::avatar(String{"CV"s}),
+                   Kr::avatar(Gfx::Icon{Mdi::CAT})
                ) |
                Ui::center();
     },

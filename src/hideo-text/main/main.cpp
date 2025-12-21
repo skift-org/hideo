@@ -6,7 +6,7 @@ import Karm.Sys;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx) {
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     auto& args = useArgs(ctx);
     Opt<Ref::Url> url;
     Res<String> text = Ok(""s);
@@ -14,5 +14,5 @@ Async::Task<> entryPointAsync(Sys::Context& ctx) {
         url = Ref::parseUrlOrPath(args[0], co_try$(Sys::pwd()));
         text = Sys::readAllUtf8(*url);
     }
-    co_return co_await Ui::runAsync(ctx, Hideo::Text::app(url, text));
+    co_return co_await Ui::runAsync(ctx, Hideo::Text::app(url, text), ct);
 }

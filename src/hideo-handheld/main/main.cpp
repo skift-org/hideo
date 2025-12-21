@@ -443,11 +443,12 @@ Ui::Child app() {
 
 } // namespace Hideo::Handheld
 
-Async::Task<> entryPointAsync(Sys::Context& ctx) {
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     App::formFactor = App::FormFactor::MOBILE;
 
     co_return co_await Ui::runAsync(
         ctx,
-        Hideo::Handheld::app() | Ui::pinSize({640, 480})
+        Hideo::Handheld::app() | Ui::pinSize({640, 480}),
+        ct
     );
 }

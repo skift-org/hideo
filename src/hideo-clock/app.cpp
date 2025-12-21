@@ -134,10 +134,10 @@ export Ui::Child app() {
     );
 }
 
-export Async::Task<> timerTask(Ui::Child app, Async::Ct ct) {
-    while (not ct.canceled()) {
+export Async::Task<> timerTask(Ui::Child app, Async::CancellationToken ct) {
+    while (not ct.cancelled()) {
         Model::event<TimeTick>(*app);
-        co_trya$(Sys::globalSched().sleepAsync(Sys::instant() + Duration::fromSecs(1)));
+        co_trya$(Sys::globalSched().sleepAsync(Sys::instant() + Duration::fromSecs(1), ct));
     }
     co_return Ok();
 }

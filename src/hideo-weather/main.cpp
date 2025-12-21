@@ -22,6 +22,6 @@ Ui::Child app() {
 
 } // namespace Hideo::Weather
 
-Async::Task<> entryPointAsync(Sys::Context& ctx) {
-    co_return co_await Ui::runAsync(ctx, Hideo::Weather::app());
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
+    co_return co_await Ui::runAsync(ctx, Hideo::Weather::app(), ct);
 }

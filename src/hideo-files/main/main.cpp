@@ -5,6 +5,6 @@ import Hideo.Files;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx) {
-    co_return co_await Ui::runAsync(ctx, Hideo::Files::app());
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
+    co_return co_await Ui::runAsync(ctx, Hideo::Files::app(), ct);
 }

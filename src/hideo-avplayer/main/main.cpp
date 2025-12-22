@@ -8,7 +8,7 @@ import Hideo.Avplayer;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx) {
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     auto& args = useArgs(ctx);
     Res<Rc<Av::Audio>> audio = Error::invalidInput("No media provided");
 
@@ -28,9 +28,8 @@ Async::Task<> entryPointAsync(Sys::Context& ctx) {
     device->play(player);
     device->pause(false);
 
-    auto [cancelation, token] = Async::Cancellation::create();
     auto app = Hideo::Avplayer::app(player, audio);
-    Async::detach(Hideo::Avplayer::updatePlayback(app, token));
+    Async::detach(Hideo::Avplayer::updatePlayback(app, ct));
 
-    co_return co_await Ui::runAsync(ctx, app);
+    co_return co_await Ui::runAsync(ctx, app, ct);
 }

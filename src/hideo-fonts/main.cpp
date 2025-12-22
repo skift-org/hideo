@@ -228,5 +228,5 @@ Ui::Child app(Font::Database db) {
 Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     Font::Database db;
     co_try$(db.loadSystemFonts());
-    co_return co_await Ui::runAsync(ctx, Hideo::Fonts::app(std::move(db), ct));
+    co_return co_await Ui::runAsync(ctx, Hideo::Fonts::app(std::move(db)), ct);
 }

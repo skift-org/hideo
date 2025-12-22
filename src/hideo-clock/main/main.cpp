@@ -6,13 +6,8 @@ import Hideo.Clock;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx) {
-    auto [cancelation, token] = Async::Cancellation::create();
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     auto app = Hideo::Clock::app();
-    Async::detach(Hideo::Clock::timerTask(app, token));
-    co_return co_await Ui::runAsync(ctx, app);
+    Async::detach(Hideo::Clock::timerTask(app, ct));
+    co_return co_await Ui::runAsync(ctx, app, ct);
 }
-
-// lilla
-// kystrat
-// spire

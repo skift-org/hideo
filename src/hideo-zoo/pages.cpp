@@ -621,6 +621,34 @@ Page PAGE_SELECT{
     },
 };
 
+Page PAGE_SELECTION{
+    Mdi::SELECTION,
+    "Marquee Selection",
+    "A scrolling selection playground demonstrating how items can be selected.",
+    [] {
+        static constexpr Array labels = {
+            "Stuff"s,
+            "More Stuff (deluxe edition)"s,
+            "Definitely Important Thing"s,
+            "Untitled Object (final_final_v3)"s,
+            "TODO: name this later"s,
+            "Legacy Item (do not touch)"s,
+            "Experimental Feature (oops)"s,
+            "This Looked Better In My Head"s,
+            "Selected By Accident"s,
+            "Absolutely Not Malware"s,
+        };
+        Ui::Children items;
+        for (auto& l : labels) {
+            items.pushBack(
+                Ui::labelMedium(l) | Ui::insets(4) | Kr::selectionItem()
+            );
+        }
+
+        return Ui::vflow(6, std::move(items)) | Ui::insets(6) | Kr::selectionArea() | Ui::vscroll();
+    },
+};
+
 Page PAGE_SIDENAV{
     Mdi::DOCK_LEFT,
     "Side Navigation"s,
@@ -815,6 +843,7 @@ export Array PAGES = {
     &PAGE_RICHTEXT,
     &PAGE_ROWS,
     &PAGE_SELECT,
+    &PAGE_SELECTION,
     &PAGE_SIDE_PANEL,
     &PAGE_SIDENAV,
     &PAGE_SLIDER,

@@ -73,25 +73,6 @@ export Ui::Child alert(State const& state, String title, String body) {
     });
 }
 
-Ui::ButtonStyle itemStyle(bool odd) {
-    auto background = odd ? Ui::GRAY50.withOpacity(0.04) : Gfx::ALPHA;
-    return {
-        .idleStyle = {
-            .backgroundFill = background,
-            .foregroundFill = Ui::GRAY300,
-        },
-        .hoverStyle = {
-            .borderWidth = 1,
-            .backgroundFill = Ui::ACCENT900,
-        },
-        .pressStyle = {
-            .borderWidth = 1,
-            .borderFill = Ui::ACCENT900,
-            .backgroundFill = Ui::ACCENT950,
-        },
-    };
-}
-
 Ui::Child directoryContextMenu() {
     return Kr::contextMenuContent({
         Kr::contextMenuDock({
@@ -112,15 +93,16 @@ Ui::Child directoryContextMenu() {
     });
 }
 
-Ui::Child directorEntry(Sys::DirEntry const& entry, bool odd) {
+Ui::Child directorEntry(Sys::DirEntry const& entry) {
     return Ui::button(
                Model::bind<Navigate>(entry.name),
-               itemStyle(odd),
+               Ui::ButtonStyle::subtle(),
                entry.type == Sys::Type::DIR
                    ? Mdi::FOLDER
                    : iconFor(Ref::sniffSuffix(Ref::suffixOf(entry.name)).unwrapOr("file"s)),
                entry.name
            ) |
+           Kr::selectionItem() |
            Kr::contextMenu(directoryContextMenu);
 }
 
@@ -129,16 +111,15 @@ Ui::Child directoryListing(State const& s, Sys::Dir const& dir) {
         return Ui::bodyMedium(Ui::GRAY500, "This directory is empty.") | Ui::center();
 
     Ui::Children children;
-    bool odd = true;
     for (auto const& entry : dir.entries()) {
         if (entry.hidden() and not s.showHidden)
             continue;
-        children.pushBack(directorEntry(entry, odd));
-        odd = !odd;
+        children.pushBack(directorEntry(entry));
     }
 
-    return Ui::vflow(children) |
-           Ui::align(Math::Align::TOP | Math::Align::HFILL) |
+    return Ui::vflow(4, children) |
+           Ui::insets(6) |
+           Kr::selectionArea() |
            Ui::vscroll() | Ui::key(s.currentIndex);
 }
 

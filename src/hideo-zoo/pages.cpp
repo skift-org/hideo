@@ -742,7 +742,7 @@ Page PAGE_TABBAR{
                             Mdi::PLUS
                         ) | Ui::center(),
                     }),
-                    .end = Kr::titlebarControls(Kr::TitlebarStyle::DEFAULT),
+                    .end = Kr::titlebarClose(),
                 },
                 Kr::toolbar({
                     Ui::button(

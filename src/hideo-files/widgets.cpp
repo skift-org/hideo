@@ -117,8 +117,8 @@ Ui::Child directoryListing(State const& s, Sys::Dir const& dir) {
         children.pushBack(directorEntry(entry));
     }
 
-    return Ui::vflow(4, children) |
-           Ui::insets(6) |
+    return Ui::vflow(8, children) |
+           Ui::insets(16) |
            Kr::selectionArea() |
            Ui::vscroll() | Ui::key(s.currentIndex);
 }

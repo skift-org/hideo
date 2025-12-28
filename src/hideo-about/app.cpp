@@ -18,7 +18,6 @@ export Ui::Child app() {
     return Kr::scaffold({
         .icon = Mdi::INFORMATION,
         .title = "About"s,
-        .titlebar = Kr::TitlebarStyle::DIALOG,
         .body =
             [] {
                 auto titleText = Ui::headlineMedium("skiftOS");

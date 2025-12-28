@@ -30,8 +30,8 @@ auto panel(Math::Vec2i size = {500, 400}) {
 Ui::Child appStack(State const& state) {
     Ui::Children apps;
     bool topLevel = true;
-    for (auto& i : iterRev(state.instances)) {
-        apps.pushBack(
+    for (auto& i : state.instances) {
+        apps.pushFront(
             makeRc<Viewport>(i, 8) |
             Ui::box({
                 .borderRadii = 8,

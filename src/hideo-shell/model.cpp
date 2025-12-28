@@ -280,7 +280,7 @@ export struct Viewport : Ui::View<Viewport> {
     }
 
     void event(App::Event& e) override {
-        if (auto c = e.is<App::RequestExitEvent>()) {
+        if (auto c = e.is<App::RequestCloseEvent>()) {
             e.accept();
             Model::bubble<RemoveInstance>(*this, {_window});
         } else if (auto it = e.is<App::MouseEvent>(); it) {

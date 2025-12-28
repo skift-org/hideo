@@ -14,7 +14,6 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::COUNTER,
             .title = "Counter"s,
-            .titlebar = Kr::TitlebarStyle::DIALOG,
             .body = [&] {
                 auto decBtn = Ui::button(
                     Model::bind<DecrementAction>(),

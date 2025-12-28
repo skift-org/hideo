@@ -95,7 +95,6 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::CALCULATOR,
             .title = "Calculator"s,
-            .titlebar = Kr::TitlebarStyle::DIALOG,
             .body = [&] {
                 return Ui::vflow(
                     screen(state) | Ui::dragRegion(),

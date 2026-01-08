@@ -32,7 +32,7 @@ Ui::Child appStack(State const& state) {
     bool topLevel = true;
     for (auto& i : state.instances) {
         apps.pushFront(
-            makeRc<Viewport>(i, 8) |
+            makeRc<Viewport>(i, false, 8) |
             Ui::box({
                 .borderRadii = 8,
                 .borderWidth = 1,

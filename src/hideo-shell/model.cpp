@@ -51,6 +51,10 @@ export struct Window {
 
     virtual void event(App::Event&) = 0;
 
+    virtual void resize(Math::Vec2i size) {
+        bound.wh = size;
+    }
+
     bool operator==(Window const& other) const {
         return this == &other;
     }
@@ -249,10 +253,11 @@ export using Model = Ui::Model<State, Action, reduce>;
 
 export struct Viewport : Ui::View<Viewport> {
     Rc<Window> _window;
+    bool _primary;
     Math::Radiif _radii;
 
-    Viewport(Rc<Window> window, Math::Radiif radii = {})
-        : _window(window), _radii(radii) {}
+    Viewport(Rc<Window> window, bool primary, Math::Radiif radii)
+        : _window(window), _primary(primary), _radii(radii) {}
 
     void reconcile(Viewport& o) override {
         _window = o._window;
@@ -272,6 +277,8 @@ export struct Viewport : Ui::View<Viewport> {
     }
 
     void layout(Math::Recti rect) override {
+        if (_primary)
+            _window->resize(rect.wh);
         View::layout(rect);
     }
 

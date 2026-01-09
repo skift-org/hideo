@@ -30,17 +30,21 @@ auto panel(Math::Vec2i size = {500, 400}) {
 Ui::Child appStack(State const& state) {
     Ui::Children apps;
     bool topLevel = true;
-    for (auto& i : state.instances) {
-        apps.pushFront(
-            makeRc<Viewport>(i, false, 8) |
-            Ui::box({
-                .borderRadii = 8,
-                .borderWidth = 1,
-                .borderFill = Ui::GRAY800,
-                .shadowStyle = Gfx::BoxShadow::elevated(topLevel ? 16 : 4),
-            }) |
-            Ui::placed(i->bound)
-        );
+    for (auto& window : state.windows) {
+        Ui::Child node = makeRc<Viewport>(window, true, window->preferSnap, state.hasFullWindow() ? 0 : 8);
+
+        if (window->preferSnap == App::Snap::NONE) {
+            node = node |
+                   Ui::box({
+                       .borderRadii = 8,
+                       .borderWidth = 1.,
+                       .borderFill = topLevel ? Ui::ACCENT500 : Ui::GRAY800,
+                       .shadowStyle = Gfx::BoxShadow::elevated(topLevel ? 16 : 4),
+                   }) |
+                   Ui::placed(window->_floatingBound);
+        }
+
+        apps.pushFront(node);
         topLevel = false;
     }
 
@@ -70,8 +74,8 @@ Ui::Child desktopPanels(State const& s) {
     return Ui::stack(
                s.activePanel == Panel::APPS
                    ? applicationsPanel(s) |
-                         Ui::align(Math::Align::START | Math::Align::TOP) |
-                         Ui::slideIn(Ui::SlideFrom::TOP)
+                         Ui::center() |
+                         Ui::scaleIn()
                    : Ui::empty(),
                s.activePanel == Panel::NOTIS
                    ? notificationPanel(s) |
@@ -98,10 +102,10 @@ Ui::Child desktop(State const& state) {
                 });
             }),
         Ui::vflow(
-            taskbar(state) | Ui::slideIn(Ui::SlideFrom::TOP)
-        ),
-        appStack(state) |
-            Ui::grow()
+            taskbar(state) | Ui::slideIn(Ui::SlideFrom::TOP),
+            appStack(state) |
+                Ui::grow()
+        )
     );
 }
 

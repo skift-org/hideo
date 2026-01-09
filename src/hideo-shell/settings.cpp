@@ -89,7 +89,7 @@ Ui::Child quickTools(State const&) {
         ),
         Ui::button(
             [](auto& n) {
-                Model::bubble(n, Activate{Panel::NIL});
+                Model::bubble(n, ActivatePanel{Panel::NIL});
                 Ui::showDialog(n, powerDialog());
             },
             Ui::ButtonStyle::secondary(), Mdi::POWER
@@ -97,7 +97,7 @@ Ui::Child quickTools(State const&) {
         Ui::grow(NONE),
         Ui::button(
             [](auto& n) {
-                Model::bubble(n, Activate{Panel::NIL});
+                Model::bubble(n, ActivatePanel{Panel::NIL});
                 Ui::showDialog(n, Kr::aboutDialog("Shell"s));
             },
             Ui::ButtonStyle::secondary(),
@@ -273,7 +273,7 @@ export Ui::Child sysFlyout(State const& state) {
            }) |
            Ui::bound() |
            Ui::dismisable(
-               Model::bind<Activate>(Panel::NIL),
+               Model::bind<ActivatePanel>(Panel::NIL),
                Ui::DismisDir::TOP,
                0.3
            ) |

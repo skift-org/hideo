@@ -31,7 +31,7 @@ export struct MockLauncher : Launcher {
             name,
             ramp
         );
-        s.instances.emplaceFront(instance);
+        s.windows.emplaceFront(instance);
     }
 };
 

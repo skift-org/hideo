@@ -11,7 +11,7 @@ namespace Hideo::Shell {
 
 export Ui::Child navbar(State const& s) {
     return Ui::stack(
-               Kr::buttonHandle(Model::bind<Activate>(Panel::APPS)),
+               Kr::buttonHandle(Model::bind<ActivatePanel>(Panel::APPS)),
                Ui::hflow(
                    Ui::grow(NONE),
                    Ui::button(Model::bind<ToggleKeyboard>(), Ui::ButtonStyle::subtle(), Mdi::KEYBOARD)

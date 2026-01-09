@@ -35,7 +35,7 @@ Ui::Child appRow(Launcher const& manifest, usize i) {
                Ui::labelLarge(manifest.name)
            ) |
                Ui::insets(6) |
-               Ui::button(Model::bind<StartInstance>(i), Ui::ButtonStyle::subtle());
+               Ui::button(Model::bind<StartApplication>(i), Ui::ButtonStyle::subtle());
 }
 
 Ui::Child appsList(State const& state) {
@@ -48,29 +48,6 @@ Ui::Child appsList(State const& state) {
     );
 }
 
-Ui::Child appTile(Launcher const& manifest, usize i) {
-    return Ui::vflow(
-               26,
-               appIcon(manifest.icon, manifest.ramp, 26),
-               Ui::labelLarge(manifest.name)
-           ) |
-           Ui::button(
-               Model::bind<StartInstance>(i),
-               Ui::ButtonStyle::subtle()
-           );
-}
-
-Ui::Child appsGrid(State const& state) {
-    return Ui::grid(
-        Ui::GridStyle::simpleFixed({8, 64}, {4, 64}),
-        iter(state.launchers)
-            .mapi([](auto& man, usize i) {
-                return appTile(*man, i);
-            })
-            .collect<Ui::Children>()
-    );
-}
-
 Ui::Child runningApp(Rc<Window> instance) {
     return Ui::stack(
                Ui::image(instance->surface()) |
@@ -78,8 +55,8 @@ Ui::Child runningApp(Rc<Window> instance) {
                        .borderWidth = 1,
                        .borderFill = Ui::GRAY800,
                    }) |
-                   Ui::button(Model::bind<FocusInstance>(instance)),
-               Ui::button(Model::bind<RemoveInstance>(instance), Ui::ButtonStyle::secondary(), Mdi::CLOSE) |
+                   Ui::button(Model::bind<FocusWindow>(instance)),
+               Ui::button(Model::bind<RemoveWindow>(instance), Ui::ButtonStyle::secondary(), Mdi::CLOSE) |
                    Ui::align(Math::Align::TOP_END) |
                    Ui::insets({6, 6, 0, 0})
            ) |
@@ -90,12 +67,12 @@ Ui::Child runningApps(State const& state) {
     if (state.keyboard)
         return Ui::empty();
 
-    if (state.instances.len() == 0)
+    if (state.windows.len() == 0)
         return Ui::empty(64);
 
     return Ui::hflow(
                8,
-               iter(state.instances)
+               iter(state.windows)
                    .map([](auto& instance) {
                        return runningApp(instance);
                    })
@@ -106,29 +83,8 @@ Ui::Child runningApps(State const& state) {
 
 export Ui::Child apps(State const& state) {
     return Ui::vflow(
-        Ui::hflow(
-            4,
-            Kr::searchbar(""s) | Ui::grow(),
-            Ui::button(
-                Model::bind<ToggleAppThumbnail>(true),
-                state.isAppPanelThumbnails
-                    ? Ui::ButtonStyle::secondary()
-                    : Ui::ButtonStyle::subtle(),
-                Mdi::VIEW_GRID
-            ),
-
-            Ui::button(
-                Model::bind<ToggleAppThumbnail>(false),
-                state.isAppPanelThumbnails
-                    ? Ui::ButtonStyle::subtle()
-                    : Ui::ButtonStyle::secondary(),
-                Mdi::FORMAT_LIST_BULLETED_SQUARE
-            )
-        ),
-
-        (state.isAppPanelThumbnails
-             ? appsGrid(state)
-             : appsList(state)) |
+        Kr::searchbar(""s),
+        appsList(state) |
             Ui::insets({12, 0}) | Ui::vscroll() | Ui::grow()
     );
 }
@@ -150,13 +106,12 @@ export Ui::Child appsFlyout(State const& state) {
                    }) |
                    Ui::bound() |
                    Ui::dismisable(
-                       Model::bind<Activate>(Panel::NIL),
+                       Model::bind<ActivatePanel>(Panel::NIL),
                        Ui::DismisDir::DOWN,
                        0.3
                    ) |
                    Ui::slideIn(Ui::SlideFrom::BOTTOM) | Ui::grow()
-           ) |
-           Ui::backgroundFilter(Gfx::BlurFilter{8});
+           );
 }
 
 } // namespace Hideo::Shell

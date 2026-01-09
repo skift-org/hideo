@@ -43,13 +43,13 @@ export Ui::Child statusbar(State const& s) {
            }) |
            Ui::box({
                .padding = {0, 12},
-               .backgroundFill = s.instances.len() ? Ui::GRAY900 : Ui::GRAY950.withOpacity(0.6),
+               .backgroundFill = s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.6),
            });
 }
 
 export Ui::Child statusbarButton(State const& s) {
     return statusbar(s) | Ui::button(
-                              Model::bind<Activate>(Panel::SYS),
+                              Model::bind<ActivatePanel>(Panel::SYS),
                               Ui::ButtonStyle::none()
                           );
 }

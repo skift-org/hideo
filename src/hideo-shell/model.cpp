@@ -39,9 +39,12 @@ export struct Launcher {
 };
 
 export struct Window {
-    Math::Recti bound = {100, 100, 600, 400};
+    Math::Recti _activeBound = {100, 100, 600, 400};
+    Math::Recti _floatingBound = {100, 100, 600, 400};
+
     bool dragged = false;
     bool focused = false;
+    App::Snap preferSnap = App::Snap::NONE;
 
     Window() = default;
 
@@ -51,8 +54,19 @@ export struct Window {
 
     virtual void event(App::Event&) = 0;
 
-    virtual void resize(Math::Vec2i size) {
-        bound.wh = size;
+    Math::Recti bound(App::Snap snap) {
+        return snap == App::Snap::NONE ? _floatingBound : _activeBound;
+    }
+
+    Math::Recti activeBound() {
+        return _activeBound;
+    }
+
+    virtual void resize(App::Snap snap, Math::Vec2i size) {
+        if (snap == App::Snap::NONE) {
+            _floatingBound.wh = size;
+        }
+        _activeBound.wh = size;
     }
 
     bool operator==(Window const& other) const {
@@ -77,23 +91,33 @@ export struct State : Meta::NoCopy {
     f64 volume = 0.5;
     Panel activePanel = Panel::NIL;
     bool isSysPanelColapsed = true;
-    bool isAppPanelThumbnails = false;
 
     DateTime dateTime;
 
     Rc<Gfx::Surface> background;
     Vec<Noti> noti;
     Vec<Rc<Launcher>> launchers;
-    Vec<Rc<Window>> instances;
+    Vec<Rc<Window>> windows;
 
     void updateFocus() {
-        if (not instances)
+        if (not windows)
             return;
 
-        for (auto& i : instances)
+        for (auto& i : windows)
             i->focused = false;
 
-        first(instances)->focused = true;
+        first(windows)->focused = true;
+    }
+
+    bool hasFullWindow() const {
+        if (App::formFactor == App::FormFactor::MOBILE)
+            return windows.len() != 0;
+
+        for (auto& w : windows) {
+            if (w->preferSnap == App::Snap::FULL)
+                return true;
+        }
+        return false;
     }
 };
 
@@ -119,36 +143,37 @@ export struct DimisNoti {
     usize index;
 };
 
-export struct StartInstance {
+export struct StartApplication {
     usize index;
 };
 
-export struct AddInstance {
-    Rc<Window> instance;
+export struct AddWindow {
+    Rc<Window> window;
 };
 
-export struct RemoveInstance {
-    Rc<Window> instance;
+export struct RemoveWindow {
+    Rc<Window> window;
 };
 
-export struct DragInstance {
+export struct SnapWindow {
+    Rc<Window> window;
+    App::Snap snap;
+};
+
+export struct DragWindow {
     Rc<Window> window;
     Math::Vec2i off;
 };
 
-export struct InstanceDragEnd {};
+export struct EndDragWindow {};
 
-export struct FocusInstance {
+export struct FocusWindow {
     Rc<Window> window;
 };
 
 export struct ToggleSysPanel {};
 
-export struct ToggleAppThumbnail {
-    bool value;
-};
-
-export struct Activate {
+export struct ActivatePanel {
     Panel panel;
 };
 
@@ -161,15 +186,15 @@ export using Action = Union<
     Lock,
     Unlock,
     DimisNoti,
-    StartInstance,
-    AddInstance,
-    RemoveInstance,
-    DragInstance,
-    InstanceDragEnd,
-    FocusInstance,
-    Activate,
-    ToggleSysPanel,
-    ToggleAppThumbnail>;
+    StartApplication,
+    AddWindow,
+    RemoveWindow,
+    SnapWindow,
+    DragWindow,
+    EndDragWindow,
+    FocusWindow,
+    ActivatePanel,
+    ToggleSysPanel>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(Visitor{
@@ -204,34 +229,37 @@ Ui::Task<Action> reduce(State& s, Action a) {
         [&](DimisNoti dismis) {
             s.noti.removeAt(dismis.index);
         },
-        [&](StartInstance start) {
+        [&](StartApplication start) {
             s.launchers[start.index]->launch(s);
             s.activePanel = Panel::NIL;
         },
-        [&](AddInstance add) {
-            s.instances.pushFront(add.instance);
+        [&](AddWindow add) {
+            s.windows.pushFront(add.window);
             s.updateFocus();
         },
-        [&](RemoveInstance rem) {
-            s.instances.removeAll(rem.instance);
+        [&](RemoveWindow rem) {
+            s.windows.removeAll(rem.window);
             s.updateFocus();
         },
-        [&](DragInstance move) {
+        [&](DragWindow move) {
             s.activePanel = Panel::NIL;
-            auto bound = move.window->bound;
+            auto bound = move.window->_floatingBound;
             bound.xy = bound.xy + move.off;
-            move.window->bound = bound;
+            move.window->_floatingBound = bound;
         },
-        [&](InstanceDragEnd) {
-            first(s.instances)->dragged = false;
+        [&](SnapWindow s) {
+            s.window->preferSnap = s.snap;
         },
-        [&](FocusInstance focus) {
-            s.instances.removeAll(focus.window);
-            s.instances.pushFront(focus.window);
+        [&](EndDragWindow) {
+            first(s.windows)->dragged = false;
+        },
+        [&](FocusWindow focus) {
+            s.windows.removeAll(focus.window);
+            s.windows.pushFront(focus.window);
             s.activePanel = Panel::NIL;
             s.updateFocus();
         },
-        [&](Activate panel) {
+        [&](ActivatePanel panel) {
             if (s.activePanel != panel.panel) {
                 s.activePanel = panel.panel;
             } else {
@@ -240,9 +268,6 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](ToggleSysPanel) {
             s.isSysPanelColapsed = not s.isSysPanelColapsed;
-        },
-        [&](ToggleAppThumbnail a) {
-            s.isAppPanelThumbnails = a.value;
         },
     });
 
@@ -254,10 +279,11 @@ export using Model = Ui::Model<State, Action, reduce>;
 export struct Viewport : Ui::View<Viewport> {
     Rc<Window> _window;
     bool _primary;
+    App::Snap _snap;
     Math::Radiif _radii;
 
-    Viewport(Rc<Window> window, bool primary, Math::Radiif radii)
-        : _window(window), _primary(primary), _radii(radii) {}
+    Viewport(Rc<Window> window, bool primary, App::Snap snap, Math::Radiif radii)
+        : _window(window), _primary(primary), _snap(snap), _radii(radii) {}
 
     void reconcile(Viewport& o) override {
         _window = o._window;
@@ -278,24 +304,24 @@ export struct Viewport : Ui::View<Viewport> {
 
     void layout(Math::Recti rect) override {
         if (_primary)
-            _window->resize(rect.wh);
+            _window->resize(_snap, rect.wh);
         View::layout(rect);
     }
 
     Math::Vec2i size(Math::Vec2i, Ui::Hint) override {
-        return _window->bound.size();
+        return _window->bound(_snap).size();
     }
 
     void event(App::Event& e) override {
         if (auto c = e.is<App::RequestCloseEvent>()) {
             e.accept();
-            Model::bubble<RemoveInstance>(*this, {_window});
+            Model::bubble<RemoveWindow>(*this, {_window});
         } else if (auto it = e.is<App::MouseEvent>(); it) {
             if (_window->dragged) {
                 if (it->type == App::MouseEvent::RELEASE) {
-                    Model::bubble<InstanceDragEnd>(*this);
+                    Model::bubble<EndDragWindow>(*this);
                 } else if (it->type == App::MouseEvent::MOVE) {
-                    Model::bubble<DragInstance>(*this, {_window, it->delta});
+                    Model::bubble<DragWindow>(*this, {_window, it->delta});
                     e.accept();
                     return;
                 }
@@ -308,7 +334,7 @@ export struct Viewport : Ui::View<Viewport> {
                     auto ee = App::makeEvent<App::MouseEvent>(transformedEvent);
                     _window->event(ee);
                 } else if (it->type == App::MouseEvent::PRESS and not _window->focused) {
-                    Model::bubble<FocusInstance>(*this, {_window});
+                    Model::bubble<FocusWindow>(*this, {_window});
                 }
                 e.accept();
             }

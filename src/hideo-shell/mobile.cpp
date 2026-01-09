@@ -26,15 +26,15 @@ Ui::Child mobilePanels(State const& s) {
 }
 
 Ui::Child mobileAppHost(State const& s) {
-    if (isEmpty(s.instances))
+    if (isEmpty(s.windows))
         return Ui::grow(NONE);
 
-    return makeRc<Viewport>(first(s.instances), true, 0);
+    return makeRc<Viewport>(first(s.windows), true, App::Snap::FULL, 0);
 }
 
 Ui::Child mobile(State const& s) {
     return Ui::stack(
-        s.instances.len() == 0
+        s.windows.len() == 0
             ? background(s)
             : Ui::empty(),
         Ui::vflow(

@@ -8,6 +8,8 @@ using namespace Karm;
 namespace Hideo::Shell {
 
 export Ui::Child background(State const& state) {
+    if (state.hasFullWindow())
+        return Ui::empty();
     return Ui::image(state.background) |
            Ui::cover() |
            Ui::grow();

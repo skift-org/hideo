@@ -15,9 +15,10 @@ namespace Hideo::Shell {
 
 Ui::Child taskbarAppsButton() {
     return Ui::button(
-        Model::bind<Activate>(Panel::APPS),
+        Model::bind<ActivatePanel>(Panel::APPS),
         Ui::ButtonStyle::subtle(),
-        Mdi::APPS, "Applications"
+        Mdi::APPS,
+        "Applications"
     );
 }
 
@@ -34,17 +35,15 @@ Ui::Child taskbarCalendarButton(State const& s) {
     );
 
     return Ui::button(
-        Model::bind<Activate>(Panel::NOTIS),
+        Model::bind<ActivatePanel>(Panel::NOTIS),
         Ui::ButtonStyle::subtle(),
-        Mdi::CALENDAR,
-
         dateTime
     );
 }
 
 Ui::Child taskbarStatusButton() {
     return Ui::button(
-        Model::bind<Activate>(Panel::SYS),
+        Model::bind<ActivatePanel>(Panel::SYS),
         Ui::ButtonStyle::subtle(),
         Ui::hflow(
             6,
@@ -63,21 +62,22 @@ Ui::Child taskbarStatusButton() {
 
 Ui::Child taskbar(State const& s) {
     return Ui::vflow(
-               Ui::hflow(
-                   6,
-                   taskbarAppsButton(),
-                   taskbarCalendarButton(s) |
-                       Ui::center() |
-                       Ui::grow(),
-                   taskbarStatusButton()
-               ) |
-                   Ui::box({
-                       .padding = 6,
-                       .backgroundFill = Ui::GRAY950.withOpacity(0.6),
-                   }),
-               Kr::separator()
-           ) |
-           Ui::backgroundFilter(Gfx::BlurFilter{16});
+        Ui::stack(
+            Ui::hflow(
+                6,
+                taskbarAppsButton(),
+                Ui::grow(NONE),
+                taskbarStatusButton()
+            ),
+            taskbarCalendarButton(s) |
+                Ui::center()
+        ) |
+            Ui::box({
+                .padding = 6,
+                .backgroundFill = s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.6),
+            }),
+        Kr::separator()
+    );
 }
 
 } // namespace Hideo::Shell

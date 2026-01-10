@@ -338,6 +338,9 @@ export struct Viewport : Ui::View<Viewport> {
                 }
                 e.accept();
             }
+        } else if (_window->focused) {
+            if (e.is<App::KeyboardEvent>() or e.is<App::TypeEvent>())
+                _window->event(e);
         }
     }
 };

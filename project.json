@@ -1,12 +1,12 @@
 {
     "$schema": "https://schemas.cute.engineering/stable/cutekit.manifest.project.v1",
-    "id": "skift-org/hideo",
+    "id": "skift/hideo",
     "type": "project",
     "version": "v0.1.0",
     "description": "A modern desktop environment for Skift & Linux",
     "extern": {
-        "skift-org/karm": {
-            "git": "https://github.com/skift-org/karm.git",
+        "skift/karm": {
+            "git": "https://codeberg.org/skift/karm.git",
             "tag": "main"
         }
     }

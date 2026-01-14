@@ -260,11 +260,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.updateFocus();
         },
         [&](ActivatePanel panel) {
-            if (s.activePanel != panel.panel) {
-                s.activePanel = panel.panel;
-            } else {
-                s.activePanel = Panel::NIL;
-            }
+            s.activePanel = s.activePanel != panel.panel ? panel.panel : Panel::NIL;
         },
         [&](ToggleSysPanel) {
             s.isSysPanelColapsed = not s.isSysPanelColapsed;

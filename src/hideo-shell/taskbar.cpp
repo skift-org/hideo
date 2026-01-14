@@ -19,7 +19,7 @@ Ui::Child taskbarAppsButton() {
         Ui::ButtonStyle::subtle(),
         Mdi::APPS,
         "Applications"
-    );
+    ) | Ui::keyboardShortcut(App::Key::SPACE, {App::KeyMod::SUPER});
 }
 
 Ui::Child taskbarCalendarButton(State const& s) {
@@ -65,7 +65,7 @@ Ui::Child taskbar(State const& s) {
         Ui::stack(
             Ui::hflow(
                 6,
-                taskbarAppsButton(),
+                taskbarAppsButton() ,
                 Ui::grow(NONE),
                 taskbarStatusButton()
             ),

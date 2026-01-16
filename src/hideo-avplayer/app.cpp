@@ -127,7 +127,7 @@ Ui::Child mediaControls(State const& s) {
                scrubberControls(s) | Ui::grow(),
                Ui::empty(4),
                volumeControls(s),
-               Ui::button(Ui::bindBubble<App::RequestMaximizeEvent>(), Ui::ButtonStyle::regular(), Mdi::FULLSCREEN)
+               Ui::button(Ui::bindBubble<App::RequestSnapeEvent>(App::Snap::FULL), Ui::ButtonStyle::regular(), Mdi::FULLSCREEN)
            ) |
            Ui::insets(8);
 }

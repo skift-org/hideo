@@ -79,56 +79,101 @@ Ui::Child settingsDialog() {
     });
 }
 
-Ui::Child app() {
-    auto terminal = makeRc<Vte::Terminal>(Vte::Theme{});
-    // terminal->_attrs.fg = Gfx::GRAY200;
-    // terminal->write("~");
-    // terminal->_attrs.fg = Gfx::BLUE;
-    // terminal->write(" λ ");
-    // terminal->_attrs.fg = Gfx::GRAY200;
-    // terminal->write("ls -la\n");
-    //
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->write("-rw-r--r-- 1 smnx smnx    3298 Aug  1 13:51 readme.md\n");
-    // terminal->_attrs.fg = Gfx::GRAY200;
-    terminal->write("~");
-    terminal->_attrs.fg = Gfx::BLUE;
-    terminal->write(" λ ");
+struct State {
+    Rc<Vte::Terminal> terminal;
+    Rc<Sys::Pty> pty;
+};
 
-    return Kr::scaffold({
-        .icon = Mdi::CONSOLE_LINE,
-        .title = "Console"s,
-        .body = [terminal] {
-            return Vte::viewport(terminal) | Ui::insets(6) |
-                   Kr::contextMenu([] {
-                       return Kr::contextMenuContent({
-                           Kr::contextMenuItem(Ui::SINK<>, Mdi::CONTENT_COPY, "Copy"),
-                           Kr::contextMenuItem(NONE, Mdi::CONTENT_PASTE, "Paste"),
-                           Kr::separator(),
-                           Kr::contextMenuItem(Ui::SINK<>, Mdi::SELECT_ALL, "Select All"),
-                           Kr::separator(),
-                           Kr::contextMenuItem(
-                               [](auto& n) {
-                                   Ui::showDialog(n, settingsDialog());
-                               },
-                               Mdi::COG, "Settings"
-                           ),
-                       });
-                   });
+using Action = Union<
+    Bytes, Union<App::TypeEvent, App::KeyboardEvent>>;
+
+static Ui::Task<Action> reduce(State& s, Action a) {
+    a.visit(Visitor{
+        [&](Bytes b) {
+            s.terminal->write(b);
+        },
+        [&](Union<App::TypeEvent, App::KeyboardEvent> const& e) {
+            e.visit(Visitor{
+                [&](App::TypeEvent e) {
+                    Io::TextEncoder<> enc{*s.pty};
+                    (void)enc.writeRune(e.rune);
+                },
+                [&](App::KeyboardEvent e) {
+                    Io::TextEncoder<> enc{*s.pty};
+                    if (e.type == App::KeyboardEvent::PRESS) {
+                        if (e.key == App::Key::ENTER) {
+                            (void)enc.writeRune('\n');
+                        } else if (e.key == App::Key::BKSPC) {
+                            (void)enc.writeRune('\b');
+                        }
+                    }
+                },
+            });
         },
     });
+    return NONE;
+}
+
+using Model = Ui::Model<State, Action, reduce>;
+
+Ui::Child contextMenu() {
+    return Kr::contextMenuContent({
+        Kr::contextMenuItem(Ui::SINK<>, Mdi::CONTENT_COPY, "Copy"),
+        Kr::contextMenuItem(NONE, Mdi::CONTENT_PASTE, "Paste"),
+        Kr::separator(),
+        Kr::contextMenuItem(Ui::SINK<>, Mdi::SELECT_ALL, "Select All"),
+        Kr::separator(),
+        Kr::contextMenuItem(
+            [](auto& n) {
+                Ui::showDialog(n, settingsDialog());
+            },
+            Mdi::COG, "Settings"
+        ),
+    });
+}
+
+Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty) {
+    return Ui::reducer<Model>(
+        State{terminal, pty},
+        [](State const& s) {
+            return Kr::scaffold({
+                .icon = Mdi::CONSOLE_LINE,
+                .title = "Console"s,
+                .body = [&] {
+                    return Vte::viewport(s.terminal, Model::map<Union<App::TypeEvent, App::KeyboardEvent>>()) |
+                           Ui::insets(6) |
+                           Kr::contextMenu([] {
+                               return contextMenu();
+                           });
+                },
+            });
+        }
+    );
 }
 
 } // namespace Hideo::Console
 
+Async::Task<> _handleAsync(Rc<Sys::Pty> pty, Ui::Child app, Async::CancellationToken ct) {
+    Array<u8, Io::DEFAULT_BUFFER_SIZE> buf;
+
+    while (true) {
+        co_try$(ct.errorIfCanceled());
+        auto read = co_trya$(pty->readAsync(buf, ct));
+        Hideo::Console::Model::event(*app, sub(buf, 0, read));
+    }
+}
+
 Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
-    co_return co_await Ui::runAsync(ctx, Hideo::Console::app(), ct);
+    auto terminal = makeRc<Vte::Terminal>(Vte::Theme{});
+
+    Sys::Command command{
+        .exe = "/bin/sh"s,
+        .env = {}
+    };
+    auto [process, p] = co_try$(command.spawnPty());
+    auto pty = makeRc<Sys::Pty>(std::move(p));
+
+    auto app = Hideo::Console::app(terminal, pty);
+    Async::detach(_handleAsync(pty, app, ct));
+    co_return co_await Ui::runAsync(ctx, app, ct);
 }

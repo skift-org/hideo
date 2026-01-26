@@ -1,4 +1,4 @@
-#include <karm-sys/entry.h>
+#include <karm/entry>
 
 import Hideo.Apps;
 import Karm.Ui;

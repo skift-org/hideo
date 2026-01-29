@@ -167,7 +167,7 @@ Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     auto terminal = makeRc<Vte::Terminal>(Vte::Theme{});
 
     Sys::Command command{
-        .exe = "/bin/sh"s,
+        .exe = "luna"s,
         .env = {}
     };
     auto [process, p] = co_try$(command.spawnPty());

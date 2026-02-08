@@ -19,28 +19,42 @@ namespace Hideo::Shell {
 
 // MARK: Shells ----------------------------------------------------------------
 
+export Ui::Child shellContent(State const& state) {
+    if (state.locked)
+        return lockScreen(state);
+
+    if (App::formFactor == App::FormFactor::MOBILE)
+        return mobileScreen(state);
+
+    return desktopScreen(state);
+}
+
 export Ui::Child app(State state) {
     return Ui::reducer<Model>(
         std::move(state),
-        [](auto const& state) {
+        [](State const& state) {
             auto content =
-                Ui::stack(
-                    state.locked
-                        ? lock(state)
-                        : (App::formFactor == App::FormFactor::MOBILE ? mobile(state)
-                                          : desktop(state)),
-
-                    App::formFactor == App::FormFactor::MOBILE
-                        ? Ui::empty()
-                        : desktopPanels(state)
-                ) |
+                shellContent(state) |
                 Ui::dialogLayer() |
                 Ui::popoverLayer() |
                 Ui::pinSize(
-                    App::formFactor == App::FormFactor::MOBILE 
+                    App::formFactor == App::FormFactor::MOBILE
                         ? Math::Vec2i{411, 731}
                         : Math::Vec2i{1280, 720}
-                );
+                ) |
+                Ui::keyboardShortcut(App::Key::ESC, {}, [&](auto& n) {
+                    if (state.activePanel != Panel::NIL)
+                        Model::bubble<ActivatePanel>(n, {Panel::NIL});
+                }) |
+                Ui::keyboardShortcut(App::Key::SPACE, {App::KeyMod::SUPER}, [&](auto& n) {
+                    Model::bubble<ActivatePanel>(n, {Panel::APPS});
+                }) |
+                Ui::keyboardShortcut(App::Key::L, {App::KeyMod::SUPER}, [&](auto& n) {
+                    Model::bubble<Lock>(n);
+                }) |
+                Ui::keyboardShortcut(App::Key::V, {App::KeyMod::SUPER}, [&](auto& n) {
+                    Model::bubble<ActivatePanel>(n, {Panel::NOTIS});
+                });
 
             if (state.nightLight) {
                 content = Ui::foregroundFilter(Gfx::SepiaFilter{0.7}, content);

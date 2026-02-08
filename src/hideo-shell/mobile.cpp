@@ -32,7 +32,7 @@ Ui::Child mobileAppHost(State const& s) {
     return makeRc<Viewport>(first(s.windows), true, App::Snap::FULL, 0);
 }
 
-Ui::Child mobile(State const& s) {
+Ui::Child mobileScreen(State const& s) {
     return Ui::stack(
         s.windows.len() == 0
             ? background(s)

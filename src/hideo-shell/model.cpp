@@ -165,7 +165,13 @@ export struct DragWindow {
     Math::Vec2i off;
 };
 
-export struct EndDragWindow {};
+export struct StartDragWindow {
+    Rc<Window> window;
+};
+
+export struct EndDragWindow {
+    Rc<Window> window;
+};
 
 export struct FocusWindow {
     Rc<Window> window;
@@ -192,6 +198,7 @@ export using Action = Union<
     SnapWindow,
     DragWindow,
     EndDragWindow,
+    StartDragWindow,
     FocusWindow,
     ActivatePanel,
     ToggleSysPanel>;
@@ -250,8 +257,11 @@ Ui::Task<Action> reduce(State& s, Action a) {
         [&](SnapWindow s) {
             s.window->preferSnap = s.snap;
         },
-        [&](EndDragWindow) {
-            first(s.windows)->dragged = false;
+        [&](StartDragWindow s) {
+            s.window->dragged = true;
+        },
+        [&](EndDragWindow s) {
+            s.window->dragged = false;
         },
         [&](FocusWindow focus) {
             s.windows.removeAll(focus.window);
@@ -309,35 +319,75 @@ export struct Viewport : Ui::View<Viewport> {
     }
 
     void event(App::Event& e) override {
-        if (auto c = e.is<App::RequestCloseEvent>()) {
-            e.accept();
-            Model::bubble<RemoveWindow>(*this, {_window});
-        } else if (auto it = e.is<App::MouseEvent>(); it) {
-            if (_window->dragged) {
-                if (it->type == App::MouseEvent::RELEASE) {
-                    Model::bubble<EndDragWindow>(*this);
-                } else if (it->type == App::MouseEvent::MOVE) {
-                    Model::bubble<DragWindow>(*this, {_window, it->delta});
-                    e.accept();
-                    return;
-                }
+        if (e.accepted())
+            return;
+
+        if (auto it = e.is<App::MouseEvent>(); it) {
+            if (it->type == App::MouseEvent::RELEASE and _window->dragged) {
+                Model::bubble<EndDragWindow>(*this, {_window});
+                e.accept();
+                return;
+            }
+
+            if (it->type == App::MouseEvent::MOVE and _window->dragged) {
+                Model::bubble<DragWindow>(*this, {_window, it->delta});
+                e.accept();
+                return;
             }
 
             if (bound().contains(it->pos)) {
-                if (_window->focused) {
-                    auto transformedEvent = *it;
-                    transformedEvent.pos = transformedEvent.pos - bound().xy;
-                    auto ee = App::makeEvent<App::MouseEvent>(transformedEvent);
-                    _window->event(ee);
-                } else if (it->type == App::MouseEvent::PRESS and not _window->focused) {
+                if (it->type == App::MouseEvent::PRESS and not _window->focused) {
                     Model::bubble<FocusWindow>(*this, {_window});
                 }
+
+                if (it->type == App::MouseEvent::PRESS and it->button == App::MouseButton::LEFT and App::match(it->mods, App::KeyMod::SUPER)) {
+                    Model::bubble<StartDragWindow>(*this, {_window});
+                    e.accept();
+                }
+
+                if (e.accepted())
+                    return;
+
+                auto transformedEvent = *it;
+                transformedEvent.pos = transformedEvent.pos - bound().xy;
+                auto ee = App::makeEvent<App::MouseEvent>(transformedEvent);
+                _window->event(ee);
                 e.accept();
             }
         } else if (_window->focused) {
             if (e.is<App::KeyboardEvent>() or e.is<App::TypeEvent>())
                 _window->event(e);
         }
+    }
+};
+
+// MARK: Mock ------------------------------------------------------------------
+
+export struct MockWindow : Window {
+    Gfx::Icon icon;
+    String name;
+    Gfx::ColorRamp ramp;
+
+    MockWindow(Gfx::Icon icon, String name, Gfx::ColorRamp ramp)
+        : icon(icon), name(name), ramp(ramp) {}
+
+    Rc<Gfx::Surface> surface() const override {
+        return Gfx::Surface::fallback();
+    }
+
+    void event(App::Event&) override {}
+};
+
+export struct MockLauncher : Launcher {
+    using Launcher::Launcher;
+
+    void launch(State& s) override {
+        auto instance = makeRc<MockWindow>(
+            icon,
+            name,
+            ramp
+        );
+        s.windows.emplaceFront(instance);
     }
 };
 

@@ -13,13 +13,13 @@ import :taskbar;
 
 namespace Hideo::Shell {
 
-auto panel(Math::Vec2i size = {500, 400}) {
+auto desktopPanel(Math::Vec2i size = {500, 400}) {
     return [=](Ui::Child child) {
         return child |
                Ui::pinSize(size) |
                Ui::box({
                    .padding = 8,
-                   .borderRadii = 8,
+                   .borderRadii = 12,
                    .borderWidth = 1,
                    .borderFill = Ui::GRAY800,
                    .backgroundFill = Ui::GRAY950,
@@ -27,7 +27,7 @@ auto panel(Math::Vec2i size = {500, 400}) {
     };
 }
 
-Ui::Child appStack(State const& state) {
+Ui::Child desktopStack(State const& state) {
     Ui::Children apps;
     bool topLevel = true;
     for (auto& window : state.windows) {
@@ -39,7 +39,7 @@ Ui::Child appStack(State const& state) {
                        .borderRadii = 8,
                        .borderWidth = 1.,
                        .borderFill = topLevel ? Ui::ACCENT500 : Ui::GRAY800,
-                       .shadowStyle = Gfx::BoxShadow::elevated(topLevel ? 16 : 4),
+                       .shadowStyle = Gfx::BoxShadow::elevated(topLevel ? 16 : 4).withFillCenter(false),
                    }) |
                    Ui::placed(window->_floatingBound);
         }
@@ -51,10 +51,6 @@ Ui::Child appStack(State const& state) {
     return Ui::stack(apps);
 }
 
-Ui::Child applicationsPanel(State const& s) {
-    return apps(s) | panel();
-}
-
 Ui::Child notificationPanel(State const& state) {
     return Ui::vflow(
                8,
@@ -62,20 +58,19 @@ Ui::Child notificationPanel(State const& state) {
                    Ui::insets({6, 0, 0, 12}),
                notifications(state) | Ui::grow()
            ) |
-           panel({500, 400});
+           desktopPanel({500, 400});
 }
 
 Ui::Child settingsPanel(State const& state) {
     return expendedQuickSettings(state) |
-           panel({320, Ui::UNCONSTRAINED});
+           desktopPanel({320, Ui::UNCONSTRAINED});
 }
 
 Ui::Child desktopPanels(State const& s) {
     return Ui::stack(
                s.activePanel == Panel::APPS
-                   ? applicationsPanel(s) |
-                         Ui::center() |
-                         Ui::scaleIn()
+                   ? appsLauncher(s) |
+                         Ui::center()
                    : Ui::empty(),
                s.activePanel == Panel::NOTIS
                    ? notificationPanel(s) |
@@ -88,10 +83,10 @@ Ui::Child desktopPanels(State const& s) {
                          Ui::slideIn(Ui::SlideFrom::TOP)
                    : Ui::empty()
            ) |
-           Ui::insets({38, 8});
+           Ui::insets(4);
 }
 
-Ui::Child desktop(State const& state) {
+Ui::Child desktopScreen(State const& state) {
     return Ui::stack(
         background(state) |
             Kr::contextMenu([] {
@@ -103,7 +98,7 @@ Ui::Child desktop(State const& state) {
             }),
         Ui::vflow(
             taskbar(state) | Ui::slideIn(Ui::SlideFrom::TOP),
-            appStack(state) |
+            Ui::stack(desktopStack(state), desktopPanels(state)) | Ui::clip() |
                 Ui::grow()
         )
     );

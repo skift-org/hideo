@@ -31,8 +31,8 @@ Ui::Child appRow(Launcher const& manifest, usize i) {
            Ui::hflow(
                12,
                Math::Align::START | Math::Align::VCENTER,
-               appIcon(manifest.icon, manifest.ramp),
-               Ui::labelLarge(manifest.name)
+               appIcon(manifest.icon, manifest.ramp, 18),
+               Ui::labelMedium(manifest.name)
            ) |
                Ui::insets(6) |
                Ui::button(Model::bind<StartApplication>(i), Ui::ButtonStyle::subtle());
@@ -40,6 +40,7 @@ Ui::Child appRow(Launcher const& manifest, usize i) {
 
 Ui::Child appsList(State const& state) {
     return Ui::vflow(
+        6,
         iter(state.launchers)
             .mapi([](auto& man, usize i) {
                 return appRow(*man, i);
@@ -81,37 +82,62 @@ Ui::Child runningApps(State const& state) {
            Ui::center() | Ui::insets({64, 0, 16, 0});
 }
 
-export Ui::Child apps(State const& state) {
-    return Ui::vflow(
-        Kr::searchbar(""s),
-        appsList(state) |
-            Ui::insets({12, 0}) | Ui::vscroll() | Ui::grow()
+export Ui::Child appsSearchbar(String text) {
+    return Ui::hflow(
+        8,
+        Math::Align::VCENTER | Math::Align::START,
+        Ui::stack(
+            text ? Ui::empty() : Ui::labelLarge(Ui::GRAY600, "Search for anything…"),
+            Ui::input(Ui::TextStyles::labelLarge(), text, Ui::SINK<String>)
+        ) | Ui::grow(),
+        Ui::icon(Mdi::MAGNIFY)
     );
+}
+
+export Ui::Child appsContent(State const& state) {
+    return Ui::vflow(
+        appsSearchbar(""s) |
+            Ui::insets({12, 16}),
+        Kr::separator(),
+        appsList(state) |
+            Ui::insets(8) | Ui::vscroll() | Ui::grow()
+    );
+}
+
+export Ui::Child appsLauncher(State const& state) {
+    return appsContent(state) | Ui::bound() |
+           Ui::box({
+               .borderRadii = 12,
+               .borderWidth = 1,
+               .borderFill = Ui::GRAY800,
+               .backgroundFill = Ui::GRAY950.withOpacity(0.9),
+               .shadowStyle = Gfx::BoxShadow::elevated(16),
+           }) |
+           Ui::pinSize({500, 400});
 }
 
 export Ui::Child appsFlyout(State const& state) {
     return Ui::vflow(
-               runningApps(state),
-               Ui::vflow(
-                   Kr::dragHandle(),
-                   apps(state) | Ui::grow()
-               ) |
-                   Ui::box({
-                       .margin = 8,
-                       .padding = {0, 12},
-                       .borderRadii = 8,
-                       .borderWidth = 1,
-                       .borderFill = Ui::GRAY800,
-                       .backgroundFill = Ui::GRAY950,
-                   }) |
-                   Ui::bound() |
-                   Ui::dismisable(
-                       Model::bind<ActivatePanel>(Panel::NIL),
-                       Ui::DismisDir::DOWN,
-                       0.3
-                   ) |
-                   Ui::slideIn(Ui::SlideFrom::BOTTOM) | Ui::grow()
-           );
+        runningApps(state),
+        Ui::vflow(
+            Kr::dragHandle(),
+            appsContent(state) | Ui::grow()
+        ) |
+            Ui::box({
+                .margin = 8,
+                .borderRadii = 8,
+                .borderWidth = 1,
+                .borderFill = Ui::GRAY800,
+                .backgroundFill = Ui::GRAY950,
+            }) |
+            Ui::bound() |
+            Ui::dismisable(
+                Model::bind<ActivatePanel>(Panel::NIL),
+                Ui::DismisDir::DOWN,
+                0.3
+            ) |
+            Ui::slideIn(Ui::SlideFrom::BOTTOM) | Ui::grow()
+    );
 }
 
 } // namespace Hideo::Shell

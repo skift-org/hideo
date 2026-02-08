@@ -13,13 +13,14 @@ using namespace Karm;
 
 namespace Hideo::Shell {
 
-Ui::Child taskbarAppsButton() {
+Ui::Child taskbarSearchButton() {
     return Ui::button(
-        Model::bind<ActivatePanel>(Panel::APPS),
-        Ui::ButtonStyle::subtle(),
-        Mdi::APPS,
-        "Applications"
-    ) | Ui::keyboardShortcut(App::Key::SPACE, {App::KeyMod::SUPER});
+               Model::bind<ActivatePanel>(Panel::APPS),
+               Ui::ButtonStyle::subtle().withRadii(99),
+               Mdi::MAGNIFY,
+               "Search…"
+           ) |
+           Ui::minSize({180, Ui::UNCONSTRAINED});
 }
 
 Ui::Child taskbarCalendarButton(State const& s) {
@@ -36,7 +37,7 @@ Ui::Child taskbarCalendarButton(State const& s) {
 
     return Ui::button(
         Model::bind<ActivatePanel>(Panel::NOTIS),
-        Ui::ButtonStyle::subtle(),
+        Ui::ButtonStyle::subtle().withRadii(99),
         dateTime
     );
 }
@@ -44,7 +45,7 @@ Ui::Child taskbarCalendarButton(State const& s) {
 Ui::Child taskbarStatusButton() {
     return Ui::button(
         Model::bind<ActivatePanel>(Panel::SYS),
-        Ui::ButtonStyle::subtle(),
+        Ui::ButtonStyle::subtle().withRadii(99),
         Ui::hflow(
             6,
             Math::Align::CENTER,
@@ -55,27 +56,26 @@ Ui::Child taskbarStatusButton() {
         ) |
 
             Ui::center() |
-            Ui::insets({6, 12}) |
+            Ui::insets({0, 12}) |
             Ui::bound()
     );
 }
 
 Ui::Child taskbar(State const& s) {
-    return Ui::vflow(
-        Ui::stack(
-            Ui::hflow(
-                6,
-                taskbarAppsButton() ,
-                Ui::grow(NONE),
-                taskbarStatusButton()
-            ),
-            taskbarCalendarButton(s) |
-                Ui::center()
-        ) |
-            Ui::box({
-                .padding = 6,
-                .backgroundFill = s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.6),
-            }),
+    return Ui::vflow(Ui::stack(
+               Ui::hflow(
+                   6,
+                   taskbarSearchButton(),
+                   Ui::grow(NONE),
+                   taskbarStatusButton()
+               ),
+               taskbarCalendarButton(s) |
+                   Ui::center()
+           ) |
+           Ui::box({
+               .padding = 4,
+               .backgroundFill = s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.9),
+           }),
         Kr::separator()
     );
 }

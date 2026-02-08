@@ -87,7 +87,7 @@ export Ui::Child appsSearchbar(String text) {
         8,
         Math::Align::VCENTER | Math::Align::START,
         Ui::stack(
-            text ? Ui::empty() : Ui::labelLarge(Ui::GRAY600, "Search for anything…"),
+            text ? Ui::empty() : Ui::labelLarge(Ui::GRAY500, "Search for anything…"),
             Ui::input(Ui::TextStyles::labelLarge(), text, Ui::SINK<String>)
         ) | Ui::grow(),
         Ui::icon(Mdi::MAGNIFY)

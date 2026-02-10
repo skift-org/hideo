@@ -26,24 +26,35 @@ Ui::Child appIcon(Gfx::Icon const& icon, Gfx::ColorRamp ramp, isize size = 22) {
            });
 }
 
-Ui::Child appRow(Launcher const& manifest, usize i) {
-    return Ui::ButtonStyle::subtle(),
-           Ui::hflow(
-               12,
-               Math::Align::START | Math::Align::VCENTER,
-               appIcon(manifest.icon, manifest.ramp, 18),
-               Ui::labelMedium(manifest.name)
-           ) |
-               Ui::insets(6) |
-               Ui::button(Model::bind<StartApplication>(i), Ui::ButtonStyle::subtle());
+Ui::Child appRow(Rc<Launcher> launcher, bool selected) {
+    auto child = Ui::hflow(
+                     12,
+                     Math::Align::START | Math::Align::VCENTER,
+                     appIcon(launcher->icon, launcher->ramp, 18),
+                     Ui::labelMedium(launcher->name)
+                 ) |
+                 Ui::insets(6) |
+                 Ui::button(Model::bind<StartApplication>(launcher), selected ? Ui::ButtonStyle::regular() : Ui::ButtonStyle::subtle());
+
+    if (selected) {
+        child |= Ui::keyboardShortcut(App::Key::ENTER);
+        child |= Ui::scrollToMe(8);
+    }
+
+    return child;
 }
 
 Ui::Child appsList(State const& state) {
+    if (state.filtered.len() == 0)
+        return Kr::errorPageContent({
+            Kr::errorPageSubTitle("No result found matching your query."s),
+        });
+
     return Ui::vflow(
         6,
-        iter(state.launchers)
-            .mapi([](auto& man, usize i) {
-                return appRow(*man, i);
+        iter(state.filtered)
+            .mapi([&](auto& man, usize i) {
+                return appRow(man, i == state.searchIndex);
             })
             .collect<Ui::Children>()
     );
@@ -82,26 +93,32 @@ Ui::Child runningApps(State const& state) {
            Ui::center() | Ui::insets({64, 0, 16, 0});
 }
 
-export Ui::Child appsSearchbar(String text) {
+export Ui::Child appsSearchbar(State const& s) {
     return Ui::hflow(
         8,
         Math::Align::VCENTER | Math::Align::START,
         Ui::stack(
-            text ? Ui::empty() : Ui::labelLarge(Ui::GRAY500, "Search for anything…"),
-            Ui::input(Ui::TextStyles::labelLarge(), text, Ui::SINK<String>)
+            s.searchQuery ? Ui::empty() : Ui::labelLarge(Ui::GRAY500, "Search for anything…"),
+            Ui::input(Ui::TextStyles::labelLarge(), s.searchQuery, Model::map<UpdateSearch>())
         ) | Ui::grow(),
         Ui::icon(Mdi::MAGNIFY)
     );
 }
 
-export Ui::Child appsContent(State const& state) {
+export Ui::Child appsContent(State const& s) {
     return Ui::vflow(
-        appsSearchbar(""s) |
-            Ui::insets({12, 16}),
-        Kr::separator(),
-        appsList(state) |
-            Ui::insets(8) | Ui::vscroll() | Ui::grow()
-    );
+               appsSearchbar(s) |
+                   Ui::insets({12, 16}),
+               Kr::separator(),
+               appsList(s) |
+                   Ui::insets(8) | Ui::vscroll() | Ui::grow()
+           ) |
+           Ui::keyboardShortcut(App::Key::UP, {}, [](auto& n) {
+               Model::bubble<SelectSearch>(n, {-1});
+           }) |
+           Ui::keyboardShortcut(App::Key::DOWN, {}, [](auto& n) {
+               Model::bubble<SelectSearch>(n, {1});
+           });
 }
 
 export Ui::Child appsLauncher(State const& state) {
@@ -113,7 +130,7 @@ export Ui::Child appsLauncher(State const& state) {
                .backgroundFill = Ui::GRAY950.withOpacity(0.9),
                .shadowStyle = Gfx::BoxShadow::elevated(16),
            }) |
-           Ui::pinSize({500, 400});
+           Ui::pinSize({500, 400}) | Ui::focusable({.visual = false, .steal = true});
 }
 
 export Ui::Child appsFlyout(State const& state) {

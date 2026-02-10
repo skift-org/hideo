@@ -91,13 +91,41 @@ export struct State : Meta::NoCopy {
     f64 volume = 0.5;
     Panel activePanel = Panel::NIL;
     bool isSysPanelColapsed = true;
+    String searchQuery = ""s;
+    usize searchIndex = 0;
 
     DateTime dateTime;
 
     Rc<Gfx::Surface> background;
     Vec<Noti> noti;
     Vec<Rc<Launcher>> launchers;
+    Vec<Rc<Launcher>> filtered;
     Vec<Rc<Window>> windows;
+
+    void filter() {
+        Vec<Tuple<Rc<Launcher>, int>> matches;
+        for (auto l : launchers) {
+            if (not searchQuery) {
+                matches.pushBack({l, {}});
+                continue;
+            }
+
+            auto match = Glob::matchFuzzy(l->name, searchQuery);
+            if (not match)
+                continue;
+            matches.pushBack({l, match->score});
+        }
+
+        if (searchQuery)
+            sort(matches, [](auto& a, auto& b) {
+                return b.v1 <=> a.v1;
+            });
+
+        filtered = iter(matches).map([](auto& m) {
+                                    return m.v0;
+                                })
+                       .collect<Vec<Rc<Launcher>>>();
+    }
 
     void updateFocus() {
         if (not windows)
@@ -119,6 +147,14 @@ export struct State : Meta::NoCopy {
         }
         return false;
     }
+};
+
+export struct UpdateSearch {
+    String query;
+};
+
+export struct SelectSearch {
+    int offset = 0;
 };
 
 export struct ToggleTablet {};
@@ -144,7 +180,7 @@ export struct DimisNoti {
 };
 
 export struct StartApplication {
-    usize index;
+    Rc<Launcher> launcher;
 };
 
 export struct AddWindow {
@@ -184,6 +220,8 @@ export struct ActivatePanel {
 };
 
 export using Action = Union<
+    UpdateSearch,
+    SelectSearch,
     ToggleTablet,
     ToggleNightLight,
     ToggleKeyboard,
@@ -205,6 +243,16 @@ export using Action = Union<
 
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(Visitor{
+        [&](UpdateSearch u) {
+            s.searchQuery = u.query;
+            s.searchIndex = 0;
+            s.filter();
+        },
+        [&](SelectSearch u) {
+            if (s.searchIndex != 0 or u.offset != -1)
+                s.searchIndex += u.offset;
+            s.searchIndex = clampIndex(s.searchIndex, s.filtered.len());
+        },
         [&](ToggleTablet) {
             if (App::formFactor == App::FormFactor::MOBILE) {
                 App::formFactor = App::FormFactor::DESKTOP;
@@ -237,7 +285,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.noti.removeAt(dismis.index);
         },
         [&](StartApplication start) {
-            s.launchers[start.index]->launch(s);
+            start.launcher->launch(s);
             s.activePanel = Panel::NIL;
         },
         [&](AddWindow add) {
@@ -270,6 +318,9 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.updateFocus();
         },
         [&](ActivatePanel panel) {
+            s.searchQuery = ""s;
+            s.searchIndex = 0;
+            s.filtered = s.launchers;
             s.activePanel = s.activePanel != panel.panel ? panel.panel : Panel::NIL;
         },
         [&](ToggleSysPanel) {
@@ -355,7 +406,7 @@ export struct Viewport : Ui::View<Viewport> {
                 e.accept();
             }
         } else if (_window->focused) {
-            if (e.is<App::KeyboardEvent>() or e.is<App::TypeEvent>())
+            if (e.is<App::KeyboardEvent>())
                 _window->event(e);
         }
     }

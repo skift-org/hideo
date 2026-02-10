@@ -31,6 +31,7 @@ Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
             makeRc<Hideo::Shell::MockLauncher>(Mdi::COG, "Settings"s, Gfx::ZINC_RAMP),
             makeRc<Hideo::Shell::MockLauncher>(Mdi::TABLE, "Spreadsheet"s, Gfx::GREEN_RAMP),
         },
+        .filtered = {},
         .windows = {}
     };
 

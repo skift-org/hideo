@@ -85,30 +85,24 @@ struct State {
 };
 
 using Action = Union<
-    Bytes, Union<App::TypeEvent, App::KeyboardEvent>>;
+    Bytes, App::KeyboardEvent>;
 
 static Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(Visitor{
         [&](Bytes b) {
             s.terminal->write(b);
         },
-        [&](Union<App::TypeEvent, App::KeyboardEvent> const& e) {
-            e.visit(Visitor{
-                [&](App::TypeEvent e) {
-                    Io::TextEncoder<> enc{*s.pty};
+        [&](App::KeyboardEvent const& e) {
+            Io::TextEncoder<> enc{*s.pty};
+            if (e.type == App::KeyboardEvent::PRESS) {
+                if (e.key == App::Key::ENTER) {
+                    (void)enc.writeRune('\n');
+                } else if (e.key == App::Key::BKSPC) {
+                    (void)enc.writeRune('\b');
+                } else {
                     (void)enc.writeRune(e.rune);
-                },
-                [&](App::KeyboardEvent e) {
-                    Io::TextEncoder<> enc{*s.pty};
-                    if (e.type == App::KeyboardEvent::PRESS) {
-                        if (e.key == App::Key::ENTER) {
-                            (void)enc.writeRune('\n');
-                        } else if (e.key == App::Key::BKSPC) {
-                            (void)enc.writeRune('\b');
-                        }
-                    }
-                },
-            });
+                }
+            }
         },
     });
     return NONE;
@@ -140,7 +134,7 @@ Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty) {
                 .icon = Mdi::CONSOLE_LINE,
                 .title = "Console"s,
                 .body = [&] {
-                    return Vte::viewport(s.terminal, Model::map<Union<App::TypeEvent, App::KeyboardEvent>>()) |
+                    return Vte::viewport(s.terminal, Model::map<App::KeyboardEvent>()) |
                            Ui::insets(6) |
                            Kr::contextMenu([] {
                                return contextMenu();

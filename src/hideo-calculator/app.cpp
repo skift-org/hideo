@@ -101,7 +101,7 @@ export Ui::Child app() {
                     keypad(state) | Ui::grow()
                 );
             },
-            .size = {300, 332},
+            .size = {300, 460},
         });
     });
 }

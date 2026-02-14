@@ -123,6 +123,46 @@ Ui::Child directoryListing(State const& s, Sys::Dir const& dir) {
            Ui::vscroll() | Ui::key(s.currentIndex);
 }
 
+// MARK: Dialog Widgets --------------------------------------------------------
+
+Ui::Child dialogEntry(State const& s, Sys::DirEntry const& entry) {
+    auto isDir = entry.type == Sys::Type::DIR;
+    auto isSelected = not isDir and s.inputFilename == entry.name;
+    auto style = isSelected ? Ui::ButtonStyle::regular() : Ui::ButtonStyle::subtle();
+
+    if (isDir) {
+        return Ui::button(
+            Model::bind<Navigate>(entry.name),
+            style,
+            Mdi::FOLDER,
+            entry.name
+        );
+    }
+
+    return Ui::button(
+        Model::bind<SetFilename>(entry.name),
+        style,
+        iconFor(Ref::sniffSuffix(Ref::suffixOf(entry.name)).unwrapOr("file"s)),
+        entry.name
+    );
+}
+
+export Ui::Child dialogDirectoryListing(State const& s, Sys::Dir const& dir) {
+    if (dir.entries().len() == 0)
+        return Ui::bodyMedium(Ui::GRAY500, "This directory is empty.") | Ui::center();
+
+    Ui::Children children;
+    for (auto const& entry : dir.entries()) {
+        if (entry.hidden() and not s.showHidden)
+            continue;
+        children.pushBack(dialogEntry(s, entry));
+    }
+
+    return Ui::vflow(8, children) |
+           Ui::insets(16) |
+           Ui::vscroll() | Ui::key(s.currentIndex);
+}
+
 Ui::Child breadcrumbItem(Str text, isize index) {
     return Ui::hflow(
         0,

@@ -13,6 +13,7 @@ struct State {
     Vec<Ref::Url> history;
     usize currentIndex = 0;
     bool showHidden = false;
+    String inputFilename;
 
     State(Ref::Url path)
         : history({path}) {}
@@ -61,6 +62,10 @@ struct AddBookmark {};
 
 struct ToggleHidden {};
 
+struct SetFilename {
+    String name;
+};
+
 using Action = Union<
     GoRoot,
     GoBack,
@@ -70,7 +75,8 @@ using Action = Union<
     GoTo,
     Refresh,
     AddBookmark,
-    ToggleHidden>;
+    ToggleHidden,
+    SetFilename>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
     return a.visit(Visitor{
@@ -78,13 +84,17 @@ Ui::Task<Action> reduce(State& s, Action a) {
             return reduce(s, GoTo{"file:/"_url});
         },
         [&](GoBack) {
-            if (s.canGoBack())
+            if (s.canGoBack()) {
                 s.currentIndex--;
+                s.inputFilename = ""s;
+            }
             return NONE;
         },
         [&](GoForward) {
-            if (s.canGoForward())
+            if (s.canGoForward()) {
                 s.currentIndex++;
+                s.inputFilename = ""s;
+            }
             return NONE;
         },
         [&](GoParent p) {
@@ -102,6 +112,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
                     .objects = {dest},
                 });
             } else {
+                s.inputFilename = ""s;
                 return reduce(s, GoTo{dest});
             }
             return NONE;
@@ -113,6 +124,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.history.trunc(s.currentIndex + 1);
             s.history.pushBack(gotTo.url);
             s.currentIndex++;
+            s.inputFilename = ""s;
             return NONE;
         },
         [&](Refresh) {
@@ -123,6 +135,10 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](ToggleHidden) {
             s.showHidden = not s.showHidden;
+            return NONE;
+        },
+        [&](SetFilename sf) {
+            s.inputFilename = sf.name;
             return NONE;
         },
     });

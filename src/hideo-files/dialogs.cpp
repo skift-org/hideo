@@ -3,6 +3,7 @@ export module Hideo.Files:dialogs;
 import Karm.Kira;
 import Karm.Ui;
 import Karm.Sys;
+import Karm.Math;
 
 import :widgets;
 
@@ -13,12 +14,13 @@ export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {
         {"location://home"_url},
         [onFile](State const& s) {
             auto maybeDir = Sys::Dir::open(s.currentUrl());
+            bool hasSelection = s.inputFilename.len() > 0;
 
             return Kr::dialogContent({
                 Kr::dialogTitleBar("Open File…"s),
                 toolbar(s),
                 (maybeDir
-                     ? directoryListing(s, maybeDir.unwrap())
+                     ? dialogDirectoryListing(s, maybeDir.unwrap())
                      : alert(
                            s,
                            "Can't access this location"s,
@@ -27,12 +29,19 @@ export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {
                     Ui::pinSize({400, 260}),
                 Kr::separator(),
                 Kr::dialogFooter({
-                    Ui::grow(NONE),
+                    hasSelection
+                        ? Ui::labelMedium(s.inputFilename) | Ui::grow()
+                        : Ui::labelMedium(Ui::GRAY500, "No file selected") | Ui::grow(),
                     Kr::dialogCancel(),
-                    Kr::dialogAction(
-                        [&, onFile](auto& n) {
-                            onFile(n, s.currentUrl());
-                        },
+                    Ui::button(
+                        hasSelection
+                            ? Opt<Ui::Send<>>{[&, onFile](auto& n) {
+                                  auto url = s.currentUrl();
+                                  url.append(s.inputFilename);
+                                  onFile(n, url);
+                              }}
+                            : NONE,
+                        Ui::ButtonStyle::primary(),
                         "Open"s
                     ),
                 }),
@@ -46,12 +55,13 @@ export Ui::Child saveDialog(Ui::Send<Ref::Url> onFile) {
         {"location://home"_url},
         [onFile](State const& s) {
             auto maybeDir = Sys::Dir::open(s.currentUrl());
+            bool hasFilename = s.inputFilename.len() > 0;
 
             return Kr::dialogContent({
                 Kr::dialogTitleBar("Save As…"s),
                 toolbar(s),
                 (maybeDir
-                     ? directoryListing(s, maybeDir.unwrap())
+                     ? dialogDirectoryListing(s, maybeDir.unwrap())
                      : alert(
                            s,
                            "Can't access this location"s,
@@ -59,13 +69,41 @@ export Ui::Child saveDialog(Ui::Send<Ref::Url> onFile) {
                        )) |
                     Ui::pinSize({400, 260}),
                 Kr::separator(),
+                Ui::hflow(
+                    8,
+                    Math::Align::VCENTER | Math::Align::START,
+                    Ui::labelMedium("Name:"),
+                    Ui::stack(
+                        s.inputFilename ? Ui::empty() : Ui::labelMedium(Ui::GRAY600, "filename.txt"),
+                        Ui::input(
+                            Ui::TextStyles::labelMedium(),
+                            s.inputFilename,
+                            [](Ui::Node& n, String name) {
+                                Model::bubble<SetFilename>(n, SetFilename{name});
+                            }
+                        )
+                    ) | Ui::grow()
+                ) | Ui::box({
+                        .padding = {6, 12},
+                        .borderRadii = 4,
+                        .borderWidth = 1,
+                        .borderFill = Ui::GRAY800,
+                    }) |
+                    Ui::focusable() |
+                    Ui::insets({8, 16}),
+                Kr::separator(),
                 Kr::dialogFooter({
                     Ui::grow(NONE),
                     Kr::dialogCancel(),
-                    Kr::dialogAction(
-                        [&, onFile](auto& n) {
-                            onFile(n, s.currentUrl());
-                        },
+                    Ui::button(
+                        hasFilename
+                            ? Opt<Ui::Send<>>{[&, onFile](auto& n) {
+                                  auto url = s.currentUrl();
+                                  url.append(s.inputFilename);
+                                  onFile(n, url);
+                              }}
+                            : NONE,
+                        Ui::ButtonStyle::primary(),
                         "Save"s
                     ),
                 }),

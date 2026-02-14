@@ -8,6 +8,7 @@ import Karm.Ref;
 import Karm.Math;
 import Karm.Logger;
 import Karm.Core;
+import Karm.App;
 
 import Hideo.Files;
 
@@ -24,11 +25,20 @@ struct State {
 struct New {
 };
 
+struct Open {
+    Ref::Url url;
+    String content;
+};
+
 struct Save {
     bool prompt = false;
 };
 
-using Action = Union<Ui::TextAction, New, Save>;
+struct SaveAs {
+    Ref::Url url;
+};
+
+using Action = Union<Ui::TextAction, New, Open, Save, SaveAs>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(::Visitor{
@@ -40,8 +50,37 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.error = NONE;
             s.text = makeRc<Ui::TextModel>();
         },
-        [&](Save&) {
-
+        [&](Open& o) {
+            s.url = o.url;
+            s.error = NONE;
+            s.text = makeRc<Ui::TextModel>();
+            s.text->load(o.content);
+        },
+        [&](Save& save) {
+            if (save.prompt or not s.url) {
+                // NOTE: Save-as is handled by the UI showing a dialog;
+                //       once the user picks a url, a SaveAs is dispatched.
+                return;
+            }
+            auto file = Sys::File::create(*s.url);
+            if (not file) {
+                s.error = file.none();
+                return;
+            }
+            Io::TextEncoder<> enc{file.unwrap()};
+            (void)enc.writeStr(s.text->string().str());
+            s.text->flush();
+        },
+        [&](SaveAs& sa) {
+            s.url = sa.url;
+            auto file = Sys::File::create(*s.url);
+            if (not file) {
+                s.error = file.none();
+                return;
+            }
+            Io::TextEncoder<> enc{file.unwrap()};
+            (void)enc.writeStr(s.text->string().str());
+            s.text->flush();
         },
     });
 
@@ -51,10 +90,48 @@ Ui::Task<Action> reduce(State& s, Action a) {
 using Model = Ui::Model<State, Action, reduce>;
 
 Ui::Child editor(Rc<Ui::TextModel> text) {
-    return Ui::input(text, [](Ui::Node& n, Action a) {
-               Model::bubble(n, a);
-           }) |
-           Ui::insets(16) | Ui::vscroll() | Ui::grow();
+    return Ui::input(
+               text,
+               [](Ui::Node& n, Action a) {
+                   Model::bubble(n, a);
+               }
+           ) |
+           Ui::focusable({.visual = false, .steal = true}) | Ui::insets(16) |
+           Ui::vscroll() |
+           Ui::grow();
+}
+
+// MARK: Toolbar ---------------------------------------------------------------
+
+Ui::Children appToolbar(State const& s) {
+    Ui::Send<> openAction = [](Ui::Node& n) {
+        Ui::showDialog(
+            n,
+            Files::openDialog([](auto& n, auto url) {
+                Ui::closeDialog(n);
+                auto content = Sys::readAllUtf8(url);
+                if (content)
+                    Model::bubble<Open>(n, Open{url, content.unwrap()});
+            })
+        );
+    };
+
+    Ui::Send<> saveAsAction = [](auto& n) {
+        Ui::showDialog(
+            n,
+            Files::saveDialog([](auto& n, auto url) {
+                Ui::closeDialog(n);
+                Model::bubble<SaveAs>(n, SaveAs{url});
+            })
+        );
+    };
+
+    return {
+        Ui::button(Model::bind<New>(), Ui::ButtonStyle::subtle(), Mdi::FILE) | Ui::keyboardShortcut(App::Key::N, App::KeyMod::CTRL),
+        Ui::button(openAction, Ui::ButtonStyle::subtle(), Mdi::FOLDER) | Ui::keyboardShortcut(App::Key::O, App::KeyMod::CTRL),
+        Ui::button(Model::bindIf<Save>(s.text->dirty() and s.url), Ui::ButtonStyle::subtle(), Mdi::CONTENT_SAVE) | Ui::keyboardShortcut(App::Key::S, App::KeyMod::CTRL),
+        Ui::button(saveAsAction, Ui::ButtonStyle::subtle(), Mdi::CONTENT_SAVE_PLUS) | Ui::keyboardShortcut(App::Key::S, {App::KeyMod::CTRL, App::KeyMod::SHIFT}),
+    };
 }
 
 export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
@@ -78,28 +155,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                 .icon = Mdi::PEN,
                 .title = "Text"s,
                 .startTools = [&] -> Ui::Children {
-                    return {
-                        Ui::button(Model::bind<New>(), Ui::ButtonStyle::subtle(), Mdi::FILE),
-                        Ui::button(
-                            [](auto& n) {
-                                Ui::showDialog(
-                                    n,
-                                    Files::openDialog([](auto&, auto url) {
-                                        logInfo("selected file: {}", url);
-                                    })
-                                );
-                            },
-                            Ui::ButtonStyle::subtle(), Mdi::FOLDER
-                        ),
-                        Ui::button(
-                            Model::bindIf(s.text->dirty(), Save{}),
-                            Ui::ButtonStyle::subtle(), Mdi::CONTENT_SAVE
-                        ),
-                        Ui::button(
-                            Model::bindIf(s.text->dirty(), Save{true}), Ui::ButtonStyle::subtle(),
-                            Mdi::CONTENT_SAVE_PLUS
-                        ),
-                    };
+                    return appToolbar(s);
                 },
                 .endTools = [&] -> Ui::Children {
                     return {
@@ -116,6 +172,18 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                     };
                 },
                 .body = [=] {
+                    usize ln = 1, col = 1;
+                    auto head = s.text->_cur.head;
+                    auto runes = s.text->runes();
+                    for (usize i = 0; i < head and i < runes.len(); i++) {
+                        if (runes[i] == '\n') {
+                            ln++;
+                            col = 1;
+                        } else {
+                            col++;
+                        }
+                    }
+
                     return Ui::vflow(
                         Ui::hflow(
                             0,
@@ -135,7 +203,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                             Math::Align::CENTER,
                             Ui::labelSmall("{}", s.text->dirty() ? "Edited" : ""),
                             Ui::grow(NONE),
-                            Ui::labelSmall("Ln {}, Col {}", 0, 0),
+                            Ui::labelSmall("Ln {}, Col {}", ln, col),
                             Kr::separator(),
                             Ui::labelSmall("UTF-8"),
                             Kr::separator(),

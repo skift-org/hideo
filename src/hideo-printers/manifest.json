@@ -5,6 +5,7 @@
     "description": "Manage printers",
     "requires": [
         "karm-kira",
-        "karm-print"
+        "karm-print",
+        "hideo-files"
     ]
 }

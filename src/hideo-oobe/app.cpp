@@ -82,6 +82,7 @@ Ui::Child welcomeStep(State const&) {
                                 ),
                             }),
                             Kr::dialogFooter({
+                                Ui::grow(NONE),
                                 Kr::dialogCancel(),
                                 Kr::dialogAction(Model::bind(Step::FINISH), "Skip Setup"s),
                             }),

@@ -32,6 +32,7 @@ Page PAGE_ALERT{
                                    Kr::dialogDescription("This action cannot be undone. This will permanently delete your account and remove your data from our servers."s),
                                }),
                                Kr::dialogFooter({
+                                   Ui::grow(NONE),
                                    Kr::dialogCancel(),
                                    Kr::dialogAction(Ui::SINK<>, "Continue"s),
                                }),

@@ -26,12 +26,10 @@ export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {
                            "Can't access this location"s,
                            Io::toStr(maybeDir.none())
                        )) |
-                    Ui::pinSize({400, 260}),
+                    Ui::pinSize({500, 300}),
                 Kr::separator(),
                 Kr::dialogFooter({
-                    hasSelection
-                        ? Ui::labelMedium(s.inputFilename) | Ui::grow()
-                        : Ui::labelMedium(Ui::GRAY500, "No file selected") | Ui::grow(),
+                    Ui::grow(NONE),
                     Kr::dialogCancel(),
                     Ui::button(
                         hasSelection
@@ -69,31 +67,8 @@ export Ui::Child saveDialog(Ui::Send<Ref::Url> onFile) {
                        )) |
                     Ui::pinSize({400, 260}),
                 Kr::separator(),
-                Ui::hflow(
-                    8,
-                    Math::Align::VCENTER | Math::Align::START,
-                    Ui::labelMedium("Name:"),
-                    Ui::stack(
-                        s.inputFilename ? Ui::empty() : Ui::labelMedium(Ui::GRAY600, "filename.txt"),
-                        Ui::input(
-                            Ui::TextStyles::labelMedium(),
-                            s.inputFilename,
-                            [](Ui::Node& n, String name) {
-                                Model::bubble<SetFilename>(n, SetFilename{name});
-                            }
-                        )
-                    ) | Ui::grow()
-                ) | Ui::box({
-                        .padding = {6, 12},
-                        .borderRadii = 4,
-                        .borderWidth = 1,
-                        .borderFill = Ui::GRAY800,
-                    }) |
-                    Ui::focusable() |
-                    Ui::insets({8, 16}),
-                Kr::separator(),
                 Kr::dialogFooter({
-                    Ui::grow(NONE),
+                    Kr::input("Filename"s, s.inputFilename, Model::map<SetFilename>()) | Ui::grow(),
                     Kr::dialogCancel(),
                     Ui::button(
                         hasFilename

@@ -37,21 +37,60 @@ struct Canvas : Ui::View<Canvas> {
     Canvas(State const& state)
         : _state(state) {}
 
+    void _paintChildren(Gfx::Canvas& g, Ref parent) {
+        for (auto const& child : _state.tree._nodes) {
+            if (child.parent == parent)
+                _paintNode(g, child.ref);
+        }
+    }
+
+    void _paintNode(Gfx::Canvas& g, Ref ref) {
+        auto const& node = _state.tree.byRef(ref);
+        auto rect = Math::Rectf::fromCenter({0, 0}, node.bound.size);
+
+        g.push();
+        g.translate(node.bound.center);
+        g.rotate(node.bound.angle);
+        g.fillStyle(_kindColor(node.kind));
+        g.fill(rect);
+
+        if (node.kind == Kind::FRAME) {
+            g.strokeStyle({.fill = Ui::GRAY700, .width = 1});
+            g.stroke(rect);
+        }
+
+        if (_state.selection.selected(node.ref)) {
+            g.strokeStyle({.fill = Ui::ACCENT500, .width = 1});
+            g.stroke(rect);
+        }
+        g.pop();
+
+        if (node.kind == Kind::FRAME) {
+            g.push();
+            g.translate(node.bound.center);
+            g.rotate(node.bound.angle);
+            g.clip(rect);
+
+            g.push();
+            g.rotate(-node.bound.angle);
+            g.translate(-node.bound.center);
+
+            _paintChildren(g, ref);
+            g.pop();
+            g.pop();
+            return;
+        }
+
+        _paintChildren(g, ref);
+    }
+
     void paint(Gfx::Canvas& g, Math::Recti) override {
         g.push();
         g.clip(bound());
 
         for (auto const& node : _state.tree._nodes) {
-            g.push();
-            g.translate(node.bound.center);
-            g.rotate(node.bound.angle);
-            g.beginPath();
-            g.rect(Math::Rectf::fromCenter({0, 0}, node.bound.size));
-            g.fill(_kindColor(node.kind));
-
-            if (_state.selection.selected(node.ref))
-                g.stroke({.fill = Ui::ACCENT500, .width = 1});
-            g.pop();
+            if (node.topLevel())
+                _paintNode(g, node.ref);
         }
 
         if (auto selectionRect = _state.selectionRect(); selectionRect) {

@@ -92,19 +92,18 @@ export struct Gizmo {
     }
 
     void paint(Gfx::Canvas& g) const {
-        auto points = bound.points();
+        auto rect = Math::Rectf::fromCenter({0, 0}, bound.size);
 
         g.push();
-        g.beginPath();
-        g.moveTo(points[0]);
-        g.lineTo(points[1]);
-        g.lineTo(points[2]);
-        g.lineTo(points[3]);
-        g.lineTo(points[0]);
-        g.stroke({.fill = Ui::ACCENT500, .width = 2});
+        g.translate(bound.center);
+        g.rotate(bound.angle);
+        g.strokeStyle({.fill = Ui::ACCENT500, .width = 2});
+        g.stroke(rect);
+        g.pop();
 
         auto rotatePos = handlePos(GizmoHandle::ROTATE);
         auto topCenter = handlePos(GizmoHandle::N);
+        g.push();
         g.beginPath();
         g.moveTo(topCenter);
         g.lineTo(rotatePos);

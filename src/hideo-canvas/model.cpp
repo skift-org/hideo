@@ -71,14 +71,6 @@ export struct State {
     Tree tree;
     Selection selection;
 
-    Opt<Ref> objectAt(Math::Vec2f pos) const {
-        return tree.objectAt(pos);
-    }
-
-    Vec<Ref> objectAt(Math::Rectf rect) const {
-        return tree.objectAt(rect);
-    }
-
     Opt<Gizmo> gizmo() const {
         if (not dragMode)
             return NONE;
@@ -124,7 +116,6 @@ struct PlacingDragMode final : DragMode {
             } else {
                 n.bound = Obb{Math::Rectf::fromTwoPoint(start, drag->pos)};
             }
-            s.selection.refresh(s.tree);
             return makeRc<PlacingDragMode>(ref, start, drag->pos);
         }
 
@@ -210,7 +201,7 @@ struct SelectingDragMode final : DragMode {
 
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto drag = a.is<CanvasDrag>()) {
-            s.selection.set(s.tree, s.objectAt(Math::Rectf::fromTwoPoint(start, drag->pos)));
+            s.selection.set(s.tree, s.tree.objectAt(Math::Rectf::fromTwoPoint(start, drag->pos), start));
             return makeRc<SelectingDragMode>(start, drag->pos);
         }
 
@@ -229,14 +220,21 @@ struct SelectingDragMode final : DragMode {
 
 struct MovingSelectionDragMode final : DragMode {
     Math::Vec2f start;
+    Opt<Ref> parent;
 
-    MovingSelectionDragMode(Math::Vec2f start)
-        : start(start) {}
+    MovingSelectionDragMode(Math::Vec2f start, Opt<Ref> parent = NONE)
+        : start(start), parent(parent) {}
 
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto drag = a.is<CanvasDrag>()) {
             s.selection.move(s.tree, drag->pos - start);
-            return makeRc<MovingSelectionDragMode>(start);
+
+            auto ignored = s.tree.descendantsOf(s.selection.roots());
+            Opt<Ref> newParent = s.tree.frameAt(drag->pos, ignored);
+            if (newParent != parent) {
+                s.tree.reparentRoots(s.selection.roots(), newParent);
+                parent = newParent;
+            }
         }
 
         if (a.is<CanvasRelease>()) {
@@ -245,7 +243,7 @@ struct MovingSelectionDragMode final : DragMode {
             return makeIdleDragMode();
         }
 
-        return makeRc<MovingSelectionDragMode>(start);
+        return makeRc<MovingSelectionDragMode>(start, parent);
     }
 };
 
@@ -268,9 +266,11 @@ struct IdleDragMode final : DragMode {
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto press = a.is<CanvasPress>()) {
             if (s.currentTool != Tool::SELECT) {
+                auto parent = s.tree.frameAt(press->pos);
                 auto ref = s.tree.insert(
                     _toolToKind(s.currentTool),
-                    Obb{Math::Rectf::fromTwoPoint(press->pos, press->pos)}
+                    Obb{Math::Rectf::fromTwoPoint(press->pos, press->pos)},
+                    parent
                 );
 
                 s.selection.set(s.tree, {ref});
@@ -292,7 +292,7 @@ struct IdleDragMode final : DragMode {
                 }
             }
 
-            if (auto ref = s.objectAt(press->pos); ref) {
+            if (auto ref = s.tree.objectAt(press->pos); ref) {
                 auto const pressedRef = ref.unwrap();
                 if (not s.selection.selected(pressedRef)) {
                     s.selection.set(s.tree, {pressedRef});
@@ -305,6 +305,11 @@ struct IdleDragMode final : DragMode {
                     }
                 }
 
+                s.selection.beginTransform(s.tree);
+                return makeRc<MovingSelectionDragMode>(press->pos);
+            }
+
+            if (auto frame = s.tree.frameAt(press->pos); frame and s.selection.selected(frame.unwrap())) {
                 s.selection.beginTransform(s.tree);
                 return makeRc<MovingSelectionDragMode>(press->pos);
             }

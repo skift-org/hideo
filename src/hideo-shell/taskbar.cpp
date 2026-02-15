@@ -62,22 +62,11 @@ Ui::Child taskbarStatusButton() {
 }
 
 Ui::Child taskbar(State const& s) {
-    return Ui::vflow(Ui::stack(
-               Ui::hflow(
-                   6,
-                   taskbarSearchButton(),
-                   Ui::grow(NONE),
-                   taskbarStatusButton()
-               ),
-               taskbarCalendarButton(s) |
-                   Ui::center()
-           ) |
-           Ui::box({
-               .padding = 4,
-               .backgroundFill = s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.9),
-           }),
-        Kr::separator()
-    );
+    return Ui::vflow(Ui::stack(Ui::hflow(6, taskbarSearchButton(), Ui::grow(NONE), taskbarStatusButton()), taskbarCalendarButton(s) | Ui::center()) | Ui::box({
+                                                                                                                                                          .padding = 4,
+                                                                                                                                                          .backgroundFill = s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.9),
+                                                                                                                                                      }),
+                     Kr::separator());
 }
 
 } // namespace Hideo::Shell

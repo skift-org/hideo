@@ -1,4 +1,4 @@
-export module Hideo.Canvas;
+export module Hideo.Canvas:app;
 
 import Mdi;
 import Karm.Core;
@@ -6,130 +6,27 @@ import Karm.Ui;
 import Karm.Kira;
 import Karm.Gfx;
 import Karm.Math;
-import Karm.Kira;
 import Karm.App;
+import :model;
 
 using namespace Karm;
 
 namespace Hideo::Canvas {
 
-enum struct Tool {
-    SELECT,
-    FRAME,
-    TEXT,
-    RECT,
-};
-
-enum struct Mode {
-    IDLE,
-    PLACING,
-    RESIZING,
-    SELECTING
-};
-
-struct Object {
-    u64 id;
-    Math::Rectf bound;
-
-    Gfx::Color backgroundColor;
-};
-
-struct State {
-    u64 idAllocator = 1;
-    Tool currentTool = Tool::SELECT;
-    Mode currentMode = Mode::IDLE;
-    Vec<u64> selected;
-    Math::Vec2f dragStart;
-    Math::Vec2f dragEnd;
-    Vec<Object> objects;
-
-    Opt<u64> objectAt(Math::Vec2f pos) {
-        for (auto& o : iterRev(objects)) {
-            if (o.bound.contains(pos))
-                return o.id;
-        }
-        return NONE;
+Gfx::Color _kindColor(Kind kind) {
+    switch (kind) {
+    case Kind::FRAME:
+        return Gfx::WHITE;
+    case Kind::RECT:
+        return Gfx::GRAY400;
+    case Kind::TEXT:
+        return Gfx::GRAY400;
+    case Kind::GROUP:
+        return Gfx::GRAY400;
+    default:
+        unreachable();
     }
-
-    Vec<u64> objectAt(Math::Rectf rect) {
-        Vec<u64> res;
-        for (auto& o : objects) {
-            if (o.bound.colide(rect))
-                res.pushBack(o.id);
-        }
-        return res;
-    }
-};
-
-struct SelectTool {
-    Tool tool;
-};
-
-struct CanvasPress {
-    Math::Vec2f pos;
-};
-
-struct CanvasRelease {
-    Math::Vec2f pos;
-};
-
-struct CanvasDrag {
-    Math::Vec2f pos;
-};
-
-using Action = Union<SelectTool, CanvasPress, CanvasRelease, CanvasDrag>;
-
-Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
-        [&](SelectTool a) {
-            s.currentTool = a.tool;
-        },
-        [&](CanvasPress a) {
-            s.dragStart = a.pos;
-            s.dragEnd = a.pos;
-            if (s.currentTool == Tool::SELECT) {
-                s.selected.clear();
-                if (auto id = s.objectAt(a.pos); id.has()) {
-                    s.selected = {id.unwrap()};
-                } else {
-                    s.currentMode = Mode::SELECTING;
-                }
-            } else {
-                s.objects.pushBack({
-                    .id = s.idAllocator++,
-                    .bound = {
-                        a.pos,
-                        {},
-                    },
-                    .backgroundColor = s.currentTool == Tool::FRAME ? Gfx::WHITE : Gfx::GRAY400,
-                });
-                s.currentMode = Mode::PLACING;
-            }
-        },
-        [&](CanvasRelease d) {
-            if (s.currentMode == Mode::PLACING) {
-                if (s.dragStart.dist(s.dragEnd) < 2) {
-                    last(s.objects).bound = Math::Rectf::fromTwoPoint(d.pos, d.pos).grow(50);
-                }
-            }
-
-            s.currentMode = Mode::IDLE;
-            s.currentTool = Tool::SELECT;
-        },
-        [&](CanvasDrag d) {
-            s.dragEnd = d.pos;
-            if (s.currentMode == Mode::RESIZING or s.currentMode == Mode::PLACING) {
-                last(s.objects).bound = Math::Rectf::fromTwoPoint(s.dragStart, d.pos);
-            } else if (s.currentMode == Mode::SELECTING) {
-                s.selected = s.objectAt(Math::Rectf::fromTwoPoint(s.dragStart, d.pos));
-            }
-        },
-    });
-
-    return NONE;
 }
-
-using Model = Ui::Model<State, Action, reduce>;
 
 // MARK: Model -----------------------------------------------------------------
 
@@ -144,19 +41,19 @@ struct Canvas : Ui::View<Canvas> {
         g.push();
         g.clip(bound());
 
-        for (auto& o : _state.objects) {
+        for (auto const& node : _state.tree._nodes) {
             g.push();
             g.beginPath();
-            g.rect(o.bound);
-            g.fill(o.backgroundColor);
+            g.rect(node.bound.aabb());
+            g.fill(_kindColor(node.kind));
 
-            if (contains(_state.selected, o.id))
+            if (_state.selection.selected(node.ref))
                 g.stroke({.fill = Ui::ACCENT500, .width = 1});
             g.pop();
         }
 
-        if (_state.currentMode == Mode::SELECTING) {
-            Kr::paintSelection(g, Math::Rectf::fromTwoPoint(_state.dragStart, _state.dragEnd));
+        if (auto selectionRect = _state.selectionRect(); selectionRect) {
+            Kr::paintSelection(g, selectionRect.unwrap());
         }
         g.pop();
     }
@@ -165,7 +62,10 @@ struct Canvas : Ui::View<Canvas> {
         if (auto e = event.is<App::MouseEvent>(); e and bound().contains(e->pos)) {
             switch (e->type) {
             case App::MouseEvent::PRESS:
-                Model::bubble<CanvasPress>(*this, {e->pos.cast<f64>()});
+                Model::bubble<CanvasPress>(*this, {
+                                                  .pos = e->pos.cast<f64>(),
+                                                  .resize = App::match(e->mods, App::KeyMod::SHIFT),
+                                              });
                 break;
             case App::MouseEvent::RELEASE:
                 Model::bubble<CanvasRelease>(*this, {e->pos.cast<f64>()});
@@ -226,7 +126,7 @@ Ui::Child documentPanel() {
 
 Ui::Child propertiesPanel() {
     return Ui::vflow(
-               Kr::labelRow("Postion"s),
+               Kr::labelRow("Position"s),
                Kr::separator(),
                Kr::labelRow("Appearance"s),
                Kr::separator(),

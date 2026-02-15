@@ -43,8 +43,10 @@ struct Canvas : Ui::View<Canvas> {
 
         for (auto const& node : _state.tree._nodes) {
             g.push();
+            g.translate(node.bound.center);
+            g.rotate(node.bound.angle);
             g.beginPath();
-            g.rect(node.bound.aabb());
+            g.rect(Math::Rectf::fromCenter({0, 0}, node.bound.size));
             g.fill(_kindColor(node.kind));
 
             if (_state.selection.selected(node.ref))
@@ -55,6 +57,10 @@ struct Canvas : Ui::View<Canvas> {
         if (auto selectionRect = _state.selectionRect(); selectionRect) {
             Kr::paintSelection(g, selectionRect.unwrap());
         }
+
+        if (auto gizmo = _state.gizmo(); gizmo) {
+            gizmo.unwrap().paint(g);
+        }
         g.pop();
     }
 
@@ -63,9 +69,9 @@ struct Canvas : Ui::View<Canvas> {
             switch (e->type) {
             case App::MouseEvent::PRESS:
                 Model::bubble<CanvasPress>(*this, {
-                                                  .pos = e->pos.cast<f64>(),
-                                                  .resize = App::match(e->mods, App::KeyMod::SHIFT),
-                                              });
+                                                      .pos = e->pos.cast<f64>(),
+                                                      .resize = App::match(e->mods, App::KeyMod::SHIFT),
+                                                  });
                 break;
             case App::MouseEvent::RELEASE:
                 Model::bubble<CanvasRelease>(*this, {e->pos.cast<f64>()});
@@ -74,7 +80,10 @@ struct Canvas : Ui::View<Canvas> {
                 break;
             case App::MouseEvent::MOVE:
                 if (e->buttons.has(App::MouseButton::LEFT))
-                    Model::bubble<CanvasDrag>(*this, {e->pos.cast<f64>()});
+                    Model::bubble<CanvasDrag>(*this, {
+                                                         .pos = e->pos.cast<f64>(),
+                                                         .resize = App::match(e->mods, App::KeyMod::SHIFT),
+                                                     });
                 break;
             default:
                 unreachable();

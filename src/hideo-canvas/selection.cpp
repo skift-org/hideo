@@ -21,19 +21,28 @@ export struct Selection {
 
     Vec<Ref> _refs;
     Vec<Ref> _roots;
-    Obb _bound;
     Opt<TransformContext> _transform;
 
     bool empty() const {
         return not _refs;
     }
 
-    Slice<Ref const> roots() const {
-        return _roots;
+    Math::Rectf aabb(Tree const& from) const {
+        auto res = from.byRef(_roots[0]).bound.aabb();
+        for (usize i = 1; i < _roots.len(); ++i)
+            res = res.mergeWith(from.byRef(_roots[i]).bound.aabb());
+        return res;
     }
 
-    Obb const& bound() const {
-        return _bound;
+    Obb obb(Tree const& from) const {
+        auto res = from.byRef(_roots[0]).bound;
+        for (usize i = 1; i < _roots.len(); ++i)
+            res = res.mergeWith(from.byRef(_roots[i]).bound);
+        return res;
+    }
+
+    Slice<Ref> roots() const {
+        return _roots;
     }
 
     bool selected(Ref ref) const {
@@ -59,41 +68,17 @@ export struct Selection {
         }
     }
 
-    void _updateBound(Tree const& tree) {
-        if (not _refs) {
-            _bound = Obb{};
-            return;
-        }
-
-        auto merged = tree.byRef(_refs[0]).bound.aabb();
-        for (auto const& ref : _refs) {
-            auto const& n = tree.byRef(ref);
-            merged = merged.mergeWith(n.bound.aabb());
-        }
-
-        _bound = Obb{merged};
-    }
-
-    void _update(Tree const& tree) {
-        _updateRoots(tree);
-        _updateBound(tree);
-    }
-
-    void refresh(Tree const& tree) {
-        _update(tree);
-    }
-
     void select(Tree const& tree, Ref ref) {
         if (contains(_refs, ref))
             return;
 
         _refs.pushBack(ref);
-        _update(tree);
+        _updateRoots(tree);
     }
 
     void set(Tree const& tree, Vec<Ref> refs) {
         _refs = std::move(refs);
-        _update(tree);
+        _updateRoots(tree);
     }
 
     void unselect(Tree const& tree, Ref ref) {
@@ -101,13 +86,12 @@ export struct Selection {
             return;
 
         _refs.removeAll(ref);
-        _update(tree);
+        _updateRoots(tree);
     }
 
     void unselectAll() {
         _refs.clear();
         _roots.clear();
-        _bound = Obb{};
     }
 
     void remove(Tree& from) {
@@ -121,13 +105,13 @@ export struct Selection {
             auto& n = tree.byRef(ref);
             n.bound = n.bound.translated(delta);
         }
-        _update(tree);
+        _updateRoots(tree);
     }
 
-    void moveTo(Tree& tree, Math::Vec2f to) {
-        auto delta = (to - _bound.center);
-        moveBy(tree, delta);
-    }
+    // void moveTo(Tree& tree, Math::Vec2f to) {
+    //     auto delta = (to - _bound.center);
+    //     moveBy(tree, delta);
+    // }
 
     void rotate(Tree& tree, f64 angle) {
         auto moved = tree.descendantsOf(_roots);
@@ -135,7 +119,7 @@ export struct Selection {
             auto& n = tree.byRef(ref);
             n.bound.angle += angle;
         }
-        _update(tree);
+        _updateRoots(tree);
     }
 
     Tree copy(Tree& from) {
@@ -196,7 +180,7 @@ export struct Selection {
         }
 
         _refs = std::move(newRefs);
-        _update(to);
+        _updateRoots(to);
     }
 
     void beginTransform(Tree const& tree) {
@@ -220,8 +204,7 @@ export struct Selection {
             auto& n = tree.byRef(transform.refs[i]);
             n.bound.center = transform.initial[i].center + delta;
         }
-
-        _update(tree);
+        _updateRoots(tree);
     }
 
     void resize(Tree& tree, Obb const& source, Math::Vec2f pivot, Math::Vec2f scale) {
@@ -237,8 +220,7 @@ export struct Selection {
             auto& n = tree.byRef(transform.refs[i]);
             n.bound = source.toWorld(scaledObb);
         }
-
-        _update(tree);
+        _updateRoots(tree);
     }
 
     void rotate(Tree& tree, Math::Vec2f center, f64 delta) {
@@ -251,71 +233,41 @@ export struct Selection {
             n.bound.center = center + (transform.initial[i].center - center).rotate(delta);
             n.bound.angle = transform.initial[i].angle + delta;
         }
+        _updateRoots(tree);
+    }
 
-        _update(tree);
+    bool hasMixedAngles(Tree const& tree) const {
+        f64 refAngle = tree.byRef(_roots[0]).bound.angle;
+        for (auto ref : _roots) {
+            auto const& node = tree.byRef(ref);
+            if (not Math::epsilonEq(node.bound.angle, refAngle))
+                return true;
+
+            if (node.kind == Kind::FRAME)
+                if (tree.hasMixedAnglesDescendants(ref))
+                    return true;
+        }
+
+        return false;
     }
 
     Opt<Gizmo> createGizmo(Tree const& from) const {
         if (empty())
             return NONE;
 
-        auto refs = from.descendantsOf(roots());
-        if (not refs)
+        if (not _roots)
             return NONE;
 
-        auto angle = from.byRef(refs[0]).bound.angle;
-        bool mixedAngles = false;
-        for (auto ref : refs) {
-            if (Math::abs(from.byRef(ref).bound.angle - angle) > 1e-4) {
-                mixedAngles = true;
-                break;
-            }
-        }
-
-        if (mixedAngles) {
-            return Gizmo{
-                .bound = bound(),
-                .uniformOnly = true,
-            };
-        }
-
-        auto c = Math::Vec2f{Math::cos(angle), Math::sin(angle)};
-        auto s = Math::Vec2f{-c.y, c.x};
-
-        f64 minX = Limits<f64>::MAX;
-        f64 maxX = -Limits<f64>::MAX;
-        f64 minY = Limits<f64>::MAX;
-        f64 maxY = -Limits<f64>::MAX;
-
-        for (auto ref : refs) {
-            for (auto p : from.byRef(ref).bound.points()) {
-                auto x = p.dot(c);
-                auto y = p.dot(s);
-                minX = min(minX, x);
-                maxX = max(maxX, x);
-                minY = min(minY, y);
-                maxY = max(maxY, y);
-            }
-        }
-
-        auto cx = (minX + maxX) / 2;
-        auto cy = (minY + maxY) / 2;
-        auto center = c * cx + s * cy;
-
-        Obb gizBound;
-        gizBound.center = center;
-        gizBound.size = {maxX - minX, maxY - minY};
-        gizBound.angle = angle;
-
+        bool mixedAngles = hasMixedAngles(from);
         return Gizmo{
-            .bound = gizBound,
-            .uniformOnly = false,
+            .bound = mixedAngles ? aabb(from) : obb(from),
+            .uniformOnly = mixedAngles,
         };
     }
 
     void commitTransform(Tree const& tree) {
         _transform = NONE;
-        _update(tree);
+        _updateRoots(tree);
     }
 
     void discardTransform(Tree& tree) {
@@ -329,7 +281,7 @@ export struct Selection {
         }
 
         _transform = NONE;
-        _update(tree);
+        _updateRoots(tree);
     }
 };
 

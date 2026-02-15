@@ -21,6 +21,10 @@ export struct Obb {
         : center(center), size(size), angle(angle) {
     }
 
+    Math::Vec2f half() const {
+        return size / 2;
+    }
+
     Math::Vec2f axisX() const {
         return {Math::cos(angle), Math::sin(angle)};
     }
@@ -137,6 +141,26 @@ export struct Obb {
         result.center = pivot + offset.rotate(delta);
         result.angle += delta;
         return result;
+    }
+
+    Obb mergeWith(Obb const& other) const {
+        auto minP = -half();
+        auto maxP = half();
+
+        for (auto p : other.points()) {
+            auto local = toLocal(p);
+            minP = minP.min(local);
+            maxP = maxP.max(local);
+        }
+
+        auto localCenter = (minP + maxP) / 2.0;
+        auto newSize = maxP - minP;
+
+        return {
+            toWorld(localCenter),
+            newSize,
+            angle
+        };
     }
 
     void repr(Io::Emit& e) const {

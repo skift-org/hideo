@@ -166,8 +166,8 @@ struct ResizingDragMode final : DragMode {
         return makeRc<ResizingDragMode>(_gizmo, handle);
     }
 
-    Opt<Gizmo> gizmo(State const&) const override {
-        return _gizmo;
+    Opt<Gizmo> gizmo(State const& s) const override {
+        return s.selection.createGizmo(s.tree);
     }
 };
 

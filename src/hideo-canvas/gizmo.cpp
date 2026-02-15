@@ -101,14 +101,14 @@ export struct Gizmo {
         g.lineTo(points[2]);
         g.lineTo(points[3]);
         g.lineTo(points[0]);
-        g.stroke({.fill = Ui::ACCENT500, .width = 1});
+        g.stroke({.fill = Ui::ACCENT500, .width = 2});
 
         auto rotatePos = handlePos(GizmoHandle::ROTATE);
         auto topCenter = handlePos(GizmoHandle::N);
         g.beginPath();
         g.moveTo(topCenter);
         g.lineTo(rotatePos);
-        g.stroke({.fill = Ui::ACCENT500, .width = 1});
+        g.stroke({.fill = Ui::ACCENT500, .width = 2});
 
         for (auto handle : handles()) {
             auto pos = handlePos(handle);

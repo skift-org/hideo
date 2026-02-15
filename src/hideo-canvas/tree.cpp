@@ -35,7 +35,7 @@ export struct Tree {
         return byRef(ref).parent;
     }
 
-    Ref insert(Kind kind, Bound bound, Opt<Ref> parent = NONE) {
+    Ref insert(Kind kind, Obb bound, Opt<Ref> parent = NONE) {
         auto ref = _nextRef++;
         _nodes.pushBack({
             .ref = ref,
@@ -96,7 +96,7 @@ export struct Tree {
 
     Vec<Ref> objectAt(Math::Rectf rect) const {
         Vec<Ref> res;
-        auto selectionBound = Bound{rect};
+        auto selectionBound = Obb{rect};
         for (auto const& n : _nodes) {
             if (n.bound.colide(selectionBound))
                 res.pushBack(n.ref);

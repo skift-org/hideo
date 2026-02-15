@@ -20,7 +20,7 @@ export struct Node {
     Ref ref;
     Opt<Ref> parent;
     Kind kind;
-    Bound bound;
+    Obb bound;
 
     bool topLevel() const {
         return not parent;

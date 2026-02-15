@@ -68,23 +68,36 @@ struct Canvas : Ui::View<Canvas> {
         if (auto e = event.is<App::MouseEvent>(); e and bound().contains(e->pos)) {
             switch (e->type) {
             case App::MouseEvent::PRESS:
-                Model::bubble<CanvasPress>(*this, {
-                                                      .pos = e->pos.cast<f64>(),
-                                                      .resize = App::match(e->mods, App::KeyMod::SHIFT),
-                                                  });
+                Model::bubble<CanvasPress>(
+                    *this,
+                    {
+                        .pos = e->pos.cast<f64>(),
+                        .resize = App::match(e->mods, App::KeyMod::SHIFT),
+                    }
+                );
                 break;
+
             case App::MouseEvent::RELEASE:
-                Model::bubble<CanvasRelease>(*this, {e->pos.cast<f64>()});
+                Model::bubble<CanvasRelease>(
+                    *this,
+                    {e->pos.cast<f64>()}
+                );
                 break;
+
             case App::MouseEvent::SCROLL:
                 break;
+
             case App::MouseEvent::MOVE:
                 if (e->buttons.has(App::MouseButton::LEFT))
-                    Model::bubble<CanvasDrag>(*this, {
-                                                         .pos = e->pos.cast<f64>(),
-                                                         .resize = App::match(e->mods, App::KeyMod::SHIFT),
-                                                     });
+                    Model::bubble<CanvasDrag>(
+                        *this,
+                        {
+                            .pos = e->pos.cast<f64>(),
+                            .uniformResize = App::match(e->mods, App::KeyMod::SHIFT),
+                        }
+                    );
                 break;
+
             default:
                 unreachable();
             }

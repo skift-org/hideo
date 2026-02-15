@@ -23,53 +23,32 @@ export enum struct GizmoHandle {
     ROTATE,
 };
 
-export struct SelectionGizmo {
-    Bound bound;
+export struct Gizmo {
+    Obb bound;
     bool uniformOnly = false;
-
-    Math::Vec2f axisX() const {
-        return Math::Vec2f{Math::cos(bound.angle), Math::sin(bound.angle)};
-    }
-
-    Math::Vec2f axisY() const {
-        auto c = axisX();
-        return Math::Vec2f{-c.y, c.x};
-    }
-
-    Math::Vec2f toWorld(Math::Vec2f local) const {
-        return bound.center + axisX() * local.x + axisY() * local.y;
-    }
-
-    Math::Vec2f toLocal(Math::Vec2f world) const {
-        auto rel = world - bound.center;
-        return {
-            rel.dot(axisX()),
-            rel.dot(axisY()),
-        };
-    }
 
     Math::Vec2f handlePos(GizmoHandle handle) const {
         auto half = bound.size / 2;
 
         switch (handle) {
         case GizmoHandle::N:
-            return toWorld({0, -half.y});
+            return bound.toWorld({0, -half.y});
         case GizmoHandle::NE:
-            return toWorld({half.x, -half.y});
+            return bound.toWorld({half.x, -half.y});
         case GizmoHandle::E:
-            return toWorld({half.x, 0});
+            return bound.toWorld({half.x, 0});
         case GizmoHandle::SE:
-            return toWorld({half.x, half.y});
+            return bound.toWorld({half.x, half.y});
         case GizmoHandle::S:
-            return toWorld({0, half.y});
+            return bound.toWorld({0, half.y});
         case GizmoHandle::SW:
-            return toWorld({-half.x, half.y});
+            return bound.toWorld({-half.x, half.y});
         case GizmoHandle::W:
-            return toWorld({-half.x, 0});
+            return bound.toWorld({-half.x, 0});
         case GizmoHandle::NW:
-            return toWorld({-half.x, -half.y});
+            return bound.toWorld({-half.x, -half.y});
         case GizmoHandle::ROTATE:
-            return toWorld({0, -half.y - 16});
+            return bound.toWorld({0, -half.y - 16});
         default:
             return bound.center;
         }
@@ -167,9 +146,9 @@ export struct SelectionGizmo {
         }
     }
 
-    Pair<f64, f64> resizeScale(GizmoHandle handle, Math::Vec2f dragPos, bool forceUniform) const {
+    Math::Vec2f resizeScale(GizmoHandle handle, Math::Vec2f dragPos, bool forceUniform) const {
         auto half = bound.size / 2;
-        auto local = toLocal(dragPos);
+        auto local = bound.toLocal(dragPos);
 
         auto minX = -half.x;
         auto maxX = half.x;

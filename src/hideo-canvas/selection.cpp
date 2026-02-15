@@ -14,15 +14,15 @@ using namespace Karm;
 namespace Hideo::Canvas {
 
 export struct Selection {
-    struct Transform {
+    struct TransformContext {
         Vec<Ref> refs;
-        Vec<Bound> initial;
+        Vec<Obb> initial;
     };
 
     Vec<Ref> _refs;
     Vec<Ref> _roots;
-    Bound _bound;
-    Opt<Transform> _transform;
+    Obb _bound;
+    Opt<TransformContext> _transform;
 
     bool empty() const {
         return not _refs;
@@ -32,7 +32,7 @@ export struct Selection {
         return _roots;
     }
 
-    Bound const& bound() const {
+    Obb const& bound() const {
         return _bound;
     }
 
@@ -61,7 +61,7 @@ export struct Selection {
 
     void _updateBound(Tree const& tree) {
         if (not _refs) {
-            _bound = Bound{};
+            _bound = Obb{};
             return;
         }
 
@@ -71,7 +71,7 @@ export struct Selection {
             merged = merged.mergeWith(n.bound.aabb());
         }
 
-        _bound = Bound{merged};
+        _bound = Obb{merged};
     }
 
     void _update(Tree const& tree) {
@@ -107,7 +107,7 @@ export struct Selection {
     void unselectAll() {
         _refs.clear();
         _roots.clear();
-        _bound = Bound{};
+        _bound = Obb{};
     }
 
     void remove(Tree& from) {
@@ -119,7 +119,7 @@ export struct Selection {
         auto moved = tree.descendantsOf(_roots);
         for (auto ref : moved) {
             auto& n = tree.byRef(ref);
-            n.bound.translate(delta);
+            n.bound = n.bound.translated(delta);
         }
         _update(tree);
     }
@@ -201,152 +201,136 @@ export struct Selection {
 
     void beginTransform(Tree const& tree) {
         auto refs = tree.descendantsOf(_roots);
-        Vec<Bound> initial;
+        Vec<Obb> initial;
         for (auto ref : refs)
             initial.pushBack(tree.byRef(ref).bound);
 
-        _transform = Transform{
+        _transform = TransformContext{
             .refs = std::move(refs),
             .initial = std::move(initial),
         };
     }
 
-    void move(Tree& tree, Math::Vec2f delta);
+    void move(Tree& tree, Math::Vec2f delta) {
+        if (not _transform)
+            return;
 
-    void resize(Tree& tree, SelectionGizmo const& gizmo, Math::Vec2f pivot, f64 sx, f64 sy);
+        auto const& transform = _transform.unwrap();
+        for (usize i = 0; i < transform.refs.len(); i++) {
+            auto& n = tree.byRef(transform.refs[i]);
+            n.bound.center = transform.initial[i].center + delta;
+        }
 
-    void rotate(Tree& tree, Math::Vec2f center, f64 delta);
+        _update(tree);
+    }
 
-    Opt<SelectionGizmo> createGizmo(Tree const& from) const;
+    void resize(Tree& tree, Obb const& source, Math::Vec2f pivot, Math::Vec2f scale) {
+        if (not _transform)
+            return;
+
+        auto const& transform = _transform.unwrap();
+
+        for (usize i = 0; i < transform.refs.len(); i++) {
+            auto localObb = source.toLocal(transform.initial[i]);
+            auto localPivot = localObb.toLocal(pivot);
+            auto scaledObb = localObb.scaled(localPivot, scale);
+            auto& n = tree.byRef(transform.refs[i]);
+            n.bound = source.toWorld(scaledObb);
+        }
+
+        _update(tree);
+    }
+
+    void rotate(Tree& tree, Math::Vec2f center, f64 delta) {
+        if (not _transform)
+            return;
+
+        auto const& transform = _transform.unwrap();
+        for (usize i = 0; i < transform.refs.len(); i++) {
+            auto& n = tree.byRef(transform.refs[i]);
+            n.bound.center = center + (transform.initial[i].center - center).rotate(delta);
+            n.bound.angle = transform.initial[i].angle + delta;
+        }
+
+        _update(tree);
+    }
+
+    Opt<Gizmo> createGizmo(Tree const& from) const {
+        if (empty())
+            return NONE;
+
+        auto refs = from.descendantsOf(roots());
+        if (not refs)
+            return NONE;
+
+        auto angle = from.byRef(refs[0]).bound.angle;
+        bool mixedAngles = false;
+        for (auto ref : refs) {
+            if (Math::abs(from.byRef(ref).bound.angle - angle) > 1e-4) {
+                mixedAngles = true;
+                break;
+            }
+        }
+
+        if (mixedAngles) {
+            return Gizmo{
+                .bound = bound(),
+                .uniformOnly = true,
+            };
+        }
+
+        auto c = Math::Vec2f{Math::cos(angle), Math::sin(angle)};
+        auto s = Math::Vec2f{-c.y, c.x};
+
+        f64 minX = Limits<f64>::MAX;
+        f64 maxX = -Limits<f64>::MAX;
+        f64 minY = Limits<f64>::MAX;
+        f64 maxY = -Limits<f64>::MAX;
+
+        for (auto ref : refs) {
+            for (auto p : from.byRef(ref).bound.points()) {
+                auto x = p.dot(c);
+                auto y = p.dot(s);
+                minX = min(minX, x);
+                maxX = max(maxX, x);
+                minY = min(minY, y);
+                maxY = max(maxY, y);
+            }
+        }
+
+        auto cx = (minX + maxX) / 2;
+        auto cy = (minY + maxY) / 2;
+        auto center = c * cx + s * cy;
+
+        Obb gizBound;
+        gizBound.center = center;
+        gizBound.size = {maxX - minX, maxY - minY};
+        gizBound.angle = angle;
+
+        return Gizmo{
+            .bound = gizBound,
+            .uniformOnly = false,
+        };
+    }
 
     void commitTransform(Tree const& tree) {
         _transform = NONE;
         _update(tree);
     }
 
-    void discardTransform(Tree& tree);
+    void discardTransform(Tree& tree) {
+        if (not _transform)
+            return;
+
+        auto const& transform = _transform.unwrap();
+        for (usize i = 0; i < transform.refs.len(); i++) {
+            auto& n = tree.byRef(transform.refs[i]);
+            n.bound = transform.initial[i];
+        }
+
+        _transform = NONE;
+        _update(tree);
+    }
 };
-
-void Selection::move(Tree& tree, Math::Vec2f delta) {
-    if (not _transform)
-        return;
-
-    auto const& transform = _transform.unwrap();
-    for (usize i = 0; i < transform.refs.len(); i++) {
-        auto& n = tree.byRef(transform.refs[i]);
-        n.bound.center = transform.initial[i].center + delta;
-    }
-
-    _update(tree);
-}
-
-void Selection::resize(Tree& tree, SelectionGizmo const& gizmo, Math::Vec2f pivot, f64 sx, f64 sy) {
-    if (not _transform)
-        return;
-
-    auto const& transform = _transform.unwrap();
-    for (usize i = 0; i < transform.refs.len(); i++) {
-        auto localCenter = gizmo.toLocal(transform.initial[i].center);
-        auto newLocalCenter = Math::Vec2f{
-            pivot.x + (localCenter.x - pivot.x) * sx,
-            pivot.y + (localCenter.y - pivot.y) * sy,
-        };
-
-        auto& n = tree.byRef(transform.refs[i]);
-        n.bound.center = gizmo.toWorld(newLocalCenter);
-        n.bound.size = {
-            max(transform.initial[i].size.x * Math::abs(sx), 2.0),
-            max(transform.initial[i].size.y * Math::abs(sy), 2.0),
-        };
-    }
-
-    _update(tree);
-}
-
-void Selection::rotate(Tree& tree, Math::Vec2f center, f64 delta) {
-    if (not _transform)
-        return;
-
-    auto const& transform = _transform.unwrap();
-    for (usize i = 0; i < transform.refs.len(); i++) {
-        auto& n = tree.byRef(transform.refs[i]);
-        n.bound.center = center + (transform.initial[i].center - center).rotate(delta);
-        n.bound.angle = transform.initial[i].angle + delta;
-    }
-
-    _update(tree);
-}
-
-void Selection::discardTransform(Tree& tree) {
-    if (not _transform)
-        return;
-
-    auto const& transform = _transform.unwrap();
-    for (usize i = 0; i < transform.refs.len(); i++) {
-        auto& n = tree.byRef(transform.refs[i]);
-        n.bound = transform.initial[i];
-    }
-
-    _transform = NONE;
-    _update(tree);
-}
-
-Opt<SelectionGizmo> Selection::createGizmo(Tree const& from) const {
-    if (empty())
-        return NONE;
-
-    auto refs = from.descendantsOf(roots());
-    if (not refs)
-        return NONE;
-
-    auto angle = from.byRef(refs[0]).bound.angle;
-    bool mixedAngles = false;
-    for (auto ref : refs) {
-        if (Math::abs(from.byRef(ref).bound.angle - angle) > 1e-4) {
-            mixedAngles = true;
-            break;
-        }
-    }
-
-    if (mixedAngles) {
-        return SelectionGizmo{
-            .bound = bound(),
-            .uniformOnly = true,
-        };
-    }
-
-    auto c = Math::Vec2f{Math::cos(angle), Math::sin(angle)};
-    auto s = Math::Vec2f{-c.y, c.x};
-
-    f64 minX = Limits<f64>::MAX;
-    f64 maxX = -Limits<f64>::MAX;
-    f64 minY = Limits<f64>::MAX;
-    f64 maxY = -Limits<f64>::MAX;
-
-    for (auto ref : refs) {
-        for (auto p : from.byRef(ref).bound.points()) {
-            auto x = p.dot(c);
-            auto y = p.dot(s);
-            minX = min(minX, x);
-            maxX = max(maxX, x);
-            minY = min(minY, y);
-            maxY = max(maxY, y);
-        }
-    }
-
-    auto cx = (minX + maxX) / 2;
-    auto cy = (minY + maxY) / 2;
-    auto center = c * cx + s * cy;
-
-    Bound gizBound;
-    gizBound.center = center;
-    gizBound.size = {maxX - minX, maxY - minY};
-    gizBound.angle = angle;
-
-    return SelectionGizmo{
-        .bound = gizBound,
-        .uniformOnly = false,
-    };
-}
 
 } // namespace Hideo::Canvas

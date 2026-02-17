@@ -175,50 +175,17 @@ Ui::Child toolbar(State const& s) {
            });
 }
 
-Ui::Child documentPanel() {
-    return Ui::vflow(
-               Kr::labelRow("Layers"s)
-           ) |
-           Ui::box({
-               .backgroundFill = Ui::GRAY900,
-           }) |
-           Ui::minSize({240, Ui::UNCONSTRAINED});
-}
-
-Ui::Child propertiesPanel() {
-    return Ui::vflow(
-               Kr::labelRow("Position"s),
-               Kr::separator(),
-               Kr::labelRow("Appearance"s),
-               Kr::separator(),
-               Kr::labelRow("Fill"s),
-               Kr::separator(),
-               Kr::labelRow("Stroke"s),
-               Kr::separator(),
-               Kr::labelRow("Effects"s),
-               Kr::separator(),
-               Kr::labelRow("Export"s),
-               Kr::separator()
-           ) |
-           Ui::box({
-               .backgroundFill = Ui::GRAY900,
-           }) |
-           Ui::minSize({240, Ui::UNCONSTRAINED});
-}
-
 export Ui::Child app() {
     return Ui::reducer<Model>([](State const& s) {
         return Kr::scaffold({
             .icon = Mdi::DRAW,
             .title = "Canvas"s,
             .body = [&] {
-                return Ui::hflow(
-                    documentPanel(),
-                    Kr::separator(),
-                    Ui::stack(canvas(s), toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER)) | Ui::grow(),
-                    Kr::separator(),
-                    propertiesPanel()
-                );
+                return Ui::stack(
+                           canvas(s),
+                           toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER)
+                       ) |
+                       Ui::grow();
             },
         });
     });

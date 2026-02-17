@@ -20,10 +20,12 @@ export enum struct GizmoHandle {
     SW,
     W,
     NW,
-    ROTATE,
 };
 
 export struct Gizmo {
+    static constexpr int RESIZE_HANDLE_HIT_RADIUS = 4;
+    static constexpr int ROTATE_HANDLE_HIT_RADIUS = 8;
+
     Obb bound;
     bool uniformOnly = false;
 
@@ -47,8 +49,6 @@ export struct Gizmo {
             return bound.toWorld({-half.x, 0});
         case GizmoHandle::NW:
             return bound.toWorld({-half.x, -half.y});
-        case GizmoHandle::ROTATE:
-            return bound.toWorld({0, -half.y - 16});
         default:
             return bound.center;
         }
@@ -61,7 +61,6 @@ export struct Gizmo {
                 GizmoHandle::NE,
                 GizmoHandle::SE,
                 GizmoHandle::SW,
-                GizmoHandle::ROTATE,
             };
         }
 
@@ -74,21 +73,23 @@ export struct Gizmo {
             GizmoHandle::SW,
             GizmoHandle::W,
             GizmoHandle::NW,
-            GizmoHandle::ROTATE,
         };
     }
 
-    GizmoHandle hitHandle(Math::Vec2f pos, f64 radius = 10) const {
+    Tuple<GizmoHandle, bool> hitHandle(Math::Vec2f pos) const {
         for (auto handle : handles()) {
-            if (handlePos(handle).dist(pos) <= radius)
-                return handle;
+            if (handlePos(handle).dist(pos) <= RESIZE_HANDLE_HIT_RADIUS)
+                return {handle, false};
         }
 
-        return GizmoHandle::NONE;
-    }
+        if (not bound.contains(pos)) {
+            for (auto handle : handles()) {
+                if (handlePos(handle).dist(pos) <= ROTATE_HANDLE_HIT_RADIUS)
+                    return {handle, true};
+            }
+        }
 
-    bool isResizeHandle(GizmoHandle handle) const {
-        return handle != GizmoHandle::NONE and handle != GizmoHandle::ROTATE;
+        return {GizmoHandle::NONE, false};
     }
 
     void paint(Gfx::Canvas& g) const {
@@ -97,21 +98,14 @@ export struct Gizmo {
         g.push();
         g.translate(bound.center);
         g.rotate(bound.angle);
-        g.strokeStyle({.fill = Ui::ACCENT500, .width = 2});
+        g.strokeStyle({.fill = Ui::ACCENT500, .width = 1});
         g.stroke(rect);
         g.pop();
 
-        auto rotatePos = handlePos(GizmoHandle::ROTATE);
-        auto topCenter = handlePos(GizmoHandle::N);
         g.push();
-        g.beginPath();
-        g.moveTo(topCenter);
-        g.lineTo(rotatePos);
-        g.stroke({.fill = Ui::ACCENT500, .width = 2});
-
         for (auto handle : handles()) {
             auto pos = handlePos(handle);
-            auto circle = Math::Ellipsef{pos, 4.0};
+            auto circle = Math::Ellipsef{pos, RESIZE_HANDLE_HIT_RADIUS};
             g.fillStyle(Gfx::WHITE);
             g.fill(circle);
             g.strokeStyle({.fill = Ui::ACCENT500, .width = 1});

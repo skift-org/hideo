@@ -13,6 +13,7 @@ export import :tree;
 import Karm.Core;
 import Karm.Math;
 import Karm.Ui;
+import Karm.App;
 
 using namespace Karm;
 
@@ -29,6 +30,8 @@ export struct SelectTool {
     Tool tool;
 };
 
+export struct DeleteSelection {};
+
 export struct CanvasPress {
     Math::Vec2f pos;
     bool resize = false;
@@ -40,11 +43,12 @@ export struct CanvasRelease {
 
 export struct CanvasDrag {
     Math::Vec2f pos;
-    bool uniformResize = false;
+    Flags<App::KeyMod> mods;
 };
 
 export using Action = Union<
     SelectTool,
+    DeleteSelection,
     CanvasPress,
     CanvasRelease,
     CanvasDrag>;
@@ -99,20 +103,9 @@ struct PlacingDragMode final : DragMode {
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto drag = a.is<CanvasDrag>()) {
             auto& n = s.tree.byRef(ref);
-            if (drag->uniformResize) {
+            if (App::match(drag->mods, App::KeyMod::SHIFT)) {
                 auto delta = drag->pos - start;
-                auto side = max(Math::abs(delta.x), Math::abs(delta.y));
-
-                f64 sx = delta.x < 0 ? -1.0 : 1.0;
-                f64 sy = delta.y < 0 ? -1.0 : 1.0;
-
-                if (Math::abs(delta.x) < 1e-6)
-                    sx = sy;
-                if (Math::abs(delta.y) < 1e-6)
-                    sy = sx;
-
-                auto constrained = start + Math::Vec2f{sx * side, sy * side};
-                n.bound = Obb{Math::Rectf::fromTwoPoint(start, constrained)};
+                n.bound = Obb{Math::Rectf::fromTwoPoint(start, start + delta.snapToDiagonal())};
             } else {
                 n.bound = Obb{Math::Rectf::fromTwoPoint(start, drag->pos)};
             }
@@ -143,7 +136,7 @@ struct ResizingDragMode final : DragMode {
 
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto drag = a.is<CanvasDrag>()) {
-            auto scale = _gizmo.resizeScale(handle, drag->pos, drag->uniformResize);
+            auto scale = _gizmo.resizeScale(handle, drag->pos, App::match(drag->mods, App::KeyMod::SHIFT));
             s.selection.resize(s.tree, _gizmo.bound, pivot, scale);
             return makeRc<ResizingDragMode>(_gizmo, handle);
         }
@@ -171,11 +164,11 @@ struct RotatingSelectionDragMode final : DragMode {
 
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto drag = a.is<CanvasDrag>()) {
-            auto currAngle = Math::atan2(drag->pos.y - center.y, drag->pos.x - center.x);
-            auto delta = currAngle - startAngle;
+            auto angle = Math::atan2(drag->pos.y - center.y, drag->pos.x - center.x);
+            auto delta = angle - startAngle;
 
             s.selection.rotate(s.tree, center, delta);
-            return makeRc<RotatingSelectionDragMode>(center, startAngle);
+            return NONE;
         }
 
         if (a.is<CanvasRelease>()) {
@@ -184,7 +177,7 @@ struct RotatingSelectionDragMode final : DragMode {
             return makeIdleDragMode();
         }
 
-        return makeRc<RotatingSelectionDragMode>(center, startAngle);
+        return NONE;
     }
 
     Opt<Gizmo> gizmo(State const& s) const override {
@@ -196,13 +189,14 @@ struct SelectingDragMode final : DragMode {
     Math::Vec2f start;
     Math::Vec2f end;
 
-    SelectingDragMode(Math::Vec2f start, Math::Vec2f end)
-        : start(start), end(end) {}
+    SelectingDragMode(Math::Vec2f start)
+        : start(start), end(start) {}
 
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto drag = a.is<CanvasDrag>()) {
+            end = drag->pos;
             s.selection.set(s.tree, s.tree.objectAt(Math::Rectf::fromTwoPoint(start, drag->pos), start));
-            return makeRc<SelectingDragMode>(start, drag->pos);
+            return NONE;
         }
 
         if (a.is<CanvasRelease>()) {
@@ -210,7 +204,7 @@ struct SelectingDragMode final : DragMode {
             return makeIdleDragMode();
         }
 
-        return makeRc<SelectingDragMode>(start, end);
+        return NONE;
     }
 
     Opt<Math::Rectf> selectionRect() const override {
@@ -278,15 +272,15 @@ struct IdleDragMode final : DragMode {
             }
 
             if (auto gizmo = s.selection.createGizmo(s.tree); gizmo) {
-                auto hitHandle = gizmo->hitHandle(press->pos);
+                auto [hitHandle, rotate] = gizmo->hitHandle(press->pos);
 
-                if (hitHandle == GizmoHandle::ROTATE) {
+                if (rotate) {
                     s.selection.beginTransform(s.tree);
                     auto startAngle = Math::atan2(press->pos.y - gizmo->bound.center.y, press->pos.x - gizmo->bound.center.x);
                     return makeRc<RotatingSelectionDragMode>(gizmo->bound.center, startAngle);
                 }
 
-                if (gizmo->isResizeHandle(hitHandle)) {
+                if (hitHandle != GizmoHandle::NONE) {
                     s.selection.beginTransform(s.tree);
                     return makeRc<ResizingDragMode>(*gizmo, hitHandle);
                 }
@@ -315,7 +309,7 @@ struct IdleDragMode final : DragMode {
             }
 
             s.selection.unselectAll();
-            return makeRc<SelectingDragMode>(press->pos, press->pos);
+            return makeRc<SelectingDragMode>(press->pos);
         }
 
         return makeIdleDragMode();
@@ -330,17 +324,22 @@ Rc<DragMode> makeIdleDragMode() {
     return makeRc<IdleDragMode>();
 }
 
-Ui::Task<Action> reduce(State& s, Action a) {
-    if (auto action = a.is<SelectTool>()) {
-        s.currentTool = action->tool;
+Ui::Task<Action> reduce(State& s, Action action) {
+    if (auto a = action.is<SelectTool>()) {
+        s.currentTool = a->tool;
+    } else if (auto a = action.is<DeleteSelection>()) {
+        s.selection.remove(s.tree);
+        s.dragMode = makeIdleDragMode();
     } else if (
-        a.is<CanvasPress>() or
-        a.is<CanvasDrag>() or
-        a.is<CanvasRelease>()
+        action.is<CanvasPress>() or
+        action.is<CanvasDrag>() or
+        action.is<CanvasRelease>()
     ) {
         if (not s.dragMode)
             s.dragMode = makeIdleDragMode();
-        s.dragMode = s.dragMode.unwrap()->reduce(s, a);
+        auto nextMode = s.dragMode.unwrap()->reduce(s, action);
+        if (nextMode)
+            s.dragMode = nextMode;
     }
 
     return NONE;

@@ -131,8 +131,8 @@ struct Canvas : Ui::View<Canvas> {
                     Model::bubble<CanvasDrag>(
                         *this,
                         {
-                            .pos = e->pos.cast<f64>(),
-                            .uniformResize = App::match(e->mods, App::KeyMod::SHIFT),
+                            .pos = (e->pos).cast<f64>(),
+                            .mods = e->mods,
                         }
                     );
                 break;
@@ -145,7 +145,9 @@ struct Canvas : Ui::View<Canvas> {
 };
 
 Ui::Child canvas(State const& s) {
-    return makeRc<Canvas>(s);
+    return makeRc<Canvas>(s) |
+           Ui::keyboardShortcut(App::Key::DELETE, Model::bind<DeleteSelection>()) |
+           Ui::keyboardShortcut(App::Key::BKSPC, Model::bind<DeleteSelection>());
 }
 
 Ui::Child toolbarButton(State const& s, Tool tool, Gfx::Icon icon) {
@@ -167,12 +169,18 @@ Ui::Child toolbar(State const& s) {
                toolbarButton(s, Tool::TEXT, Mdi::FORMAT_TEXT)
            ) |
            Ui::box({
-               .margin = 16,
                .padding = 2,
                .borderRadii = 4,
                .backgroundFill = Ui::GRAY900,
-               .shadowStyle = Gfx::BoxShadow::elevated(4),
            });
+}
+
+Ui::Child toolbarZoom() {
+    return Ui::button(Ui::SINK<>, Mdi::MAGNIFY, "100%");
+}
+
+Ui::Child toolbarFormat() {
+    return Ui::button(Ui::SINK<>, Mdi::FORMAT_TEXTBOX);
 }
 
 export Ui::Child app() {
@@ -183,7 +191,11 @@ export Ui::Child app() {
             .body = [&] {
                 return Ui::stack(
                            canvas(s),
-                           toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER)
+                           Ui::stack(
+                               toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER),
+                               toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2),
+                               toolbarFormat() | Ui::align(Math::Align::TOP | Math::Align::END) | Ui::insets(2)
+                           ) | Ui::insets(16)
                        ) |
                        Ui::grow();
             },

@@ -30,7 +30,17 @@ export struct SelectTool {
     Tool tool;
 };
 
+export struct SelectAll {};
+
+export struct CopySelection {};
+
+export struct CutSelection {};
+
+export struct PasteSelection {};
+
 export struct DeleteSelection {};
+
+export struct FrameSelection {};
 
 export struct CanvasPress {
     Math::Vec2f pos;
@@ -48,6 +58,11 @@ export struct CanvasDrag {
 
 export using Action = Union<
     SelectTool,
+    SelectAll,
+    CopySelection,
+    CutSelection,
+    PasteSelection,
+    FrameSelection,
     DeleteSelection,
     CanvasPress,
     CanvasRelease,
@@ -73,6 +88,7 @@ export struct State {
     Tool currentTool = Tool::SELECT;
     Opt<Rc<DragMode>> dragMode;
     Tree tree;
+    Opt<Tree> clipboard = NONE;
     Selection selection;
 
     Opt<Gizmo> gizmo() const {
@@ -327,6 +343,29 @@ Rc<DragMode> makeIdleDragMode() {
 Ui::Task<Action> reduce(State& s, Action action) {
     if (auto a = action.is<SelectTool>()) {
         s.currentTool = a->tool;
+    } else if (action.is<SelectAll>()) {
+        s.selection.selectAll(s.tree);
+    } else if (auto a = action.is<CopySelection>()) {
+        if (not s.selection.empty())
+            s.clipboard = s.selection.copy(s.tree);
+    } else if (auto a = action.is<CopySelection>()) {
+        if (not s.selection.empty()) {
+            s.clipboard = s.selection.cut(s.tree);
+            s.dragMode = makeIdleDragMode();
+        }
+    } else if (auto a = action.is<PasteSelection>()) {
+        if (s.clipboard) {
+            s.selection.paste(s.tree, s.clipboard.unwrap());
+            s.dragMode = makeIdleDragMode();
+        }
+    } else if (auto a = action.is<FrameSelection>()) {
+        if (not s.selection.empty()) {
+            auto obb = s.selection.obb(s.tree);
+            auto parentRef = s.tree.insert(Kind::FRAME, obb);
+            s.tree.reparentRoots(s.selection.roots(), parentRef);
+            s.selection.unselectAll();
+            s.selection.select(s.tree, parentRef);
+        }
     } else if (auto a = action.is<DeleteSelection>()) {
         s.selection.remove(s.tree);
         s.dragMode = makeIdleDragMode();

@@ -30,6 +30,20 @@ Gfx::Color _kindColor(Kind kind) {
 
 // MARK: Model -----------------------------------------------------------------
 
+Ui::Child canvasContextMenu(State const& s) {
+    return Kr::contextMenuContent({
+        Kr::contextMenuItem(Model::bindIf<CopySelection>(not s.selection.empty()), Mdi::CONTENT_COPY, "Copy"s),
+        Kr::contextMenuItem(Model::bindIf<CutSelection>(not s.selection.empty()), Mdi::CONTENT_CUT, "Cut"s),
+        Kr::contextMenuItem(Model::bindIf<PasteSelection>(s.clipboard.has()), Mdi::CONTENT_PASTE, "Paste"s),
+        Kr::contextMenuItem(Model::bindIf<DeleteSelection>(not s.selection.empty()), Mdi::TRASH_CAN, "Delete"),
+        Kr::separator(),
+        Kr::contextMenuItem(Model::bind<SelectAll>(), Mdi::SELECT_ALL, "Select All"),
+        Kr::separator(),
+        Kr::contextMenuItem(Model::bindIf<FrameSelection>(not s.selection.empty()), Mdi::ARTBOARD, "Frame Selection"),
+
+    });
+}
+
 struct Canvas : Ui::View<Canvas> {
     State const& _state;
     Ui::MouseListener _listener;
@@ -107,13 +121,17 @@ struct Canvas : Ui::View<Canvas> {
         if (auto e = event.is<App::MouseEvent>(); e and bound().contains(e->pos)) {
             switch (e->type) {
             case App::MouseEvent::PRESS:
-                Model::bubble<CanvasPress>(
-                    *this,
-                    {
-                        .pos = e->pos.cast<f64>(),
-                        .resize = App::match(e->mods, App::KeyMod::SHIFT),
-                    }
-                );
+                if (e->button == App::MouseButton::RIGHT) {
+                    Ui::showPopover(*this, e->pos, canvasContextMenu(_state));
+                } else {
+                    Model::bubble<CanvasPress>(
+                        *this,
+                        {
+                            .pos = e->pos.cast<f64>(),
+                            .resize = App::match(e->mods, App::KeyMod::SHIFT),
+                        }
+                    );
+                }
                 break;
 
             case App::MouseEvent::RELEASE:
@@ -146,6 +164,10 @@ struct Canvas : Ui::View<Canvas> {
 
 Ui::Child canvas(State const& s) {
     return makeRc<Canvas>(s) |
+           Ui::keyboardShortcut(App::Key::A, App::KeyMod::CTRL, Model::bind<SelectAll>()) |
+           Ui::keyboardShortcut(App::Key::C, App::KeyMod::CTRL, Model::bind<CopySelection>()) |
+           Ui::keyboardShortcut(App::Key::X, App::KeyMod::CTRL, Model::bind<CutSelection>()) |
+           Ui::keyboardShortcut(App::Key::V, App::KeyMod::CTRL, Model::bind<PasteSelection>()) |
            Ui::keyboardShortcut(App::Key::DELETE, Model::bind<DeleteSelection>()) |
            Ui::keyboardShortcut(App::Key::BKSPC, Model::bind<DeleteSelection>());
 }
@@ -192,9 +214,9 @@ export Ui::Child app() {
                 return Ui::stack(
                            canvas(s),
                            Ui::stack(
-                               toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER),
-                               toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2),
-                               toolbarFormat() | Ui::align(Math::Align::TOP | Math::Align::END) | Ui::insets(2)
+                               toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER)
+                               // toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2),
+                               // toolbarFormat() | Ui::align(Math::Align::TOP | Math::Align::END) | Ui::insets(2)
                            ) | Ui::insets(16)
                        ) |
                        Ui::grow();

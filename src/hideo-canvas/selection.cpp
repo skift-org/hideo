@@ -76,6 +76,17 @@ export struct Selection {
         _updateRoots(tree);
     }
 
+    void selectAll(Tree const& tree) {
+        unselectAll();
+        _refs =
+            iter(tree._nodes)
+                .map([](auto& n) {
+                    return n.ref;
+                })
+                .collect<Vec<Ref>>();
+        _updateRoots(tree);
+    }
+
     void set(Tree const& tree, Vec<Ref> refs) {
         _refs = std::move(refs);
         _updateRoots(tree);

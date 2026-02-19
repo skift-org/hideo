@@ -651,8 +651,8 @@ struct Kernel {
         f32 cxPix = clamp(lensCx, 0.0f, 1.0f) * (f32)w;
         f32 cyPix = clamp(lensCy, 0.0f, 1.0f) * (f32)h;
 
-        for (isize y : range(h)) {
-            for (isize x : range(w)) {
+        for (isize y : irange::zeroTo(h)) {
+            for (isize x : irange::zeroTo(w)) {
                 // 1) undistorted camera coords (in pixels -> normalized by fPix)
                 f32 dx = (x + 0.5f) - cxPix;
                 f32 dy = (y + 0.5f) - cyPix;
@@ -703,8 +703,8 @@ struct Kernel {
 
         isize w = in.width();
         isize h = in.height();
-        for (isize y : range(h)) {
-            for (isize x : range(w)) {
+        for (isize y : irange::zeroTo(h)) {
+            for (isize x : irange::zeroTo(w)) {
                 auto c = in.loadUnsafe({x, y});
                 auto lin = toLinear(c);
                 auto adj = apply(lin, x, y, w, h, flags);
@@ -769,8 +769,8 @@ export ImageAnalysis analyze(Gfx::Pixels const& in) {
     isize w = in.width();
     isize h = in.height();
 
-    for (isize y : range(h)) {
-        for (isize x : range(w)) {
+    for (isize y : irange::zeroTo(h)) {
+        for (isize x : irange::zeroTo(w)) {
             auto c = in.loadUnsafe({x, y});
             Linear v = toLinear(c);
             f32 l = clamp(getLuma(v), 0.0f, 1.0f);

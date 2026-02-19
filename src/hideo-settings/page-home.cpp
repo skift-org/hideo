@@ -11,7 +11,7 @@ namespace Hideo::Settings {
 
 Ui::Child tileButton(Ui::Send<> onPress, Gfx::Icon icon, String text) {
     return Ui::vflow(
-               Ui::icon(icon, 36) | Ui::center() | Ui::grow(),
+               Ui::icon(icon, 32) | Ui::center() | Ui::grow(),
                Ui::text(text) | Ui::center()
            ) |
            Ui::insets(8) |

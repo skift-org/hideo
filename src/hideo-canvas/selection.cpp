@@ -80,10 +80,10 @@ export struct Selection {
         unselectAll();
         _refs =
             iter(tree._nodes)
-                .map([](auto& n) {
+                | Select([](auto& n) {
                     return n.ref;
                 })
-                .collect<Vec<Ref>>();
+                | Collect<Vec<Ref>>();
         _updateRoots(tree);
     }
 

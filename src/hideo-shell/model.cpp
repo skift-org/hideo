@@ -121,10 +121,11 @@ export struct State : Meta::NoCopy {
                 return b.v1 <=> a.v1;
             });
 
-        filtered = iter(matches).map([](auto& m) {
-                                    return m.v0;
-                                })
-                       .collect<Vec<Rc<Launcher>>>();
+        filtered = iter(matches) |
+                   Select([](auto& m) {
+                       return m.v0;
+                   }) |
+                   Collect<Vec<Rc<Launcher>>>();
     }
 
     void updateFocus() {

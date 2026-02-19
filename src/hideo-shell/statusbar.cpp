@@ -39,7 +39,7 @@ export Ui::Child statusbar(State const& s) {
            ) |
            Ui::minSize({
                Ui::UNCONSTRAINED,
-               36,
+               32,
            }) |
            Ui::box({
                .padding = {0, 12},

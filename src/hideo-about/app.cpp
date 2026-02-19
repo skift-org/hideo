@@ -37,7 +37,7 @@ export Ui::Child app() {
                     );
 
                     return body | Ui::insets({6, 16, 6, 12}) |
-                           Ui::minSize({Ui::UNCONSTRAINED, 36}) |
+                           Ui::minSize({Ui::UNCONSTRAINED, 32}) |
                            Ui::button(bind(v + 1), Ui::ButtonStyle::subtle());
                 });
 

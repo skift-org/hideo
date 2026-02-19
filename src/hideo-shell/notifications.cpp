@@ -51,9 +51,9 @@ export Ui::Child notifications(State const& state) {
 
     return Ui::vflow(
                8,
-               iter(state.noti)
-                   .mapi(noti)
-                   .collect<Ui::Children>()
+               iter(state.noti) |
+                   Selecti(noti) |
+                   Collect<Ui::Children>()
            ) |
            Ui::vscroll();
 }

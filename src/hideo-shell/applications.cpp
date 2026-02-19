@@ -52,11 +52,11 @@ Ui::Child appsList(State const& state) {
 
     return Ui::vflow(
         6,
-        iter(state.filtered)
-            .mapi([&](auto& man, usize i) {
+        iter(state.filtered) |
+            Selecti([&](auto& man, usize i) {
                 return appRow(man, i == state.searchIndex);
-            })
-            .collect<Ui::Children>()
+            }) |
+            Collect<Ui::Children>()
     );
 }
 
@@ -84,13 +84,14 @@ Ui::Child runningApps(State const& state) {
 
     return Ui::hflow(
                8,
-               iter(state.windows)
-                   .map([](auto& instance) {
+               iter(state.windows) |
+                   Select([](auto& instance) {
                        return runningApp(instance);
-                   })
-                   .collect<Ui::Children>()
+                   }) |
+                   Collect<Ui::Children>()
            ) |
-           Ui::center() | Ui::insets({64, 0, 16, 0});
+           Ui::center() |
+           Ui::insets({64, 0, 16, 0});
 }
 
 export Ui::Child appsSearchbar(State const& s) {

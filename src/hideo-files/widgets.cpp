@@ -239,14 +239,12 @@ export Ui::Child refreshTool() {
 export Ui::Child breadcrumb(State const& s) {
     Ui::Children items;
     items.pushBack(breadcrumbRoot(s.currentUrl()));
-    s
-        .currentUrl()
-        .iter()
-        .mapi([&](auto const& text, usize i) {
+
+    s.currentUrl().iter() |
+        ForEachi([&](auto const& text, usize i) {
             items.pushBack(breadcrumbItem(text, s.currentUrl().len() - i - 1));
             return true;
-        })
-        .collect();
+        });
 
     return Ui::box(
                {

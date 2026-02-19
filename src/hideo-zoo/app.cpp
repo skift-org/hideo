@@ -18,7 +18,7 @@ export Ui::Child app() {
             .sidebar = [&] {
                 return Kr::sidenav(
                     iter(PAGES)
-                        .mapi([&](Page const* page, usize index) {
+                        | Selecti([&](Page const* page, usize index) {
                             return Kr::sidenavItem(
                                 index == s.page,
                                 Model::bind<Switch>(index),
@@ -26,7 +26,7 @@ export Ui::Child app() {
                                 page->name
                             );
                         })
-                        .collect<Ui::Children>()
+                        | Collect<Ui::Children>()
                 );
             },
             .body = [&] {

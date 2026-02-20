@@ -10,7 +10,7 @@ using namespace Karm;
 namespace Hideo::Apps {
 
 Ui::Child sidebar() {
-    return Kr::sidenav({
+    return Kr::sidenavContent({
         Kr::searchbar(""s) | Ui::insets({6, 0}),
         Kr::sidenavItem(true, Ui::SINK<>, Mdi::STAR_OUTLINE, "Discover"s),
         Kr::sidenavItem(false, Ui::SINK<>, Mdi::GAMEPAD_OUTLINE, "Play"s),
@@ -33,7 +33,7 @@ export Ui::Child app() {
             return sidebar();
         },
         .body = [] {
-            return pageContent() | Ui::grow();
+            return pageContent() | Kr::scaffoldContent() | Ui::grow();
         },
     });
 }

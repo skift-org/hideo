@@ -26,7 +26,7 @@ Ui::Child sidebar(State const& state) {
         Kr::sidenavItem(state.page() == Page::ABOUT, Model::bind<GoTo>(Page::ABOUT), Mdi::INFORMATION_OUTLINE, "About"s),
     };
 
-    return Kr::sidenav(items);
+    return Kr::sidenavContent(items);
 }
 
 // MARK: Pages -----------------------------------------------------------------
@@ -66,7 +66,7 @@ export Ui::Child app() {
                 return sidebar(s);
             },
             .body = [&] {
-                return pageContent(s) | Ui::grow();
+                return pageContent(s) | Ui::bound() | Kr::scaffoldContent() | Ui::grow();
             },
         });
     });

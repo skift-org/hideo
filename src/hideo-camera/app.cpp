@@ -125,8 +125,7 @@ Ui::Child appContent(State const& s) {
                 Ui::ButtonStyle::regular().withForegroundFill(Gfx::WHITE).withRadii(999),
                 Mdi::TUNE
             )
-        ) |
-        Ui::insets(24);
+        );
 
     auto bottomBar =
         Ui::vflow(
@@ -151,15 +150,12 @@ Ui::Child appContent(State const& s) {
                      : Ui::empty()) |
                     Ui::pinSize(48)
             ) | Ui::center()
-        ) |
-        Ui::box({
-            .padding = {32, 8},
-            .backgroundFill = Ui::GRAY950.withOpacity(0.6),
-        });
+        );
 
-    return Ui::stack(
-        viewport,
-        Ui::hflow(topBar, Ui::grow(NONE), bottomBar)
+    return Ui::hflow(
+        topBar,
+        viewport | Ui::bound() | Kr::scaffoldContent() | Ui::insets({0, 8}) | Ui::grow(),
+        bottomBar
     );
 }
 

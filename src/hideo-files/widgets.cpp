@@ -250,7 +250,7 @@ export Ui::Child breadcrumb(State const& s) {
                {
                    .borderRadii = 4,
                    .borderWidth = 1,
-                   .backgroundFill = Ui::GRAY800,
+                   .backgroundFill = Ui::GRAY700,
                },
                Ui::hflow(
                    Ui::empty(12),
@@ -318,7 +318,7 @@ export Ui::Child toolbar(State const& s) {
         goBackTool(s),
         goForwardTool(s),
         goParentTool(s),
-        Ui::grow(breadcrumb(s)),
+        breadcrumb(s) | Ui::grow(),
         moreTool(s),
     });
 }

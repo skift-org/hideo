@@ -14,7 +14,7 @@ export Ui::Child app() {
         .icon = Mdi::MICROPHONE,
         .title = "Recorder"s,
         .body = [] {
-            return Ui::empty();
+            return Ui::empty() | Kr::scaffoldContent();
         },
     });
 }

@@ -14,7 +14,7 @@ export Ui::Child app() {
         .icon = Mdi::CODE_BRACES,
         .title = "Code"s,
         .body = [] {
-            return Ui::empty();
+            return Ui::empty() | Kr::scaffoldContent();
         },
     });
 }

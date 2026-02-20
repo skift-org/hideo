@@ -97,9 +97,10 @@ export Ui::Child app() {
             .title = "Calculator"s,
             .body = [&] {
                 return Ui::vflow(
-                    screen(state) | Ui::dragRegion(),
-                    keypad(state) | Ui::grow()
-                );
+                           screen(state) | Ui::dragRegion(),
+                           keypad(state) | Ui::grow()
+                       ) |
+                       Kr::scaffoldContent();
             },
             .size = {280, 440},
         });

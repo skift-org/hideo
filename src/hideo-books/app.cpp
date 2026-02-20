@@ -14,7 +14,7 @@ export Ui::Child app() {
         .icon = Mdi::BOOK,
         .title = "Books"s,
         .body = [] {
-            return Ui::empty();
+            return Ui::empty() | Kr::scaffoldContent();
         },
     });
 }

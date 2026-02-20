@@ -240,146 +240,148 @@ Ui::Child _paperSelect(State const& s) {
 
 Ui::Child _printSettings(State const& s) {
     return Ui::vflow(
-               Kr::titleRow("Options"s),
-               Ui::vflow(
-                   Kr::rowContent(
-                       NONE,
-                       "Destination"s,
-                       NONE,
-                       _destinationSelect()
-                   ),
-                   Kr::selectRow(
-                       Kr::selectValue("1"s),
-                       [] -> Ui::Children {
-                           return {
-                               Kr::selectItem(Ui::SINK<>, "1"s),
-                               Kr::selectItem(Ui::SINK<>, "2"s),
-                               Kr::selectItem(Ui::SINK<>, "3"s),
-                               Kr::selectItem(Ui::SINK<>, "4"s),
-                               Kr::selectItem(Ui::SINK<>, "5"s),
-                           };
-                       },
-                       "Copies"s
-                   ),
-                   Kr::selectRow(
-                       Kr::selectValue("All"s),
-                       [] -> Ui::Children {
-                           return {
-                               Kr::selectItem(Ui::SINK<>, "All"s),
-                               Kr::selectItem(Ui::SINK<>, "Odd pages only"s),
-                               Kr::selectItem(Ui::SINK<>, "Even pages only"s),
-                               Kr::selectItem(Ui::SINK<>, "Custom"s),
-                           };
-                       },
-                       "Pages"s
-                   ),
-                   Kr::selectRow(
-                       Kr::selectValue(
-                           s.settings.orientation == Print::Orientation::PORTRAIT
-                               ? "Portrait"s
-                               : "Landscape"s
-                       ),
-                       [] -> Ui::Children {
-                           return {
-                               Kr::selectItem(Model::bind<ChangeOrientation>(Print::Orientation::PORTRAIT), "Portrait"s),
-                               Kr::selectItem(Model::bind<ChangeOrientation>(Print::Orientation::LANDSCAPE), "Landscape"s),
+        4,
+        Ui::vflow(
+            Kr::rowContent(
+                NONE,
+                "Destination"s,
+                NONE,
+                _destinationSelect()
+            ),
+            Kr::selectRow(
+                Kr::selectValue("1"s),
+                [] -> Ui::Children {
+                    return {
+                        Kr::selectItem(Ui::SINK<>, "1"s),
+                        Kr::selectItem(Ui::SINK<>, "2"s),
+                        Kr::selectItem(Ui::SINK<>, "3"s),
+                        Kr::selectItem(Ui::SINK<>, "4"s),
+                        Kr::selectItem(Ui::SINK<>, "5"s),
+                    };
+                },
+                "Copies"s
+            ),
+            Kr::selectRow(
+                Kr::selectValue("All"s),
+                [] -> Ui::Children {
+                    return {
+                        Kr::selectItem(Ui::SINK<>, "All"s),
+                        Kr::selectItem(Ui::SINK<>, "Odd pages only"s),
+                        Kr::selectItem(Ui::SINK<>, "Even pages only"s),
+                        Kr::selectItem(Ui::SINK<>, "Custom"s),
+                    };
+                },
+                "Pages"s
+            ),
+            Kr::selectRow(
+                Kr::selectValue(
+                    s.settings.orientation == Print::Orientation::PORTRAIT
+                        ? "Portrait"s
+                        : "Landscape"s
+                ),
+                [] -> Ui::Children {
+                    return {
+                        Kr::selectItem(Model::bind<ChangeOrientation>(Print::Orientation::PORTRAIT), "Portrait"s),
+                        Kr::selectItem(Model::bind<ChangeOrientation>(Print::Orientation::LANDSCAPE), "Landscape"s),
 
-                           };
-                       },
-                       "Orientation"s
-                   )
-               ) | Kr::card(),
-               Kr::rowSpacer(),
-               Kr::treeRow(
-                   NONE,
-                   "More settings"s,
-                   NONE,
-                   Ui::Slots{[&] -> Ui::Children {
-                       return {
-                           Kr::rowContent(
-                               NONE,
-                               "Paper"s,
-                               NONE,
-                               _paperSelect(s)
-                           ),
-                           Kr::selectRow(
-                               Kr::selectValue("1"s),
-                               [] -> Ui::Children {
-                                   return {
-                                       Kr::selectItem(Ui::SINK<>, "1"s),
-                                       Kr::selectItem(Ui::SINK<>, "2"s),
-                                       Kr::selectItem(Ui::SINK<>, "4"s),
-                                       Kr::selectItem(Ui::SINK<>, "6"s),
-                                       Kr::selectItem(Ui::SINK<>, "9"s),
-                                       Kr::selectItem(Ui::SINK<>, "16"s),
-                                   };
-                               },
-                               "Page per sheet"s
-                           ),
-                           Kr::selectRow(
-                               Kr::selectValue(Io::format("{}", Io::cased(s.settings.margins, Io::Case::CAPITAL))),
-                               [] -> Ui::Children {
-                                   return {
-                                       Kr::selectItem(Model::bind<ChangeMargin>(Print::Margins::NONE), "None"s),
-                                       Kr::selectItem(Model::bind<ChangeMargin>(Print::Margins::MINIMUM), "Minimum"s),
-                                       Kr::selectItem(Model::bind<ChangeMargin>(Print::Margins::DEFAULT), "Default"s),
-                                       Kr::selectItem(Model::bind<ChangeMargin>(Print::Margins::CUSTOM), "Custom"s),
-                                   };
-                               },
-                               "Margins"s
-                           ),
+                    };
+                },
+                "Orientation"s
+            )
+        ) | Kr::scaffoldContent(),
+        Kr::treeRow(
+            NONE,
+            "More settings"s,
+            NONE,
+            Ui::Slots{[&] -> Ui::Children {
+                return {
+                    Kr::rowContent(
+                        NONE,
+                        "Paper"s,
+                        NONE,
+                        _paperSelect(s)
+                    ),
+                    Kr::selectRow(
+                        Kr::selectValue("1"s),
+                        [] -> Ui::Children {
+                            return {
+                                Kr::selectItem(Ui::SINK<>, "1"s),
+                                Kr::selectItem(Ui::SINK<>, "2"s),
+                                Kr::selectItem(Ui::SINK<>, "4"s),
+                                Kr::selectItem(Ui::SINK<>, "6"s),
+                                Kr::selectItem(Ui::SINK<>, "9"s),
+                                Kr::selectItem(Ui::SINK<>, "16"s),
+                            };
+                        },
+                        "Page per sheet"s
+                    ),
+                    Kr::selectRow(
+                        Kr::selectValue(Io::format("{}", Io::cased(s.settings.margins, Io::Case::CAPITAL))),
+                        [] -> Ui::Children {
+                            return {
+                                Kr::selectItem(Model::bind<ChangeMargin>(Print::Margins::NONE), "None"s),
+                                Kr::selectItem(Model::bind<ChangeMargin>(Print::Margins::MINIMUM), "Minimum"s),
+                                Kr::selectItem(Model::bind<ChangeMargin>(Print::Margins::DEFAULT), "Default"s),
+                                Kr::selectItem(Model::bind<ChangeMargin>(Print::Margins::CUSTOM), "Custom"s),
+                            };
+                        },
+                        "Margins"s
+                    ),
 
-                           Kr::numberRow(
-                               s.settings.scale,
-                               [](auto& n, f64 scale) {
-                                   Model::bubble<ChangeScale>(n, ChangeScale{scale});
-                               },
-                               0.1,
-                               "Scale"s
-                           ),
+                    Kr::numberRow(
+                        s.settings.scale,
+                        [](auto& n, f64 scale) {
+                            Model::bubble<ChangeScale>(n, ChangeScale{scale});
+                        },
+                        0.1,
+                        "Scale"s
+                    ),
 
-                           Kr::checkboxRow(
-                               s.settings.headerFooter,
-                               [&](auto& n, ...) {
-                                   Model::bubble<ToggleHeaderFooter>(n);
-                               },
-                               "Header and footers"s
-                           ),
-                           Kr::checkboxRow(
-                               s.settings.backgroundGraphics,
-                               [&](auto& n, ...) {
-                                   Model::bubble<ToggleBackgroundGraphics>(n);
-                               },
-                               "Background graphics"s
-                           ),
-                       };
-                   }}
-               ) | Kr::card()
-           ) |
-           Ui::insets(16);
+                    Kr::checkboxRow(
+                        s.settings.headerFooter,
+                        [&](auto& n, ...) {
+                            Model::bubble<ToggleHeaderFooter>(n);
+                        },
+                        "Header and footers"s
+                    ),
+                    Kr::checkboxRow(
+                        s.settings.backgroundGraphics,
+                        [&](auto& n, ...) {
+                            Model::bubble<ToggleBackgroundGraphics>(n);
+                        },
+                        "Background graphics"s
+                    ),
+                };
+            }}
+        ) | Kr::scaffoldContent()
+    );
 }
 
 Ui::Child _printControls(State const& s) {
     return _printSettings(s) |
            Ui::vscroll() |
            Ui::grow() |
-           Ui::minSize({320, Ui::UNCONSTRAINED});
+           Ui::minSize({280, Ui::UNCONSTRAINED});
 }
 
 Ui::Child _printDialog(State const& s) {
     return Kr::dialogContent({
         Kr::dialogTitleBar("Print"s),
-        Ui::hflow(
-            _printPreview(s),
-            Kr::separator(),
-            _printControls(s) | Ui::grow()
+        Ui::vflow(
+            4,
+            Ui::hflow(
+                4,
+                _printPreview(s) | Kr::scaffoldContent() | Ui::grow(),
+                _printControls(s)
+            ) | Ui::insets({0, 8}) |
+                Ui::grow(),
+            Kr::dialogFooter({
+                Ui::grow(NONE),
+                Kr::dialogCancel(),
+                Kr::dialogAction(Model::bind(PrintAction::PRINT), "Print"s),
+            })
         ) | Ui::maxSize({Ui::UNCONSTRAINED, 500}) |
             Ui::grow(),
-        Kr::separator(),
-        Kr::dialogFooter({
-            Kr::dialogCancel(),
-            Kr::dialogAction(Model::bind(PrintAction::PRINT), "Print"s),
-        }),
     });
 }
 

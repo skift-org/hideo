@@ -63,7 +63,7 @@ export Ui::Child app() {
                                licenseBtn
                            )
                        ) |
-                       Ui::insets(16);
+                       Ui::insets(8) | Kr::scaffoldContent();
             },
         .size = {460, 320},
     });

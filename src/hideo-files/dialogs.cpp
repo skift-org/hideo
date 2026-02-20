@@ -26,8 +26,9 @@ export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {
                            "Can't access this location"s,
                            Io::toStr(maybeDir.none())
                        )) |
-                    Ui::pinSize({500, 300}),
-                Kr::separator(),
+                    Ui::pinSize({500, 300}) |
+                    Kr::scaffoldContent() |
+                    Ui::insets({0, 6}),
                 Kr::dialogFooter({
                     Ui::grow(NONE),
                     Kr::dialogCancel(),
@@ -65,8 +66,9 @@ export Ui::Child saveDialog(Ui::Send<Ref::Url> onFile) {
                            "Can't access this location"s,
                            Io::toStr(maybeDir.none())
                        )) |
-                    Ui::pinSize({400, 260}),
-                Kr::separator(),
+                    Ui::pinSize({500, 300}) |
+                    Kr::scaffoldContent() |
+                    Ui::insets({0, 6}),
                 Kr::dialogFooter({
                     Kr::input("Filename"s, s.inputFilename, Model::map<SetFilename>()) | Ui::grow(),
                     Kr::dialogCancel(),
@@ -103,8 +105,9 @@ export Ui::Child directoryDialog(Ui::Send<Ref::Url> onFile) {
                            "Can't access this location"s,
                            Io::toStr(maybeDir.none())
                        )) |
-                    Ui::pinSize({400, 260}),
-                Kr::separator(),
+                    Ui::pinSize({500, 300}) |
+                    Kr::scaffoldContent() |
+                    Ui::insets({0, 6}),
                 Kr::dialogFooter({
                     Ui::grow(NONE),
                     Kr::dialogCancel(),

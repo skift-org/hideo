@@ -14,7 +14,7 @@ export Ui::Child app() {
         .icon = Mdi::CALENDAR,
         .title = "Calendar"s,
         .body = [] {
-            return Ui::empty();
+            return Ui::empty() | Kr::scaffoldContent();
         },
     });
 }

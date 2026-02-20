@@ -656,7 +656,7 @@ Page PAGE_SIDENAV{
     "A vertical list of links that can be toggled open and closed.",
     [] {
         return Ui::hflow(
-            Kr::sidenav({
+            Kr::sidenavContent({
                 Kr::sidenavTitle("Navigation"s),
                 Kr::sidenavItem(true, Ui::SINK<>, Mdi::DUCK, "Item 1"s),
                 Kr::sidenavTree(Mdi::TREE, "Item 2"s, [] {

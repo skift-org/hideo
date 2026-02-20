@@ -16,30 +16,30 @@ export Ui::Child app() {
             .icon = Mdi::DUCK,
             .title = "Zoo"s,
             .sidebar = [&] {
-                return Kr::sidenav(
-                    iter(PAGES)
-                        | Selecti([&](Page const* page, usize index) {
-                            return Kr::sidenavItem(
-                                index == s.page,
-                                Model::bind<Switch>(index),
-                                page->icon,
-                                page->name
-                            );
-                        })
-                        | Collect<Ui::Children>()
+                return Kr::sidenavContent(
+                    iter(PAGES) | Selecti([&](Page const* page, usize index) {
+                        return Kr::sidenavItem(
+                            index == s.page,
+                            Model::bind<Switch>(index),
+                            page->icon,
+                            page->name
+                        );
+                    }) |
+                    Collect<Ui::Children>()
                 );
             },
             .body = [&] {
                 auto& page = PAGES[s.page];
                 return Ui::vflow(
-                    Ui::vflow(
-                        Ui::titleMedium(page->name),
-                        Ui::empty(4),
-                        Ui::bodySmall(page->description)
-                    ) | Ui::insets(16),
-                    Kr::separator(),
-                    page->build() | Ui::grow()
-                );
+                           Ui::vflow(
+                               Ui::titleMedium(page->name),
+                               Ui::empty(4),
+                               Ui::bodySmall(page->description)
+                           ) | Ui::insets(16),
+                           Kr::separator(),
+                           page->build() | Ui::grow()
+                       ) |
+                       Kr::scaffoldContent();
             },
         });
     });

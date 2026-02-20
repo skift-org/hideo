@@ -14,7 +14,7 @@ export Ui::Child app() {
         .icon = Mdi::FORMAT_LIST_BULLETED,
         .title = "Notes"s,
         .body = [] {
-            return Ui::empty();
+            return Ui::empty() | Kr::scaffoldContent();
         },
     });
 }

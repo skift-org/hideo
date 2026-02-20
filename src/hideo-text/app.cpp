@@ -185,19 +185,22 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                     }
 
                     return Ui::vflow(
-                        Ui::hflow(
-                            0,
-                            Math::Align::CENTER,
-                            Ui::labelSmall("{}{}", s.url ? s.url->basename() : "Untitled", s.text->dirty() ? "*" : ""),
-                            Ui::icon(Mdi::CIRCLE_SMALL, Ui::GRAY700) | Ui::insets({0, -3}),
-                            Ui::text(Ui::TextStyles::labelSmall().withColor(Ui::GRAY500), "{}", s.url)
-                        ) | Ui::insets({6, 16}),
-                        Kr::separator(),
+                        4,
+                        Ui::vflow(
+                            Ui::hflow(
+                                0,
+                                Math::Align::CENTER,
+                                Ui::labelSmall("{}{}", s.url ? s.url->basename() : "Untitled", s.text->dirty() ? "*" : ""),
+                                Ui::icon(Mdi::CIRCLE_SMALL, Ui::GRAY700) | Ui::insets({0, -3}),
+                                Ui::text(Ui::TextStyles::labelSmall().withColor(Ui::GRAY500), "{}", s.url)
+                            ) | Ui::insets({6, 16}),
+                            Kr::separator(),
 
-                        s.error
-                            ? Kr::errorPage(Mdi::ALERT_DECAGRAM, "Unable to load text"s, Io::toStr(s.error)) | Ui::grow()
-                            : editor(s.text),
-                        Kr::separator(),
+                            s.error
+                                ? Kr::errorPage(Mdi::ALERT_DECAGRAM, "Unable to load text"s, Io::toStr(s.error)) | Ui::grow()
+                                : editor(s.text)
+                        ) |
+                            Kr::scaffoldContent() | Ui::grow(),
                         Ui::hflow(
                             6,
                             Math::Align::CENTER,
@@ -208,10 +211,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                             Ui::labelSmall("UTF-8"),
                             Kr::separator(),
                             Ui::labelSmall("LF")
-                        ) | Ui::box({
-                                .padding = {6, 12},
-                                .backgroundFill = Ui::GRAY900,
-                            })
+                        ) | Ui::insets({6, 16})
                     );
                 },
             });

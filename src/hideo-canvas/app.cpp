@@ -219,7 +219,7 @@ export Ui::Child app() {
                                // toolbarFormat() | Ui::align(Math::Align::TOP | Math::Align::END) | Ui::insets(2)
                            ) | Ui::insets(16)
                        ) |
-                       Ui::grow();
+                       Kr::scaffoldContent();
             },
         });
     });

@@ -118,14 +118,19 @@ export Ui::Child app() {
                     });
 
                     return Ui::vflow(
-                        Ui::hflow(
-                            0,
-                            Math::Align::CENTER,
-                            Ui::titleLarge(toStr(s.page)),
-                            Ui::grow(NONE),
-                            Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::DOTS_HORIZONTAL)
-                        ) | Ui::insets({18, 18, 0, 18}),
-                        appContent(s) | Ui::grow(),
+                        Ui::vflow(
+                            Ui::hflow(
+                                0,
+                                Math::Align::CENTER,
+                                Ui::titleLarge(toStr(s.page)),
+                                Ui::grow(NONE),
+                                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::DOTS_HORIZONTAL)
+                            ) |
+                                Ui::insets(12),
+                            appContent(s) | Ui::vscroll() | Ui::grow()
+                        ) |
+                            Kr::scaffoldContent() |
+                            Ui::grow(),
                         navbar
                     );
                 },

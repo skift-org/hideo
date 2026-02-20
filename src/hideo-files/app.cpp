@@ -17,7 +17,7 @@ Ui::Child sidenavItem(State const& s, Gfx::Icon icon, String title, Ref::Url url
 }
 
 Ui::Child sidebar(State const& s) {
-    return Kr::sidenav({
+    return Kr::sidenavContent({
         Kr::searchbar(""s) | Ui::insets({6, 0}),
         sidenavItem(s, Mdi::HOME, "Home"s, "location://home"_url),
         sidenavItem(s, Mdi::FILE_DOCUMENT, "Documents"s, "location://documents"_url),
@@ -62,7 +62,7 @@ export Ui::Child app() {
             },
             .middleTools = [&] -> Ui::Children {
                 return {
-                    breadcrumb(s) | Ui::grow(),
+                    breadcrumb(s) | Ui::maxSize({480, Ui::UNCONSTRAINED}) | Ui::grow(),
                 };
             },
             .endTools = [&] -> Ui::Children {
@@ -74,7 +74,7 @@ export Ui::Child app() {
                 return sidebar(s);
             },
             .body = [&] {
-                return pageContent(s);
+                return pageContent(s) | Kr::scaffoldContent();
             },
         });
     });

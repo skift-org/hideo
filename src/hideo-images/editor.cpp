@@ -154,8 +154,9 @@ Ui::Child editorPresets(Editor const& editor) {
                 Ui::button(Model::bind<Preset>(Presets::PASTEL_DREAM), "PASTEL_DREAM"),
                 Ui::button(Model::bind<Preset>(Presets::CYBERPUNK), "CYBERPUNK")
             )
-        ) | Ui::grow(),
-        editorHistogram(editor) | Kr::resizable(Kr::ResizeHandle::TOP, {192}, NONE)
+        ) | Kr::scaffoldContent() |
+            Ui::grow(),
+        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandle::TOP, {192}, NONE)
     );
 }
 
@@ -259,8 +260,9 @@ Ui::Child editorProperties(Editor const& editor) {
                     }
                 )
             )
-        ) | Ui::grow(),
-        editorHistogram(editor) | Kr::resizable(Kr::ResizeHandle::TOP, {192}, NONE)
+        ) | Kr::scaffoldContent() |
+            Ui::grow(),
+        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandle::TOP, {192}, NONE)
     );
 }
 
@@ -271,16 +273,13 @@ Ui::Child editorSidepanel(State const& s) {
             : editorPresets(s.mode.unwrap<Editor>());
 
     return Ui::hflow(
+        4,
         panel | Ui::grow(),
-        Kr::separator(),
         Ui::vflow(
             4,
             Ui::button(Model::bind<Panel>(Panel::ADJUST), Ui::ButtonStyle::subtle().withForegroundFill(s.panel == Panel::ADJUST ? Ui::GRAY50 : Ui::GRAY500), Mdi::TUNE),
             Ui::button(Model::bind<Panel>(Panel::PRESETS), Ui::ButtonStyle::subtle().withForegroundFill(s.panel == Panel::PRESETS ? Ui::GRAY50 : Ui::GRAY500), Mdi::PALETTE_SWATCH_VARIANT)
-        ) | Ui::box({
-                .padding = 6,
-                .backgroundFill = Ui::GRAY900,
-            })
+        )
     );
 }
 
@@ -322,7 +321,7 @@ Ui::Child editorApp(State const& s) {
         },
         .body = [&] {
             return Ui::hflow(
-                editorPreview(s.mode.unwrap<Editor>()) | Ui::grow(),
+                editorPreview(s.mode.unwrap<Editor>()) | Ui::bound() | Kr::scaffoldContent() | Ui::grow(),
                 editorSidepanel(s) | Kr::resizable(Kr::ResizeHandle::START, {320}, NONE)
             );
         },

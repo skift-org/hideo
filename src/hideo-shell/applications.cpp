@@ -110,9 +110,8 @@ export Ui::Child appsContent(State const& s) {
     return Ui::vflow(
                appsSearchbar(s) |
                    Ui::insets({12, 16}),
-               Kr::separator(),
                appsList(s) |
-                   Ui::insets(8) | Ui::vscroll() | Ui::grow()
+                   Ui::insets(8) | Ui::vscroll() | Kr::scaffoldContent() | Ui::grow()
            ) |
            Ui::keyboardShortcut(App::Key::UP, {}, [](auto& n) {
                Model::bubble<SelectSearch>(n, {-1});
@@ -125,10 +124,11 @@ export Ui::Child appsContent(State const& s) {
 export Ui::Child appsLauncher(State const& state) {
     return appsContent(state) | Ui::bound() |
            Ui::box({
-               .borderRadii = 12,
+               .padding = 4,
+               .borderRadii = 8,
                .borderWidth = 1,
                .borderFill = Ui::GRAY800,
-               .backgroundFill = Ui::GRAY950.withOpacity(0.9),
+               .backgroundFill = Ui::GRAY900.withOpacity(0.9),
                .shadowStyle = Gfx::BoxShadow::elevated(16),
            }) |
            Ui::pinSize({500, 400}) | Ui::focusable({.visual = false, .steal = true});

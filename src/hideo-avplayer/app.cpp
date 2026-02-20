@@ -163,7 +163,8 @@ export Ui::Child app(Rc<Av::Player> p, Res<Rc<Av::Audio>> a) {
                        }) |
                        Ui::keyboardShortcut(App::Key::UP, [&](auto& n) {
                            Model::bubble<ChangeVolume>(n, ChangeVolume{s.player->volume() + 0.1});
-                       });
+                       }) |
+                       Kr::scaffoldContent();
             },
         });
     });

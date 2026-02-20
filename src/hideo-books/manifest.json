@@ -5,7 +5,6 @@
     "description": "Read books in various formats",
     "requires": [
         "karm-kira",
-        "karm-gfx",
-        "vaev-view"
+        "karm-gfx"
     ]
 }

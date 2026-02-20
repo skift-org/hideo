@@ -44,7 +44,7 @@ export Ui::Child app() {
                            Ui::hflow(16, decBtn, incBtn),
                            resetBtn
                        ) |
-                       Ui::insets(32);
+                       Ui::insets(32) | Kr::scaffoldContent();
             },
             .size = 420,
         });

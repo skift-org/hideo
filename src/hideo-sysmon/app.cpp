@@ -40,7 +40,7 @@ Ui::Child sidebarItem(bool selected, Ui::Send<> onPress, Gfx::Color color, Strin
 }
 
 Ui::Child sidebar(State const& s) {
-    return Kr::sidenav({
+    return Kr::sidenavContent({
         Kr::sidenavTitle("Software"s),
         Kr::sidenavItem(
             s.tab == Tab::APPLICATIONS,
@@ -61,7 +61,6 @@ Ui::Child sidebar(State const& s) {
             "Kernel"s
         ),
 
-        Kr::separator(),
         Kr::sidenavTitle("Hardware"s),
 
         sidebarItem(
@@ -113,7 +112,7 @@ export Ui::Child app() {
                 return sidebar(s);
             },
             .body = [] {
-                return Ui::empty();
+                return Ui::empty() | Kr::scaffoldContent();
             },
         });
     });

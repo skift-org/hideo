@@ -138,7 +138,8 @@ Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty) {
                            Ui::insets(6) |
                            Kr::contextMenu([] {
                                return contextMenu();
-                           });
+                           }) |
+                           Kr::scaffoldContent();
                 },
             });
         }

@@ -217,7 +217,7 @@ Ui::Child app(Font::Database db) {
                 )};
             },
             .body = [&] {
-                return appContent(s);
+                return appContent(s) | Kr::scaffoldContent();
             },
         });
     });

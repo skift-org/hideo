@@ -334,6 +334,11 @@ Ui::Task<Action> reduce(State& s, Action a) {
 
 export using Model = Ui::Model<State, Action, reduce>;
 
+export struct WindowFlipEvent {
+    Rc<Window> window;
+    Math::Recti region;
+};
+
 export struct Viewport : Ui::View<Viewport> {
     Rc<Window> _window;
     bool _primary;
@@ -374,7 +379,9 @@ export struct Viewport : Ui::View<Viewport> {
         if (e.accepted())
             return;
 
-        if (auto it = e.is<App::MouseEvent>(); it) {
+        if (auto it = e.is<WindowFlipEvent>(); it and it->window == _window) {
+            Ui::shouldRepaint(*this, it->region);
+        } else if (auto it = e.is<App::MouseEvent>(); it) {
             if (it->type == App::MouseEvent::RELEASE and _window->dragged) {
                 Model::bubble<EndDragWindow>(*this, {_window});
                 e.accept();

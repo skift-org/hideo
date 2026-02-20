@@ -28,7 +28,7 @@ Ui::Child messageSidebarItem(Str name) {
 }
 
 Ui::Child messageSidebar() {
-    return Kr::sidenav({
+    return Kr::sidenavContent({
         Kr::searchbar(""s) | Ui::insets({6, 0}),
         messageSidebarItem("Mathilde"),
         messageSidebarItem("Lou"),
@@ -91,10 +91,11 @@ export Ui::Child app() {
         },
         .body = [] {
             return Ui::vflow(
-                messageThread() | Ui::grow(),
-                Kr::separator(),
-                messageComposer()
-            );
+                       messageThread() | Ui::grow(),
+                       Kr::separator(),
+                       messageComposer()
+                   ) |
+                   Kr::scaffoldContent();
         },
     });
 }

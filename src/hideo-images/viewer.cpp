@@ -51,7 +51,7 @@ export Ui::Child viewerApp(State const& state) {
         },
         .body = [&] {
             return Ui::vflow(
-                viewerPreview(state) | Ui::grow(),
+                viewerPreview(state) | Ui::bound() | Kr::scaffoldContent() | Ui::grow(),
                 viewerControls(state)
             );
         },

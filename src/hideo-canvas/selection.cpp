@@ -17,6 +17,7 @@ export struct Selection {
     struct TransformContext {
         Vec<Ref> refs;
         Vec<Obb> initial;
+        Vec<Vec<InputPoint>> freehand;
     };
 
     Vec<Ref> _refs;
@@ -79,11 +80,10 @@ export struct Selection {
     void selectAll(Tree const& tree) {
         unselectAll();
         _refs =
-            iter(tree._nodes)
-                | Select([](auto& n) {
-                    return n.ref;
-                })
-                | Collect<Vec<Ref>>();
+            iter(tree._nodes) | Select([](auto& n) {
+                return n.ref;
+            }) |
+            Collect<Vec<Ref>>();
         _updateRoots(tree);
     }
 
@@ -197,12 +197,16 @@ export struct Selection {
     void beginTransform(Tree const& tree) {
         auto refs = tree.descendantsOf(_roots);
         Vec<Obb> initial;
-        for (auto ref : refs)
+        Vec<Vec<InputPoint>> freehand;
+        for (auto ref : refs) {
             initial.pushBack(tree.byRef(ref).bound);
+            freehand.pushBack(tree.byRef(ref).freehand);
+        }
 
         _transform = TransformContext{
             .refs = std::move(refs),
             .initial = std::move(initial),
+            .freehand = std::move(freehand),
         };
     }
 
@@ -214,6 +218,12 @@ export struct Selection {
         for (usize i = 0; i < transform.refs.len(); i++) {
             auto& n = tree.byRef(transform.refs[i]);
             n.bound.center = transform.initial[i].center + delta;
+            if (n.freehand) {
+                n.freehand = transform.freehand[i];
+                for (auto& p : n.freehand) {
+                    p.pos = p.pos + delta;
+                }
+            }
         }
         _updateRoots(tree);
     }
@@ -230,6 +240,14 @@ export struct Selection {
             auto scaledObb = localObb.scaled(localPivot, scale);
             auto& n = tree.byRef(transform.refs[i]);
             n.bound = source.toWorld(scaledObb);
+            if (n.freehand) {
+                n.freehand = transform.freehand[i];
+                for (auto& p : n.freehand) {
+                    auto localPos = source.toLocal(p.pos);
+                    localPos = ((localPos - localPivot) * scale) + localPivot;
+                    p.pos = source.toWorld(localPos);
+                }
+            }
         }
         _updateRoots(tree);
     }
@@ -243,8 +261,13 @@ export struct Selection {
             auto& n = tree.byRef(transform.refs[i]);
             n.bound.center = center + (transform.initial[i].center - center).rotate(delta);
             n.bound.angle = transform.initial[i].angle + delta;
+            if (n.freehand) {
+                n.freehand = transform.freehand[i];
+                for (auto& p : n.freehand) {
+                    p.pos = p.pos.rotateAround(center, delta);
+                }
+            }
         }
-        _updateRoots(tree);
     }
 
     bool hasMixedAngles(Tree const& tree) const {

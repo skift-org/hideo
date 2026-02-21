@@ -17,6 +17,8 @@ Gfx::Color _kindColor(Kind kind) {
     switch (kind) {
     case Kind::FRAME:
         return Gfx::WHITE;
+    case Kind::FREEHAND:
+        return Gfx::PINK500;
     case Kind::RECT:
         return Gfx::GRAY400;
     case Kind::TEXT:
@@ -40,7 +42,6 @@ Ui::Child canvasContextMenu(State const& s) {
         Kr::contextMenuItem(Model::bind<SelectAll>(), Mdi::SELECT_ALL, "Select All"),
         Kr::separator(),
         Kr::contextMenuItem(Model::bindIf<FrameSelection>(not s.selection.empty()), Mdi::ARTBOARD, "Frame Selection"),
-
     });
 }
 
@@ -65,8 +66,11 @@ struct Canvas : Ui::View<Canvas> {
         g.push();
         g.translate(node.bound.center);
         g.rotate(node.bound.angle);
-        g.fillStyle(_kindColor(node.kind));
-        g.fill(rect);
+
+        if (not node.freehand) {
+            g.fillStyle(_kindColor(node.kind));
+            g.fill(rect);
+        }
 
         if (node.kind == Kind::FRAME) {
             g.strokeStyle({.fill = Ui::GRAY700, .width = 1});
@@ -95,6 +99,12 @@ struct Canvas : Ui::View<Canvas> {
             return;
         }
 
+        if (node.freehand) {
+            auto path = strokeToPath(expandFreehand(node.freehand, {}));
+            g.fillStyle(Gfx::WHITE);
+            g.fill(path, Gfx::FillRule::NONZERO);
+        }
+
         _paintChildren(g, ref);
     }
 
@@ -114,6 +124,7 @@ struct Canvas : Ui::View<Canvas> {
         if (auto gizmo = _state.gizmo(); gizmo) {
             gizmo.unwrap().paint(g);
         }
+
         g.pop();
     }
 
@@ -186,6 +197,7 @@ Ui::Child toolbar(State const& s) {
     return Ui::hflow(
                4,
                toolbarButton(s, Tool::SELECT, Mdi::CURSOR_DEFAULT),
+               toolbarButton(s, Tool::FREEHAND, Mdi::GESTURE),
                toolbarButton(s, Tool::FRAME, Mdi::ARTBOARD),
                toolbarButton(s, Tool::RECT, Mdi::RECTANGLE),
                toolbarButton(s, Tool::TEXT, Mdi::FORMAT_TEXT)

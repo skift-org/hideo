@@ -9,6 +9,7 @@ export import :gizmo;
 export import :node;
 export import :selection;
 export import :tree;
+export import :freehand;
 
 import Karm.Core;
 import Karm.Math;
@@ -21,6 +22,7 @@ namespace Hideo::Canvas {
 
 export enum struct Tool {
     SELECT,
+    FREEHAND,
     FRAME,
     TEXT,
     RECT,
@@ -109,28 +111,28 @@ export struct State {
 Rc<DragMode> makeIdleDragMode();
 
 struct PlacingDragMode final : DragMode {
-    Ref ref;
-    Math::Vec2f start;
-    Math::Vec2f end;
+    Ref _ref;
+    Math::Vec2f _start;
+    Math::Vec2f _end;
 
     PlacingDragMode(Ref ref, Math::Vec2f start, Math::Vec2f end)
-        : ref(ref), start(start), end(end) {}
+        : _ref(ref), _start(start), _end(end) {}
 
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto drag = a.is<CanvasDrag>()) {
-            auto& n = s.tree.byRef(ref);
+            auto& n = s.tree.byRef(_ref);
             if (App::match(drag->mods, App::KeyMod::SHIFT)) {
-                auto delta = drag->pos - start;
-                n.bound = Obb{Math::Rectf::fromTwoPoint(start, start + delta.snapToDiagonal())};
+                auto delta = drag->pos - _start;
+                n.bound = Obb{Math::Rectf::fromTwoPoint(_start, _start + delta.snapToDiagonal())};
             } else {
-                n.bound = Obb{Math::Rectf::fromTwoPoint(start, drag->pos)};
+                n.bound = Obb{Math::Rectf::fromTwoPoint(_start, drag->pos)};
             }
-            return makeRc<PlacingDragMode>(ref, start, drag->pos);
+            return makeRc<PlacingDragMode>(_ref, _start, drag->pos);
         }
 
         if (auto release = a.is<CanvasRelease>()) {
-            if (start.dist(end) < 2) {
-                auto& n = s.tree.byRef(ref);
+            if (_start.dist(_end) < 2) {
+                auto& n = s.tree.byRef(_ref);
                 n.bound = Obb{Math::Rectf::fromTwoPoint(release->pos, release->pos).grow(50)};
             }
 
@@ -138,23 +140,47 @@ struct PlacingDragMode final : DragMode {
             return makeIdleDragMode();
         }
 
-        return makeRc<PlacingDragMode>(ref, start, end);
+        return makeRc<PlacingDragMode>(_ref, _start, _end);
+    }
+};
+
+struct FreehandDragMode final : DragMode {
+    Ref _ref;
+    Math::Vec2f _min;
+    Math::Vec2f _max;
+
+    FreehandDragMode(Ref ref, Math::Vec2f start)
+        : _ref(ref), _min(start), _max(start) {}
+
+    Opt<Rc<DragMode>> reduce(State& s, Action a) override {
+        if (auto drag = a.is<CanvasDrag>()) {
+            auto& n = s.tree.byRef(_ref);
+            _min = _min.min(drag->pos);
+            _max = _max.max(drag->pos);
+            n.freehand.pushBack({drag->pos});
+            n.bound = Obb{Math::Rectf::fromTwoPoint(_min, _max)};
+        }
+
+        if (a.is<CanvasRelease>())
+            return makeIdleDragMode();
+
+        return NONE;
     }
 };
 
 struct ResizingDragMode final : DragMode {
     Gizmo _gizmo;
-    GizmoHandle handle;
-    Math::Vec2f pivot;
+    GizmoHandle _handle;
+    Math::Vec2f _pivot;
 
     ResizingDragMode(Gizmo gizmo, GizmoHandle handle)
-        : _gizmo(gizmo), handle(handle), pivot(gizmo.oppositePivot(handle)) {}
+        : _gizmo(gizmo), _handle(handle), _pivot(gizmo.oppositePivot(handle)) {}
 
     Opt<Rc<DragMode>> reduce(State& s, Action a) override {
         if (auto drag = a.is<CanvasDrag>()) {
-            auto scale = _gizmo.resizeScale(handle, drag->pos, App::match(drag->mods, App::KeyMod::SHIFT));
-            s.selection.resize(s.tree, _gizmo.bound, pivot, scale);
-            return makeRc<ResizingDragMode>(_gizmo, handle);
+            auto scale = _gizmo.resizeScale(_handle, drag->pos, App::match(drag->mods, App::KeyMod::SHIFT));
+            s.selection.resize(s.tree, _gizmo.bound, _pivot, scale);
+            return makeRc<ResizingDragMode>(_gizmo, _handle);
         }
 
         if (a.is<CanvasRelease>()) {
@@ -163,7 +189,7 @@ struct ResizingDragMode final : DragMode {
             return makeIdleDragMode();
         }
 
-        return makeRc<ResizingDragMode>(_gizmo, handle);
+        return makeRc<ResizingDragMode>(_gizmo, _handle);
     }
 
     Opt<Gizmo> gizmo(State const& s) const override {
@@ -262,6 +288,8 @@ struct IdleDragMode final : DragMode {
         switch (tool) {
         case Tool::FRAME:
             return Kind::FRAME;
+        case Tool::FREEHAND:
+            return Kind::FREEHAND;
         case Tool::TEXT:
             return Kind::TEXT;
         case Tool::RECT:
@@ -283,8 +311,12 @@ struct IdleDragMode final : DragMode {
                     parent
                 );
 
-                s.selection.set(s.tree, {ref});
-                return makeRc<PlacingDragMode>(ref, press->pos, press->pos);
+                if (s.currentTool == Tool::FREEHAND) {
+                    return makeRc<FreehandDragMode>(ref, press->pos);
+                } else {
+                    s.selection.set(s.tree, {ref});
+                    return makeRc<PlacingDragMode>(ref, press->pos, press->pos);
+                }
             }
 
             if (auto gizmo = s.selection.createGizmo(s.tree); gizmo) {
@@ -348,7 +380,7 @@ Ui::Task<Action> reduce(State& s, Action action) {
     } else if (auto a = action.is<CopySelection>()) {
         if (not s.selection.empty())
             s.clipboard = s.selection.copy(s.tree);
-    } else if (auto a = action.is<CopySelection>()) {
+    } else if (auto a = action.is<CutSelection>()) {
         if (not s.selection.empty()) {
             s.clipboard = s.selection.cut(s.tree);
             s.dragMode = makeIdleDragMode();

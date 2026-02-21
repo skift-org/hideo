@@ -380,7 +380,7 @@ export struct Viewport : Ui::View<Viewport> {
             return;
 
         if (auto it = e.is<WindowFlipEvent>(); it and it->window == _window) {
-            Ui::shouldRepaint(*this, it->region);
+            Ui::shouldRepaint(*this, it->region.offset(bound().topStart()));
         } else if (auto it = e.is<App::MouseEvent>(); it) {
             if (it->type == App::MouseEvent::RELEASE and _window->dragged) {
                 Model::bubble<EndDragWindow>(*this, {_window});

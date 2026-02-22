@@ -44,6 +44,10 @@ export struct DeleteSelection {};
 
 export struct FrameSelection {};
 
+export struct ChooseFreeHandColor {
+    Gfx::Color color;
+};
+
 export struct CanvasPress {
     Math::Vec2f pos;
     bool resize = false;
@@ -66,6 +70,7 @@ export using Action = Union<
     PasteSelection,
     FrameSelection,
     DeleteSelection,
+    ChooseFreeHandColor,
     CanvasPress,
     CanvasRelease,
     CanvasDrag>;
@@ -92,6 +97,7 @@ export struct State {
     Tree tree;
     Opt<Tree> clipboard = NONE;
     Selection selection;
+    Gfx::Color freehandColor = Gfx::WHITE;
 
     Opt<Gizmo> gizmo() const {
         if (not dragMode)
@@ -312,6 +318,7 @@ struct IdleDragMode final : DragMode {
                 );
 
                 if (s.currentTool == Tool::FREEHAND) {
+                    s.tree.byRef(ref).freehandColor = s.freehandColor;
                     return makeRc<FreehandDragMode>(ref, press->pos);
                 } else {
                     s.selection.set(s.tree, {ref});
@@ -401,6 +408,8 @@ Ui::Task<Action> reduce(State& s, Action action) {
     } else if (auto a = action.is<DeleteSelection>()) {
         s.selection.remove(s.tree);
         s.dragMode = makeIdleDragMode();
+    } else if (auto c = action.is<ChooseFreeHandColor>()) {
+        s.freehandColor = c->color;
     } else if (
         action.is<CanvasPress>() or
         action.is<CanvasDrag>() or

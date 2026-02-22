@@ -45,11 +45,11 @@ Ui::Child canvasContextMenu(State const& s) {
     });
 }
 
-struct Canvas : Ui::View<Canvas> {
+struct Viewport : Ui::View<Viewport> {
     State const& _state;
     Ui::MouseListener _listener;
 
-    Canvas(State const& state)
+    Viewport(State const& state)
         : _state(state) {}
 
     void _paintChildren(Gfx::Canvas& g, Ref parent) {
@@ -100,8 +100,8 @@ struct Canvas : Ui::View<Canvas> {
         }
 
         if (node.freehand) {
-            auto path = strokeToPath(expandFreehand(node.freehand, {}));
-            g.fillStyle(Gfx::WHITE);
+            auto path = strokeToPath(expandFreehand(node.freehand, {.size = 32}));
+            g.fillStyle(node.freehandColor);
             g.fill(path, Gfx::FillRule::NONZERO);
         }
 
@@ -173,14 +173,55 @@ struct Canvas : Ui::View<Canvas> {
     }
 };
 
-Ui::Child canvas(State const& s) {
-    return makeRc<Canvas>(s) |
+Ui::Child viewport(State const& s) {
+    return makeRc<Viewport>(s) |
            Ui::keyboardShortcut(App::Key::A, App::KeyMod::CTRL, Model::bind<SelectAll>()) |
            Ui::keyboardShortcut(App::Key::C, App::KeyMod::CTRL, Model::bind<CopySelection>()) |
            Ui::keyboardShortcut(App::Key::X, App::KeyMod::CTRL, Model::bind<CutSelection>()) |
            Ui::keyboardShortcut(App::Key::V, App::KeyMod::CTRL, Model::bind<PasteSelection>()) |
            Ui::keyboardShortcut(App::Key::DELETE, Model::bind<DeleteSelection>()) |
            Ui::keyboardShortcut(App::Key::BKSPC, Model::bind<DeleteSelection>());
+}
+
+Ui::Child colorButton(State const& s, Gfx::Color color) {
+    return (s.freehandColor == color ? Ui::icon(Mdi::CHECK, color.luminance() > 0.7 ? Gfx::BLACK : Gfx::WHITE) : Ui::empty(18)) |
+           Ui::box({
+               .padding = 2,
+               .borderRadii = 99,
+               .backgroundFill = color,
+           }) |
+           Ui::button(Model::bind<ChooseFreeHandColor>(color), Ui::ButtonStyle::subtle().withRadii(99));
+}
+
+Ui::Child colorBar(State const& s) {
+    return Ui::hflow(
+               4,
+               colorButton(s, Gfx::WHITE),
+               colorButton(s, Gfx::BLACK),
+               colorButton(s, Gfx::RED),
+               colorButton(s, Gfx::ORANGE),
+               colorButton(s, Gfx::AMBER),
+               colorButton(s, Gfx::YELLOW),
+               colorButton(s, Gfx::LIME),
+               colorButton(s, Gfx::GREEN),
+               colorButton(s, Gfx::EMERALD),
+               colorButton(s, Gfx::TEAL),
+               colorButton(s, Gfx::CYAN),
+               colorButton(s, Gfx::SKY),
+               colorButton(s, Gfx::BLUE),
+               colorButton(s, Gfx::INDIGO),
+               colorButton(s, Gfx::VIOLET),
+               colorButton(s, Gfx::PURPLE),
+               colorButton(s, Gfx::FUCHSIA),
+               colorButton(s, Gfx::PINK),
+               colorButton(s, Gfx::ROSE)
+           ) |
+           Ui::box({
+               .margin = 4,
+               .padding = 4,
+               .borderRadii = 99,
+               .backgroundFill = Ui::GRAY900,
+           });
 }
 
 Ui::Child toolbarButton(State const& s, Tool tool, Gfx::Icon icon) {
@@ -224,9 +265,10 @@ export Ui::Child app() {
             .title = "Canvas"s,
             .body = [&] {
                 return Ui::stack(
-                           canvas(s),
+                           viewport(s),
                            Ui::stack(
-                               toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER)
+                               toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER),
+                               colorBar(s) | Ui::align(Math::Align::TOP | Math::Align::HCENTER)
                                // toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2),
                                // toolbarFormat() | Ui::align(Math::Align::TOP | Math::Align::END) | Ui::insets(2)
                            ) | Ui::insets(16)

@@ -1,6 +1,7 @@
 export module Hideo.Canvas:node;
 
 import Karm.Core;
+import Karm.Gfx;
 import :bound;
 import :freehand;
 
@@ -24,6 +25,7 @@ export struct Node {
     Kind kind;
     Obb bound;
     Vec<InputPoint> freehand = {};
+    Gfx::Color freehandColor = Gfx::WHITE;
 
     bool topLevel() const {
         return not parent;

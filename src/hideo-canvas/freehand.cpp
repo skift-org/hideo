@@ -17,8 +17,8 @@ struct TaperOptions {
 };
 
 struct StrokeOptions {
-    f64 size = 8;
-    f64 thinning = .5;
+    f64 size = 6;
+    f64 thinning = .6;
     f64 smoothing = .5;
     f64 streamline = .5;
     Math::Easing easing = Math::Easing::linear;

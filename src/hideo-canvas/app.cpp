@@ -100,7 +100,7 @@ struct Viewport : Ui::View<Viewport> {
         }
 
         if (node.freehand) {
-            auto path = strokeToPath(expandFreehand(node.freehand, {.size = 32}));
+            auto path = strokeToPath(expandFreehand(node.freehand, {}));
             g.fillStyle(node.freehandColor);
             g.fill(path, Gfx::FillRule::NONZERO);
         }
@@ -258,22 +258,46 @@ Ui::Child toolbarFormat() {
     return Ui::button(Ui::SINK<>, Mdi::FORMAT_TEXTBOX);
 }
 
+Ui::Child viewportPanel(State const& s) {
+    return Ui::stack(
+               viewport(s),
+               Ui::stack(
+                   toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER),
+                   colorBar(s) | Ui::align(Math::Align::TOP | Math::Align::HCENTER)
+                   // toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2),
+                   // toolbarFormat() | Ui::align(Math::Align::TOP | Math::Align::END) | Ui::insets(2)
+               ) | Ui::insets(16)
+           ) |
+           Kr::scaffoldContent();
+}
+
+Ui::Child propertiesPanel(State const&) {
+    return Ui::empty(240) | Kr::scaffoldContent();
+}
+
 export Ui::Child app() {
     return Ui::reducer<Model>([](State const& s) {
         return Kr::scaffold({
             .icon = Mdi::DRAW,
             .title = "Canvas"s,
+            .endTools = [&] -> Ui::Children {
+                return {
+                    Ui::button(Model::bind<ToggleProperties>(), Ui::ButtonStyle::subtle(), Mdi::TUNE)
+                };
+            },
+            .sidebar = [&] {
+                return Kr::sidenavContent({});
+            },
             .body = [&] {
-                return Ui::stack(
-                           viewport(s),
-                           Ui::stack(
-                               toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER),
-                               colorBar(s) | Ui::align(Math::Align::TOP | Math::Align::HCENTER)
-                               // toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2),
-                               // toolbarFormat() | Ui::align(Math::Align::TOP | Math::Align::END) | Ui::insets(2)
-                           ) | Ui::insets(16)
-                       ) |
-                       Kr::scaffoldContent();
+                if (s.propertiesVisible) {
+                    return Ui::hflow(
+                        2,
+                        viewportPanel(s) | Ui::grow(),
+                        propertiesPanel(s)
+                    );
+                } else {
+                    return viewportPanel(s);
+                }
             },
         });
     });

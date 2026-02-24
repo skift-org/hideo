@@ -62,7 +62,10 @@ export struct CanvasDrag {
     Flags<App::KeyMod> mods;
 };
 
+export struct ToggleProperties {};
+
 export using Action = Union<
+    ToggleProperties,
     SelectTool,
     SelectAll,
     CopySelection,
@@ -98,6 +101,7 @@ export struct State {
     Opt<Tree> clipboard = NONE;
     Selection selection;
     Gfx::Color freehandColor = Gfx::WHITE;
+    bool propertiesVisible = false;
 
     Opt<Gizmo> gizmo() const {
         if (not dragMode)
@@ -380,7 +384,9 @@ Rc<DragMode> makeIdleDragMode() {
 }
 
 Ui::Task<Action> reduce(State& s, Action action) {
-    if (auto a = action.is<SelectTool>()) {
+    if (action.is<ToggleProperties>()) {
+        s.propertiesVisible = not s.propertiesVisible;
+    } else if (auto a = action.is<SelectTool>()) {
         s.currentTool = a->tool;
     } else if (action.is<SelectAll>()) {
         s.selection.selectAll(s.tree);

@@ -168,7 +168,11 @@ Ui::Child breadcrumbItem(Str text, isize index) {
         0,
         Math::Align::CENTER,
         Ui::icon(Mdi::CHEVRON_RIGHT),
-        Ui::button(Model::bind<GoParent>(index), Ui::ButtonStyle::text().withPadding({2, 0}), Ui::text(text))
+        Ui::button(
+            Model::bind<GoParent>(index),
+            Ui::ButtonStyle::text().withPadding({2, 0}),
+            Ui::text(text)
+        )
     );
 }
 
@@ -249,8 +253,7 @@ export Ui::Child breadcrumb(State const& s) {
     return Ui::box(
                {
                    .borderRadii = 4,
-                   .borderWidth = 1,
-                   .backgroundFill = Ui::GRAY700,
+                   .backgroundFill = Ui::GRAY800,
                },
                Ui::hflow(
                    Ui::empty(12),

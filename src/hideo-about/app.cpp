@@ -29,7 +29,7 @@ export Ui::Child app() {
                         "All rights reserved."
                     );
 
-                auto inspireMe = Ui::state(Sys::now().val(), [](auto v, auto bind) {
+                auto inspireMe = Ui::state(Sys::instant().val(), [](auto v, auto bind) {
                     auto body = Ui::hflow(
                         8, Math::Align::CENTER,
                         Ui::image("bundle://hideo-about/pride.qoi"_url, 4) | Ui::sizing(Ui::UNCONSTRAINED, 24),

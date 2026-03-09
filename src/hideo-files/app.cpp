@@ -34,15 +34,13 @@ Ui::Child sidebar(State const& s) {
 }
 
 Ui::Child pageContent(State const& state) {
-    auto url = state.currentUrl();
-    auto dir = Sys::Dir::open(url);
     auto listing =
-        dir
-            ? directoryListing(state, dir.unwrap()) | Ui::grow()
+        not state.directoryError
+            ? directoryListing(state) | Ui::grow()
             : alert(
                   state,
                   "Can't access this location"s,
-                  Io::toStr(dir.none())
+                  Io::toStr(*state.directoryError)
               );
 
     return listing | Ui::grow();

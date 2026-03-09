@@ -14,12 +14,33 @@ struct State {
     usize currentIndex = 0;
     bool showHidden = false;
     String inputFilename;
+    Vec<Sys::DirEntry> directoryListing;
+    Opt<Error> directoryError = NONE;
 
     State(Ref::Url path)
-        : history({path}) {}
+        : history({path}) {
+        reloadDirectoryListing();
+    }
 
     Ref::Url currentUrl() const {
         return history[currentIndex];
+    }
+
+    void reloadDirectoryListing() {
+        auto dir = Sys::Dir::open(currentUrl());
+        directoryListing.clear();
+        directoryError = NONE;
+
+        if (not dir) {
+            directoryError = dir.none();
+            return;
+        }
+
+        for (auto const& entry : dir.unwrap().entries()) {
+            if (entry.hidden() and not showHidden)
+                continue;
+            directoryListing.pushBack(entry);
+        }
     }
 
     bool canGoBack() const {
@@ -87,6 +108,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             if (s.canGoBack()) {
                 s.currentIndex--;
                 s.inputFilename = ""s;
+                s.reloadDirectoryListing();
             }
             return NONE;
         },
@@ -94,6 +116,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             if (s.canGoForward()) {
                 s.currentIndex++;
                 s.inputFilename = ""s;
+                s.reloadDirectoryListing();
             }
             return NONE;
         },
@@ -125,9 +148,11 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.history.pushBack(goTo.url);
             s.currentIndex++;
             s.inputFilename = ""s;
+            s.reloadDirectoryListing();
             return NONE;
         },
         [&](Refresh) {
+            s.reloadDirectoryListing();
             return NONE;
         },
         [&](AddBookmark) {
@@ -135,6 +160,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](ToggleHidden) {
             s.showHidden = not s.showHidden;
+            s.reloadDirectoryListing();
             return NONE;
         },
         [&](SetFilename sf) {

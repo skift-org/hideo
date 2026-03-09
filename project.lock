@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schemas.cute.engineering/stable/cutekit.lockfile.v1",
+    "extern": {
+        "cute-engineering/ce-bootfs": {
+            "commit": "8b53ffa6c801345b2050fa996da605c30caa04df",
+            "git": "https://codeberg.org/cute-engineering/ce-bootfs.git",
+            "tag": "v0.2.0"
+        },
+        "cute-engineering/ce-heap": {
+            "commit": "664de4bd5c3810da1a679724c3533204f30e80f8",
+            "git": "https://codeberg.org/cute-engineering/ce-heap.git",
+            "tag": "v1.3.0"
+        },
+        "cute-engineering/ce-libc": {
+            "commit": "2e8e4b6eedb25b12f3f0a662b01d40583bbf7730",
+            "git": "https://codeberg.org/cute-engineering/ce-libc.git",
+            "tag": "v1.3.1"
+        },
+        "cute-engineering/ce-libm": {
+            "commit": "24a1b42a44db053bcb332675a9a3f82690362f4c",
+            "git": "https://codeberg.org/cute-engineering/ce-libm.git",
+            "tag": "v1.2.1"
+        },
+        "cute-engineering/ce-mdi": {
+            "commit": "950f40cbb8f67ec645f0d5844ee3a468b8169dce",
+            "git": "https://codeberg.org/cute-engineering/ce-mdi.git",
+            "tag": "v0.7.0"
+        },
+        "cute-engineering/ce-stdcpp": {
+            "commit": "868a2ad4a2b1742e9c1684ca9aab02cd3a5bb6ce",
+            "git": "https://codeberg.org/cute-engineering/ce-stdcpp.git",
+            "tag": "v1.6.1"
+        },
+        "cute-engineering/ce-targets": {
+            "commit": "9c0064dc613d43c40e5f00bb972ed54977a82e00",
+            "git": "https://codeberg.org/cute-engineering/ce-targets.git",
+            "tag": "v0.6.0"
+        },
+        "skift/assets": {
+            "commit": "d311e1f13f9d6d91fc2aa5a6c896ef6a714363e6",
+            "git": "https://codeberg.org/skift/assets.git",
+            "tag": "main"
+        },
+        "skift/karm": {
+            "commit": "ac45cf88375f43e3a152a8389d57c92676959657",
+            "git": "https://codeberg.org/skift/karm.git",
+            "tag": "main"
+        }
+    }
+}

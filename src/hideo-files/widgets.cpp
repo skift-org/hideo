@@ -102,14 +102,12 @@ Ui::Child directorEntry(Sys::DirEntry const& entry) {
            Kr::contextMenu(directoryContextMenu);
 }
 
-Ui::Child directoryListing(State const& s, Sys::Dir const& dir) {
-    if (dir.entries().len() == 0)
+Ui::Child directoryListing(State const& s) {
+    if (s.directoryListing.len() == 0)
         return Ui::bodyMedium(Ui::GRAY500, "This directory is empty.") | Ui::center();
 
     Ui::Children children;
-    for (auto const& entry : dir.entries()) {
-        if (entry.hidden() and not s.showHidden)
-            continue;
+    for (auto const& entry : s.directoryListing) {
         children.pushBack(directorEntry(entry));
     }
 
@@ -133,14 +131,12 @@ Ui::Child dialogEntry(State const& s, Sys::DirEntry const& entry) {
     );
 }
 
-export Ui::Child dialogDirectoryListing(State const& s, Sys::Dir const& dir) {
-    if (dir.entries().len() == 0)
+export Ui::Child dialogDirectoryListing(State const& s) {
+    if (s.directoryListing.len() == 0)
         return Ui::bodyMedium(Ui::GRAY500, "This directory is empty.") | Ui::center();
 
     Ui::Children children;
-    for (auto const& entry : dir.entries()) {
-        if (entry.hidden() and not s.showHidden)
-            continue;
+    for (auto const& entry : s.directoryListing) {
         children.pushBack(dialogEntry(s, entry));
     }
 

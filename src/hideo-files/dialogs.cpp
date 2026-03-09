@@ -13,18 +13,17 @@ export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {
     return Ui::reducer<Model>(
         {"location://home"_url},
         [onFile](State const& s) {
-            auto maybeDir = Sys::Dir::open(s.currentUrl());
             bool hasSelection = s.inputFilename.len() > 0;
 
             return Kr::dialogContent({
                 Kr::dialogTitleBar("Open File…"s),
                 toolbar(s),
-                (maybeDir
-                     ? dialogDirectoryListing(s, maybeDir.unwrap())
+                (not s.directoryError
+                     ? dialogDirectoryListing(s)
                      : alert(
                            s,
                            "Can't access this location"s,
-                           Io::toStr(maybeDir.none())
+                           Io::toStr(*s.directoryError)
                        )) |
                     Ui::pinSize({500, 300}) |
                     Kr::scaffoldContent() |
@@ -53,18 +52,17 @@ export Ui::Child saveDialog(Ui::Send<Ref::Url> onFile) {
     return Ui::reducer<Model>(
         {"location://home"_url},
         [onFile](State const& s) {
-            auto maybeDir = Sys::Dir::open(s.currentUrl());
             bool hasFilename = s.inputFilename.len() > 0;
 
             return Kr::dialogContent({
                 Kr::dialogTitleBar("Save As…"s),
                 toolbar(s),
-                (maybeDir
-                     ? dialogDirectoryListing(s, maybeDir.unwrap())
+                (not s.directoryError
+                     ? dialogDirectoryListing(s)
                      : alert(
                            s,
                            "Can't access this location"s,
-                           Io::toStr(maybeDir.none())
+                           Io::toStr(*s.directoryError)
                        )) |
                     Ui::pinSize({500, 300}) |
                     Kr::scaffoldContent() |
@@ -93,17 +91,15 @@ export Ui::Child directoryDialog(Ui::Send<Ref::Url> onFile) {
     return Ui::reducer<Model>(
         {"location://home"_url},
         [onFile](auto const& d) {
-            auto maybeDir = Sys::Dir::open(d.currentUrl());
-
             return Kr::dialogContent({
                 Kr::dialogTitleBar("Select Directory…"s),
                 toolbar(d),
-                (maybeDir
-                     ? directoryListing(d, maybeDir.unwrap())
+                (not d.directoryError
+                     ? directoryListing(d)
                      : alert(
                            d,
                            "Can't access this location"s,
-                           Io::toStr(maybeDir.none())
+                           Io::toStr(*d.directoryError)
                        )) |
                     Ui::pinSize({500, 300}) |
                     Kr::scaffoldContent() |

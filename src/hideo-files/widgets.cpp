@@ -42,9 +42,9 @@ Gfx::Icon iconFor(Ref::Uti type) {
         if (type == m.type)
             return m.icon;
 
-        if (bestRank < m.type.rank() and type.conformsTo(m.type)) {
+        if (bestRank < m.type.specificity() and type.conformsTo(m.type)) {
             best = m.icon;
-            bestRank = m.type.rank();
+            bestRank = m.type.specificity();
         }
     }
     return best;

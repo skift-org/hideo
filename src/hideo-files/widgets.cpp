@@ -13,51 +13,49 @@ import :model;
 
 namespace Hideo::Files {
 
-struct Mime2Icon {
-    Str type;
-    Str subtype;
+struct Type2Icon {
+    Ref::Uti type;
     Gfx::Icon icon;
 };
 
-static Array MIME2ICON = {
-    Mime2Icon{"text", "", Mdi::FILE_DOCUMENT},
-    Mime2Icon{"text", "html", Mdi::LANGUAGE_HTML5},
-    Mime2Icon{"text", "css", Mdi::LANGUAGE_CSS3},
-    Mime2Icon{"text", "javascript", Mdi::LANGUAGE_JAVASCRIPT},
-    Mime2Icon{"text", "plain", Mdi::FILE_DOCUMENT},
-
-    Mime2Icon{"image", "", Mdi::IMAGE},
-    Mime2Icon{"image", "jpeg", Mdi::FILE_JPG_BOX},
-    Mime2Icon{"image", "png", Mdi::FILE_PNG_BOX},
-
-    Mime2Icon{"video", "", Mdi::FILMSTRIP},
-
-    Mime2Icon{"font", "", Mdi::FORMAT_FONT},
-
-    Mime2Icon{"application", "pdf", Mdi::FILE_PDF_BOX},
-    Mime2Icon{"application", "json", Mdi::CODE_JSON},
-    Mime2Icon{"application", "zip", Mdi::ZIP_BOX},
-    Mime2Icon{"application", "tar", Mdi::ZIP_BOX},
-    Mime2Icon{"application", "gz", Mdi::ZIP_BOX},
-    Mime2Icon{"application", "bz2", Mdi::ZIP_BOX},
-    Mime2Icon{"application", "7z-compressed", Mdi::ZIP_BOX},
-    Mime2Icon{"application", "rar", Mdi::ZIP_BOX},
-    Mime2Icon{"application", "x-xz", Mdi::ZIP_BOX},
-    Mime2Icon{"application", "x-msdownload", Mdi::COG_BOX},
+static Array _type2Icon = {
+    Type2Icon{Ref::Uti::PUBLIC_ITEM, Mdi::FILE},
+    Type2Icon{Ref::Uti::PUBLIC_DIRECTORY, Mdi::FOLDER},
+    Type2Icon{Ref::Uti::PUBLIC_HTML, Mdi::LANGUAGE_HTML5},
+    Type2Icon{Ref::Uti::PUBLIC_CSS, Mdi::LANGUAGE_CSS3},
+    Type2Icon{Ref::Uti::PUBLIC_JAVASCRIPT, Mdi::LANGUAGE_JAVASCRIPT},
+    Type2Icon{Ref::Uti::PUBLIC_TEXT, Mdi::FILE_DOCUMENT},
+    Type2Icon{Ref::Uti::PUBLIC_IMAGE, Mdi::IMAGE},
+    Type2Icon{Ref::Uti::PUBLIC_JPEG, Mdi::FILE_JPG_BOX},
+    Type2Icon{Ref::Uti::PUBLIC_PNG, Mdi::FILE_PNG_BOX},
+    Type2Icon{Ref::Uti::PUBLIC_AV, Mdi::FILMSTRIP},
+    Type2Icon{Ref::Uti::PUBLIC_FONT, Mdi::FORMAT_FONT},
+    Type2Icon{Ref::Uti::PUBLIC_PDF, Mdi::FILE_PDF_BOX},
+    Type2Icon{Ref::Uti::PUBLIC_JSON, Mdi::CODE_JSON},
+    Type2Icon{Ref::Uti::PUBLIC_ARCHIVE, Mdi::ZIP_BOX}
 };
 
-Gfx::Icon iconFor(Ref::Mime const& mime) {
-    Gfx::Icon icon = Mdi::FILE;
-
-    for (auto const& m : MIME2ICON) {
-        if (m.type == mime.type() and m.subtype == mime.subtype())
+Gfx::Icon iconFor(Ref::Uti type) {
+    Gfx::Icon best = Mdi::FILE;
+    u64 bestRank = 0;
+    for (auto const& m : _type2Icon) {
+        if (type == m.type)
             return m.icon;
 
-        if (m.type == mime.type() and m.subtype == "")
-            icon = m.icon;
+        if (bestRank < m.type.rank() and type.conformsTo(m.type)) {
+            best = m.icon;
+            bestRank = m.type.rank();
+        }
     }
+    return best;
+}
 
-    return icon;
+Gfx::Icon iconFor(Sys::DirEntry const& entry) {
+    if (entry.hidden()) {
+        return entry.type == Sys::Type::DIR ? Mdi::FOLDER_HIDDEN : Mdi::FILE_HIDDEN;
+    } else {
+        return iconFor(entry.uti());
+    }
 }
 
 // MARK: Common Widgets --------------------------------------------------------
@@ -97,9 +95,7 @@ Ui::Child directorEntry(Sys::DirEntry const& entry) {
     return Ui::button(
                Model::bind<Navigate>(entry.name),
                Ui::ButtonStyle::subtle(),
-               entry.type == Sys::Type::DIR
-                   ? Mdi::FOLDER
-                   : iconFor(Ref::sniffSuffix(Ref::suffixOf(entry.name)).unwrapOr("file"s)),
+               iconFor(entry),
                entry.name
            ) |
            Kr::selectionItem() |
@@ -129,20 +125,10 @@ Ui::Child dialogEntry(State const& s, Sys::DirEntry const& entry) {
     auto isDir = entry.type == Sys::Type::DIR;
     auto isSelected = not isDir and s.inputFilename == entry.name;
     auto style = isSelected ? Ui::ButtonStyle::regular() : Ui::ButtonStyle::subtle();
-
-    if (isDir) {
-        return Ui::button(
-            Model::bind<Navigate>(entry.name),
-            style,
-            Mdi::FOLDER,
-            entry.name
-        );
-    }
-
     return Ui::button(
         Model::bind<SetFilename>(entry.name),
         style,
-        iconFor(Ref::sniffSuffix(Ref::suffixOf(entry.name)).unwrapOr("file"s)),
+        iconFor(entry),
         entry.name
     );
 }

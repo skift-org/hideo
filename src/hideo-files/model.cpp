@@ -81,7 +81,7 @@ using Action = Union<
 Ui::Task<Action> reduce(State& s, Action a) {
     return a.visit(Visitor{
         [&](GoRoot) {
-            return reduce(s, GoTo{"file:/"_url});
+            return reduce(s, GoTo{s.currentUrl().origin()});
         },
         [&](GoBack) {
             if (s.canGoBack()) {
@@ -117,12 +117,12 @@ Ui::Task<Action> reduce(State& s, Action a) {
             }
             return NONE;
         },
-        [&](GoTo gotTo) {
-            if (s.currentUrl() == gotTo.url)
+        [&](GoTo goTo) {
+            if (s.currentUrl() == goTo.url)
                 return NONE;
 
             s.history.trunc(s.currentIndex + 1);
-            s.history.pushBack(gotTo.url);
+            s.history.pushBack(goTo.url);
             s.currentIndex++;
             s.inputFilename = ""s;
             return NONE;

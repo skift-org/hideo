@@ -1,0 +1,41 @@
+#include <karm/entry>
+
+import Karm.Ui;
+import Hideo.Browser;
+import Vaev.Engine;
+import Karm.Http;
+import Karm.Gc;
+import Karm.Sys;
+import Karm.Debug;
+
+using namespace Karm;
+
+Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
+    co_try$(Debug::toggleFlag(Debug::FEATURE, "*", true));
+
+    auto args = Sys::useArgs(ctx);
+    auto url = args.len()
+                   ? Ref::parseUrlOrPath(args[0], co_try$(Sys::pwd()))
+                   : "about:blank"_url;
+
+    auto client = Http::defaultClient();
+    client->userAgent = "Hideo.Browser/" stringify$(__ck_version_value) ""s;
+    auto window = Vaev::Dom::Window::create(client);
+    window->changeMedia(
+        Vaev::Style::Media::forView(
+            {},
+            Ui::darkMode ? Vaev::ColorScheme::DARK : Vaev::ColorScheme::LIGHT
+        )
+    );
+    co_trya$(window->loadLocationAsync(
+        url,
+        Ref::Uti::PUBLIC_OPEN,
+        Async::CancellationToken::uninterruptible()
+    ));
+
+    co_return co_await Ui::runAsync(
+        ctx,
+        Vaev::Browser::app(window),
+        ct
+    );
+}

@@ -8,12 +8,12 @@ import Hideo.Avplayer;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
-    auto& args = useArgs(ctx);
+Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
+    auto& args = env.args();
     Res<Rc<Av::Audio>> audio = Error::invalidInput("No media provided");
 
     if (args.len()) {
-        auto url = Ref::parseUrlOrPath(args[0], co_try$(Sys::pwd()));
+        auto url = Ref::parseUrlOrPath(args[0], env.cwd());
         audio = Av::load(url);
 
         if (not audio) {
@@ -31,5 +31,5 @@ Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     auto app = Hideo::Avplayer::app(player, audio);
     Async::detach(Hideo::Avplayer::updatePlayback(app, ct));
 
-    co_return co_await Ui::runAsync(ctx, app, ct);
+    co_return co_await Ui::runAsync(env, app, ct);
 }

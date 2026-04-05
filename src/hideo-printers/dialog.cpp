@@ -189,7 +189,7 @@ void _printPDF(State const& s) {
             }
         );
     }
-    printer->save(Ref::parseUrlOrPath("./output.pdf", Sys::pwd().unwrap())).unwrap();
+    printer->save(Ref::parseUrlOrPath("./output.pdf", Sys::globalEnv().cwd())).unwrap();
 }
 
 Ui::Child _destinationSelect() {

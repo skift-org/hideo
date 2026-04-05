@@ -10,12 +10,12 @@ import Karm.Debug;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
+Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     co_try$(Debug::toggleFlag(Debug::FEATURE, "*", true));
 
-    auto args = Sys::useArgs(ctx);
+    auto& args = env.args();
     auto url = args.len()
-                   ? Ref::parseUrlOrPath(args[0], co_try$(Sys::pwd()))
+                   ? Ref::parseUrlOrPath(args[0], env.cwd())
                    : "about:blank"_url;
 
     auto client = Http::defaultClient();
@@ -34,7 +34,7 @@ Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
     ));
 
     co_return co_await Ui::runAsync(
-        ctx,
+        env,
         Vaev::Browser::app(window),
         ct
     );

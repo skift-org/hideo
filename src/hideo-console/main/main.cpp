@@ -158,7 +158,7 @@ Async::Task<> _handleAsync(Rc<Sys::Pty> pty, Ui::Child app, Async::CancellationT
     }
 }
 
-Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
+Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     auto terminal = makeRc<Vte::Terminal>(Vte::Theme{});
 
     Sys::Command command{
@@ -170,5 +170,5 @@ Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
 
     auto app = Hideo::Console::app(terminal, pty);
     Async::detach(_handleAsync(pty, app, ct));
-    co_return co_await Ui::runAsync(ctx, app, ct);
+    co_return co_await Ui::runAsync(env, app, ct);
 }

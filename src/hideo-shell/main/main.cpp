@@ -10,9 +10,7 @@ import Mdi;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
-    auto args = useArgs(ctx);
-
+Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     Hideo::Shell::State state = {
         .dateTime = Sys::dateTime(),
         .background = co_try$(Image::loadOrFallback("bundle://hideo-shell/wallpapers/abstract.qoi"_url)),
@@ -35,5 +33,5 @@ Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
         .windows = {}
     };
 
-    co_return co_await Ui::runAsync(ctx, Hideo::Shell::app(std::move(state)), ct);
+    co_return co_await Ui::runAsync(env, Hideo::Shell::app(std::move(state)), ct);
 }

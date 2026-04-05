@@ -12,12 +12,12 @@ import Mdi;
 
 using namespace Karm;
 
-Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
-    auto& args = useArgs(ctx);
+Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
+    auto& args = env.args();
     Res<Rc<Gfx::Surface>> image = Error::invalidInput("No image provided");
 
     if (args.len()) {
-        auto url = Ref::parseUrlOrPath(args[0], co_try$(Sys::pwd()));
+        auto url = Ref::parseUrlOrPath(args[0], env.cwd());
         image = Image::load(url);
 
         if (not image) {
@@ -25,5 +25,5 @@ Async::Task<> entryPointAsync(Sys::Context& ctx, Async::CancellationToken ct) {
         }
     }
 
-    co_return co_await Ui::runAsync(ctx, Hideo::Images::app(image.unwrap()), ct);
+    co_return co_await Ui::runAsync(env, Hideo::Images::app(image.unwrap()), ct);
 }

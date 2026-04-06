@@ -7,6 +7,7 @@ import Karm.Http;
 import Karm.Gc;
 import Karm.Sys;
 import Karm.Debug;
+import Karm.Logger;
 
 using namespace Karm;
 
@@ -35,7 +36,7 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
 
     co_return co_await Ui::runAsync(
         env,
-        Vaev::Browser::app(window),
+        Hideo::Browser::app(window),
         ct
     );
 }

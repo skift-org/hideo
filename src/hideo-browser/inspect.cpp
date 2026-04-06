@@ -9,8 +9,9 @@ import Karm.Core;
 import Mdi;
 
 using namespace Karm;
+using namespace Vaev;
 
-namespace Vaev::Browser {
+namespace Hideo::Browser {
 
 export struct ExpandNode {
     Gc::Ref<Dom::Node> node;
@@ -202,4 +203,4 @@ export Ui::Child inspect(Rc<Dom::Window> window, InspectState const& s, Ui::Acti
     );
 }
 
-} // namespace Vaev::Browser
+} // namespace Hideo::Browser

@@ -14,7 +14,7 @@ import Vaev.View;
 import :inspect;
 import :dialogs;
 
-namespace Vaev::Browser {
+namespace Hideo::Browser {
 
 enum struct SidePanel {
     CLOSE,
@@ -298,7 +298,7 @@ Ui::Child inspectorContent(State const& s) {
                Ui::center();
     }
 
-    return Vaev::Browser::inspect(
+    return Hideo::Browser::inspect(
         s.window,
         s.inspect,
         [&](auto& n, auto a) {
@@ -435,4 +435,4 @@ export Ui::Child app(Rc<Dom::Window> window) {
     );
 }
 
-} // namespace Vaev::Browser
+} // namespace Hideo::Browser

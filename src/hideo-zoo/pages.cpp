@@ -14,6 +14,7 @@ import Hideo.Printers;
 import :model;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Zoo {
 
@@ -414,9 +415,9 @@ Page PAGE_PRINT_DIALOG{
                            n,
                            Hideo::Printers::printDialog([](Print::Settings const& s) -> Vec<Print::Page> {
                                return {
-                                   {s.paper},
-                                   {s.paper},
-                                   {s.paper},
+                                   {s.pageSize().cast<f64>()},
+                                   {s.pageSize().cast<f64>()},
+                                   {s.pageSize().cast<f64>()},
                                };
                            })
                        );
@@ -642,7 +643,7 @@ Page PAGE_SELECTION{
         Ui::Children items;
         for (auto& l : labels) {
             items.pushBack(
-                Ui::labelMedium(l) | Ui::insets(4) | Kr::selectionItem()
+                Ui::labelMedium(l) | Ui::insets(4) | Kr::selectionItem(false, Ui::SINK<bool>)
             );
         }
 

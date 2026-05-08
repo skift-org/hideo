@@ -9,6 +9,7 @@ import Karm.Sys;
 import Karm.Gfx;
 
 using namespace Karm;
+using namespace Karm::Ref::Literals;
 
 namespace Hideo::Camera {
 

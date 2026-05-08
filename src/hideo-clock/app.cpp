@@ -13,6 +13,8 @@ import Karm.Math;
 
 import :model;
 
+using namespace Karm::Literals;
+
 namespace Hideo::Clock {
 
 // MARK: Alarm Page ------------------------------------------------------------

@@ -1,3 +1,7 @@
+module;
+
+#include <karm/macros>
+
 export module Hideo.Graph;
 
 import Mdi;
@@ -7,9 +11,9 @@ import Karm.Kira;
 import Karm.Gfx;
 import Karm.Math;
 import Karm.Logger;
-#include "karm/macros"
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Graph {
 

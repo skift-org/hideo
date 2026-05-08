@@ -10,6 +10,8 @@ import Karm.Math;
 import :model;
 import :kernel;
 
+using namespace Karm::Literals;
+
 namespace Hideo::Images {
 
 Ui::Child histogram(Hist const& hist) {

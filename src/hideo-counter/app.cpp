@@ -7,6 +7,8 @@ import Karm.Math;
 import Mdi;
 import :model;
 
+using namespace Karm::Literals;
+
 namespace Hideo::Counter {
 
 export Ui::Child app() {

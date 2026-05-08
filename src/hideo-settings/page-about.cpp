@@ -12,6 +12,8 @@ import Karm.Gfx;
 import :model;
 import :common;
 
+using namespace Karm::Literals;
+
 namespace Hideo::Settings {
 
 Ui::Child errorScope(Str what, auto callback) {

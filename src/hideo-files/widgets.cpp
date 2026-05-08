@@ -98,7 +98,7 @@ Ui::Child directorEntry(Sys::DirEntry const& entry) {
                iconFor(entry),
                entry.name
            ) |
-           Kr::selectionItem() |
+           Kr::selectionItem(false, Ui::SINK<bool>) |
            Kr::contextMenu(directoryContextMenu);
 }
 

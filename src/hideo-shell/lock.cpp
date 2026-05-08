@@ -10,6 +10,8 @@ import Karm.Math;
 import :model;
 import :background;
 
+using namespace Karm::Ref::Literals;
+
 namespace Hideo::Shell {
 
 static Opt<Rc<Gfx::Fontface>> _blackFontface = NONE;

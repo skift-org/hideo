@@ -6,6 +6,7 @@ import Karm.Kira;
 import Karm.Core;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Shell {
 

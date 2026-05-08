@@ -8,6 +8,7 @@ import Karm.Core;
 export module Hideo.Write;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Write {
 

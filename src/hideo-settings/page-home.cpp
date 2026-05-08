@@ -5,7 +5,10 @@ import Karm.Ui;
 import Karm.App;
 import Karm.Sys;
 import Karm.Gfx;
+
 import :model;
+
+using namespace Karm::Literals;
 
 namespace Hideo::Settings {
 

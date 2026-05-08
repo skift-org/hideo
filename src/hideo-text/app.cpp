@@ -13,6 +13,7 @@ import Karm.App;
 import Hideo.Files;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Text {
 

@@ -42,8 +42,13 @@
             "tag": "main"
         },
         "skift/karm": {
-            "commit": "ac45cf88375f43e3a152a8389d57c92676959657",
+            "commit": "0f02c1307b43d979fc1bed3ef7a08a4287b070fb",
             "git": "https://codeberg.org/skift/karm.git",
+            "tag": "main"
+        },
+        "skift/vaev": {
+            "commit": "d7984a4ea1618396434f9b3837b1093df6c65c7b",
+            "git": "https://codeberg.org/skift/vaev.git",
             "tag": "main"
         }
     }

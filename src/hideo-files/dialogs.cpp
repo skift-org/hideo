@@ -7,6 +7,9 @@ import Karm.Math;
 
 import :widgets;
 
+using namespace Karm::Literals;
+using namespace Karm::Ref::Literals;
+
 namespace Hideo::Files {
 
 export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {

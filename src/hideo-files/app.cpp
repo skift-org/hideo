@@ -9,6 +9,8 @@ import Karm.Gfx;
 import :model;
 import :widgets;
 
+using namespace Karm::Ref::Literals;
+
 namespace Hideo::Files {
 
 Ui::Child sidenavItem(State const& s, Gfx::Icon icon, String title, Ref::Url url) {

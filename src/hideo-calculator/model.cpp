@@ -4,6 +4,7 @@ import Karm.Core;
 import Karm.Ui;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Calculator {
 

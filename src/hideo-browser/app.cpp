@@ -14,6 +14,9 @@ import Vaev.View;
 import :inspect;
 import :dialogs;
 
+using namespace Karm::Literals;
+using namespace Karm::Ref::Literals;
+
 namespace Hideo::Browser {
 
 enum struct SidePanel {
@@ -354,7 +357,19 @@ Ui::Child webview(State const& s) {
     if (not s.loadingResult)
         return alert(s, "The page could not be loaded"s, Io::toStr(s.loadingResult));
 
-    return Vaev::View::viewport(s.window, {.wireframe = s.wireframe, .selected = s.inspect.selectedNode}) |
+    Opt<Dom::OriginatingElement> selected = NONE;
+    if (s.inspect.selectedNode) {
+        if (auto it = s.inspect.selectedNode->is<Dom::Element>())
+            selected = Dom::OriginatingElement{Gc::Ref(*const_cast<Dom::Element*>(it.upgrade()._ptr))};
+    }
+
+    return View::viewport(
+               s.window,
+               {
+                   .wireframe = s.wireframe,
+                   .selected = selected,
+               }
+           ) |
            Ui::box({
                .backgroundFill = Gfx::WHITE,
            }) |

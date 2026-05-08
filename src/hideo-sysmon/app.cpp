@@ -8,6 +8,8 @@ import Karm.Gfx;
 
 import :model;
 
+using namespace Karm::Literals;
+
 namespace Hideo::Sysmon {
 
 // MARK: Sidebar ---------------------------------------------------------------

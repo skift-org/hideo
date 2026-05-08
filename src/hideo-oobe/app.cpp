@@ -10,6 +10,8 @@ import Karm.Gfx;
 import Karm.Math;
 
 using namespace Karm;
+using namespace Karm::Literals;
+using namespace Karm::Ref::Literals;
 
 namespace Hideo::Oobe {
 

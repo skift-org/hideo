@@ -10,6 +10,7 @@ import Karm.App;
 import Karm.Vte;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Console {
 

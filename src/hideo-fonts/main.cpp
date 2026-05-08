@@ -8,6 +8,7 @@ import Karm.Math;
 import Mdi;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Fonts {
 

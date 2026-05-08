@@ -11,6 +11,8 @@ import Karm.Math;
 import Mdi;
 
 using namespace Karm;
+using namespace Karm::Literals;
+using namespace Karm::Ref::Literals;
 
 namespace Hideo::About {
 

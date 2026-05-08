@@ -7,6 +7,7 @@ import Karm.Ui;
 import Karm.Math;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Chat {
 

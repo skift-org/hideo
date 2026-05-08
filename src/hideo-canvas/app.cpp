@@ -10,6 +10,7 @@ import Karm.App;
 import :model;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Canvas {
 

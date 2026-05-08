@@ -9,6 +9,7 @@ import Karm.Core;
 import Mdi;
 
 using namespace Karm;
+using namespace Karm::Literals;
 using namespace Vaev;
 
 namespace Hideo::Browser {
@@ -167,14 +168,14 @@ Ui::Child computedStyles(Gc::Ref<Dom::Document> dom, InspectState const& s, Ui::
                    Ui::center();
 
     if (s.selectedNode)
-        if (auto el = s.selectedNode->is<Dom::Element>()) {
+        if (auto const el = s.selectedNode->is<Dom::Element>()) {
             Ui::Children children;
 
             for (auto const& [name, registration] : dom->registeredPropertySet.registrations().iterItems()) {
                 if (s.filter and startWith(name.str(), s.filter) == Match::NO)
                     continue;
 
-                auto property = registration->load(*el->specifiedValues());
+                auto property = registration->load(*el->computedValues());
                 children.pushBack(
                     Ui::text(Ui::TextStyles::codeSmall(), "{}: {}", name, *property) |
                     Ui::insets({4, 8})

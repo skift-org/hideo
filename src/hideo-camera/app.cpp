@@ -12,6 +12,7 @@ import Karm.Math;
 import :model;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Camera {
 

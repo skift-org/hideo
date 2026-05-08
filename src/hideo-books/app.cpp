@@ -6,6 +6,7 @@ import Karm.Kira;
 import Karm.Ui;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Books {
 

@@ -4,7 +4,10 @@ import Mdi;
 import Karm.Core;
 import Karm.Kira;
 import Karm.Ui;
+
 import :model;
+
+using namespace Karm::Literals;
 
 namespace Hideo::Images {
 

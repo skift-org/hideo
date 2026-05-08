@@ -9,6 +9,8 @@ import Karm.Gfx;
 import Mdi;
 
 using namespace Karm;
+using namespace Karm::Literals;
+using namespace Karm::Ref::Literals;
 
 Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     Hideo::Shell::State state = {

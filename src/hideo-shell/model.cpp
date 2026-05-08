@@ -7,8 +7,10 @@ import Karm.App;
 import Karm.Image;
 import Karm.Gfx;
 import Karm.Math;
+import Karm.Glob;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Shell {
 
@@ -410,7 +412,7 @@ export struct Viewport : Ui::View<Viewport> {
                 auto transformedEvent = *it;
                 transformedEvent.pos = transformedEvent.pos - bound().xy;
                 auto ee = App::makeEvent<App::MouseEvent>(transformedEvent);
-                _window->event(ee);
+                _window->event(*ee);
                 e.accept();
             }
         } else if (_window->focused) {

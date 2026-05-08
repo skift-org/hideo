@@ -10,6 +10,8 @@ import Karm.Debug;
 import Karm.Logger;
 
 using namespace Karm;
+using namespace Karm::Literals;
+using namespace Karm::Ref::Literals;
 
 Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     co_try$(Debug::toggleFlag(Debug::FEATURE, "*", true));

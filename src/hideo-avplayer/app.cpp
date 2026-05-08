@@ -18,6 +18,8 @@ import Karm.Math;
 export import :model;
 
 using namespace Karm;
+using namespace Karm::Literals;
+using namespace Karm::Ref::Literals;
 
 namespace Hideo::Avplayer {
 

@@ -5,7 +5,7 @@
     "description": "Showcase the beautiful Kira components library",
     "requires": [
         "hideo-files",
-        "hideo-printers",
-        "karm-kira"
+        "karm-kira",
+        "karm-print.dialog"
     ]
 }

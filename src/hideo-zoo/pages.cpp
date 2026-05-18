@@ -4,13 +4,13 @@ import Mdi;
 import Karm.Kira;
 import Karm.Ui;
 import Karm.Print;
+import Karm.Print.Dialog;
 import Karm.Ref;
 import Karm.Gfx;
 import Karm.Math;
 import Karm.Logger;
 
 import Hideo.Files;
-import Hideo.Printers;
 import :model;
 
 using namespace Karm;
@@ -413,7 +413,7 @@ Page PAGE_PRINT_DIALOG{
                    [](auto& n) {
                        Ui::showDialog(
                            n,
-                           Hideo::Printers::printDialog([](Print::Settings const& s) -> Vec<Print::Page> {
+                           Print::printDialog([](Print::Settings const& s) -> Vec<Print::Page> {
                                return {
                                    {s.pageSize().cast<f64>()},
                                    {s.pageSize().cast<f64>()},

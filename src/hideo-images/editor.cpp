@@ -158,7 +158,7 @@ Ui::Child editorPresets(Editor const& editor) {
             )
         ) | Kr::scaffoldContent() |
             Ui::grow(),
-        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandle::TOP, {192}, NONE)
+        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandlePosition::TOP, {192}, NONE)
     );
 }
 
@@ -264,7 +264,7 @@ Ui::Child editorProperties(Editor const& editor) {
             )
         ) | Kr::scaffoldContent() |
             Ui::grow(),
-        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandle::TOP, {192}, NONE)
+        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandlePosition::TOP, {192}, NONE)
     );
 }
 
@@ -324,7 +324,7 @@ Ui::Child editorApp(State const& s) {
         .body = [&] {
             return Ui::hflow(
                 editorPreview(s.mode.unwrap<Editor>()) | Ui::bound() | Kr::scaffoldContent() | Ui::grow(),
-                editorSidepanel(s) | Kr::resizable(Kr::ResizeHandle::START, {320}, NONE)
+                editorSidepanel(s) | Kr::resizable(Kr::ResizeHandlePosition::START, {320}, NONE)
             );
         },
     });

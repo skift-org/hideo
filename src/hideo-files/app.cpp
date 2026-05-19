@@ -62,7 +62,9 @@ export Ui::Child app() {
             },
             .middleTools = [&] -> Ui::Children {
                 return {
+                    Ui::empty(36),
                     breadcrumb(s) | Ui::maxSize({480, Ui::UNCONSTRAINED}) | Ui::grow(),
+                    Ui::empty(36),
                 };
             },
             .endTools = [&] -> Ui::Children {

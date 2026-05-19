@@ -9,11 +9,10 @@ import Hideo.Avplayer;
 using namespace Karm;
 
 Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
-    auto& args = env.args();
     Res<Rc<Av::Audio>> audio = Error::invalidInput("No media provided");
 
-    if (args.len()) {
-        auto url = Ref::parseUrlOrPath(args[0], env.cwd());
+    if (env.argsLen()) {
+        auto url = Ref::parseUrlOrPath(env[0], env.cwd());
         audio = Av::load(url);
 
         if (not audio) {

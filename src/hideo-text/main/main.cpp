@@ -8,11 +8,10 @@ using namespace Karm;
 using namespace Karm::Literals;
 
 Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
-    auto& args = env.args();
     Opt<Ref::Url> url;
     Res<String> text = Ok(""s);
-    if (args.len()) {
-        url = Ref::parseUrlOrPath(args[0], env.cwd());
+    if (env.argsLen()) {
+        url = Ref::parseUrlOrPath(env[0], env.cwd());
         text = Sys::readAllUtf8(*url);
     }
     co_return co_await Ui::runAsync(env, Hideo::Text::app(url, text), ct);

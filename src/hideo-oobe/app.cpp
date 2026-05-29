@@ -35,9 +35,11 @@ struct State {
 using Action = Union<Step>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{[&](Step step) {
-        s.step = step;
-    }});
+    a.visit(
+        [&](Step step) {
+            s.step = step;
+        }
+    );
 
     return NONE;
 }

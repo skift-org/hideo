@@ -31,7 +31,7 @@ struct State {
     using Action = Union<QuickMenuToggle, LaunchGame, QuitGame, LaunchHome>;
 
     Ui::Task<Action> reduce(Action const& action) {
-        return action.visit(Visitor{
+        return action.visit(
             [&](QuickMenuToggle) {
                 quickMenuVisible = not quickMenuVisible;
                 return NONE;
@@ -51,8 +51,8 @@ struct State {
                 inMenu = true;
                 quickMenuVisible = false;
                 return NONE;
-            },
-        });
+            }
+        );
     }
 };
 

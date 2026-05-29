@@ -42,7 +42,7 @@ struct SaveAs {
 using Action = Union<Ui::TextAction, New, Open, Save, SaveAs>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(::Visitor{
+    a.visit(
         [&](Ui::TextAction& t) {
             s.text->reduce(t);
         },
@@ -82,8 +82,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
             Io::TextEncoder<> enc{file.unwrap()};
             (void)enc.writeStr(s.text->string().str());
             s.text->flush();
-        },
-    });
+        }
+    );
 
     return NONE;
 }

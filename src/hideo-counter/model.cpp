@@ -24,7 +24,7 @@ export using Action = Union<
     DecrementAction>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
+    a.visit(
         [&](ResetAction) {
             s = State{.initial = true};
         },
@@ -35,8 +35,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
         [&](DecrementAction) {
             s.initial = false;
             s.counter -= 1;
-        },
-    });
+        }
+    );
 
     return NONE;
 }

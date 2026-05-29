@@ -183,9 +183,9 @@ export using Action = Union<
     ToggleFlag>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    s.mode.visit(Visitor{
+    s.mode.visit(
         [&](Editor& m) {
-            a.visit(Visitor{
+            a.visit(
                 [&](Save) {
                     s.mode = Viewer{m.original};
                 },
@@ -229,14 +229,14 @@ Ui::Task<Action> reduce(State& s, Action a) {
             });
         },
         [&](Viewer& m) {
-            a.visit(Visitor{
+            a.visit(
                 [&](Edit) {
                     s.mode = Editor::create(m.image);
                 },
                 [](auto&) {
                     notImplemented();
-                },
-            });
+                }
+            );
         },
     });
 

@@ -38,7 +38,7 @@ using Action = Union<
     Scrub>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
+    a.visit(
         [&](Update) {
         },
         [&](TogglePause) {
@@ -55,8 +55,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](Scrub m) {
             s.player->seek(m.duration);
-        },
-    });
+        }
+    );
 
     return NONE;
 }

@@ -308,19 +308,17 @@ Page PAGE_INPUT{
 
         auto reduce = [](State& s, Action a) -> Ui::Task<Action> {
             a.visit(
-                Visitor{
-                    [&](UpdateUsername& u) {
-                        s.username = u.username;
-                    },
-                    [&](UpdateEmail& u) {
-                        s.email = u.email;
-                    },
-                    [&](UpdatePassword& u) {
-                        s.password = u.password;
-                    },
-                    [&](UpdateText& u) {
-                        s.text = u.text;
-                    }
+                [&](UpdateUsername& u) {
+                    s.username = u.username;
+                },
+                [&](UpdateEmail& u) {
+                    s.email = u.email;
+                },
+                [&](UpdatePassword& u) {
+                    s.password = u.password;
+                },
+                [&](UpdateText& u) {
+                    s.text = u.text;
                 }
             );
 

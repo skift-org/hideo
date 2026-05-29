@@ -37,7 +37,7 @@ struct SelectFace {
 using Action = Union<GoBack, SelectFamily, SelectFace>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
+    a.visit(
         [&](GoBack) {
             if (s.fontFace) {
                 s.fontFace = NONE;
@@ -50,8 +50,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](SelectFace a) {
             s.fontFace = a.id;
-        },
-    });
+        }
+    );
 
     return NONE;
 }

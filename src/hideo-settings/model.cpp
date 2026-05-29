@@ -47,7 +47,7 @@ export struct GoForward {};
 export using Action = Union<GoTo, GoBack, GoForward>;
 
 Ui::Task<Action> reduce(State& s, Action action) {
-    action.visit(Visitor{
+    action.visit(
         [&](GoTo a) {
             if (s.page() == a.page)
                 return;
@@ -61,8 +61,8 @@ Ui::Task<Action> reduce(State& s, Action action) {
         },
         [&](GoForward) {
             s.historyIndex = min(s.historyIndex + 1, s.history.len() - 1);
-        },
-    });
+        }
+    );
 
     return NONE;
 }

@@ -199,11 +199,11 @@ struct AddRelation {
 using Action = Union<AddRelation>;
 
 Ui::Task<Action> reduce(State& state, Action action) {
-    action.visit(Visitor{
+    action.visit(
         [&](AddRelation) {
             state.relations.emplaceBack();
-        },
-    });
+        }
+    );
     return NONE;
 }
 

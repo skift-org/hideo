@@ -18,10 +18,8 @@ export using Action = Union<ToggleShift>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(
-        Visitor{
-            [&](ToggleShift) {
-                s.shift = not s.shift;
-            },
+        [&](ToggleShift) {
+            s.shift = not s.shift;
         }
     );
 

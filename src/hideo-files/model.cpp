@@ -101,7 +101,7 @@ using Action = Union<
     SetFilename>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    return a.visit(Visitor{
+    return a.visit(
         [&](GoRoot) {
             return reduce(s, GoTo{s.currentUrl().origin()});
         },
@@ -167,8 +167,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
         [&](SetFilename sf) {
             s.inputFilename = sf.name;
             return NONE;
-        },
-    });
+        }
+    );
 }
 
 using Model = Ui::Model<State, Action, reduce>;

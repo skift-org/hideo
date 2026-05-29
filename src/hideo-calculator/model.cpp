@@ -172,7 +172,7 @@ void doOperator(State& s, Operator op) {
 Ui::Task<Action> reduce(State& s, Action action) {
     s.error = NONE;
 
-    action.visit(Visitor{
+    action.visit(
         [&](Operator op) {
             if (not isUnary(s.op))
                 doOperator(s, s.op);
@@ -237,8 +237,8 @@ Ui::Task<Action> reduce(State& s, Action action) {
             s.hasMem = true;
         },
         [&](EnterDecimalAction) {
-        },
-    });
+        }
+    );
 
     return NONE;
 }

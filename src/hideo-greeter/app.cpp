@@ -39,7 +39,7 @@ struct Login {};
 using Action = Union<Back, Select, Login>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
+    a.visit(
         [&](Back) {
             s.selected = NONE;
         },
@@ -48,8 +48,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](Login) {
 
-        },
-    });
+        }
+    );
 
     return NONE;
 }

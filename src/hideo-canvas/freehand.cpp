@@ -128,13 +128,11 @@ Vec<Math::Vec2f> getStrokeOutlinePoints(Slice<StrokePoint> points, StrokeOptions
         if (not t)
             return 0.0;
         return t.unwrap().visit(
-            Visitor{
-                [&](bool b) {
-                    return b ? max(options.size, totalLength) : 0.0;
-                },
-                [&](f64 v) {
-                    return v;
-                },
+            [&](bool b) {
+                return b ? max(options.size, totalLength) : 0.0;
+            },
+            [&](f64 v) {
+                return v;
             }
         );
     };

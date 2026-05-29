@@ -245,7 +245,7 @@ export using Action = Union<
     ToggleSysPanel>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
+    a.visit(
         [&](UpdateSearch u) {
             s.searchQuery = u.query;
             s.searchIndex = 0;
@@ -328,8 +328,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](ToggleSysPanel) {
             s.isSysPanelColapsed = not s.isSysPanelColapsed;
-        },
-    });
+        }
+    );
 
     return NONE;
 }

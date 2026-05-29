@@ -46,7 +46,7 @@ using Action = Union<
     OpenLast>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
+    a.visit(
         [&](Capture) {
             auto videoFrame = s.stream->next();
             if (videoFrame) {
@@ -72,7 +72,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             )
                 .unwrap("could not launch intent");
         },
-    });
+    );
 
     return NONE;
 }

@@ -11,14 +11,14 @@ export Ui::Child app(Rc<Gfx::Surface> initial) {
     return Ui::reducer<Model>(
         State{Viewer{initial}},
         [](State const& s) {
-            return s.mode.visit(Visitor{
+            return s.mode.visit(
                 [&](Editor const&) {
                     return editorApp(s);
                 },
                 [&](Viewer const&) {
                     return viewerApp(s);
-                },
-            });
+                }
+            );
         }
     );
 }

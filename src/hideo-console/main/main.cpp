@@ -89,7 +89,7 @@ using Action = Union<
     Bytes, App::KeyboardEvent>;
 
 static Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(Visitor{
+    a.visit(
         [&](Bytes b) {
             s.terminal->write(b);
         },
@@ -104,8 +104,8 @@ static Ui::Task<Action> reduce(State& s, Action a) {
                     (void)enc.writeRune(e.rune);
                 }
             }
-        },
-    });
+        }
+    );
     return NONE;
 }
 

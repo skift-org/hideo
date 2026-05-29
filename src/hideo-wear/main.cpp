@@ -28,12 +28,12 @@ struct State {
     using Action = Union<Page>;
 
     Ui::Task<Action> reduce(Action const& action) {
-        return action.visit(Visitor{
+        return action.visit(
             [&](Page p) {
                 page = p;
                 return NONE;
-            },
-        });
+            }
+        );
     }
 };
 

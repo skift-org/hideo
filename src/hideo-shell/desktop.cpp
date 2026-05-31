@@ -39,7 +39,7 @@ Ui::Child desktopStack(State const& state) {
                        .borderRadii = 8,
                        .borderWidth = 1.,
                        .borderFill = Ui::GRAY800,
-                       .shadowStyle = Gfx::BoxShadow::elevated(topLevel ? 16 : 4).withFillCenter(false),
+                       .shadowStyle = Gfx::BoxShadow::elevated(topLevel ? 16 : 4).withSkipOccluded(true),
                    }) |
                    Ui::placed(window->_floatingBound);
         }

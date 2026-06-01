@@ -26,7 +26,7 @@ export Ui::Child app() {
 
                 auto bodyText =
                     Ui::bodySmall(
-                        "Copyright © 2018-2025 The skiftOS Developers\n"
+                        "Copyright © 2018-2026 The skiftOS Developers\n"
                         "\n"
                         "All rights reserved."
                     );

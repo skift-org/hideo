@@ -71,7 +71,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
                 }
             )
                 .unwrap("could not launch intent");
-        },
+        }
     );
 
     return NONE;

@@ -225,8 +225,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
                 },
                 [](auto&) {
                     notImplemented();
-                },
-            });
+                }
+            );
         },
         [&](Viewer& m) {
             a.visit(
@@ -237,8 +237,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
                     notImplemented();
                 }
             );
-        },
-    });
+        }
+    );
 
     return NONE;
 }

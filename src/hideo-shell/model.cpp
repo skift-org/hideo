@@ -40,11 +40,16 @@ export struct Launcher {
     virtual void launch(State&) = 0;
 };
 
+export inline constexpr Math::Vec2i MIN_WINDOW_SIZE = {250, 150};
+
 export struct Window {
     Math::Recti _activeBound = {100, 100, 600, 400};
     Math::Recti _floatingBound = {100, 100, 600, 400};
 
     bool dragged = false;
+    bool resizing = false;
+    Math::Vec2i resizeDir = {};
+    App::CursorStyle cursor = App::CursorStyle::DEFAULT;
     bool focused = false;
     App::Snap preferSnap = App::Snap::NONE;
 
@@ -212,6 +217,20 @@ export struct EndDragWindow {
     Rc<Window> window;
 };
 
+export struct StartResizeWindow {
+    Rc<Window> window;
+    Math::Vec2i dir;
+};
+
+export struct ResizeWindow {
+    Rc<Window> window;
+    Math::Vec2i off;
+};
+
+export struct EndResizeWindow {
+    Rc<Window> window;
+};
+
 export struct FocusWindow {
     Rc<Window> window;
 };
@@ -240,6 +259,9 @@ export using Action = Union<
     DragWindow,
     EndDragWindow,
     StartDragWindow,
+    ResizeWindow,
+    EndResizeWindow,
+    StartResizeWindow,
     FocusWindow,
     ActivatePanel,
     ToggleSysPanel>;
@@ -314,6 +336,30 @@ Ui::Task<Action> reduce(State& s, Action a) {
         [&](EndDragWindow s) {
             s.window->dragged = false;
         },
+        [&](StartResizeWindow s) {
+            s.window->resizing = true;
+            s.window->resizeDir = s.dir;
+        },
+        [&](ResizeWindow resize) {
+            s.activePanel = Panel::NIL;
+            auto dir = resize.window->resizeDir;
+            auto bound = resize.window->_floatingBound;
+
+            if (dir.x < 0)
+                bound.start(min(bound.start() + resize.off.x, bound.end() - MIN_WINDOW_SIZE.x));
+            else if (dir.x > 0)
+                bound.end(max(bound.end() + resize.off.x, bound.start() + MIN_WINDOW_SIZE.x));
+
+            if (dir.y < 0)
+                bound.top(min(bound.top() + resize.off.y, bound.bottom() - MIN_WINDOW_SIZE.y));
+            else if (dir.y > 0)
+                bound.bottom(max(bound.bottom() + resize.off.y, bound.top() + MIN_WINDOW_SIZE.y));
+
+            resize.window->_floatingBound = bound;
+        },
+        [&](EndResizeWindow s) {
+            s.window->resizing = false;
+        },
         [&](FocusWindow focus) {
             s.windows.removeAll(focus.window);
             s.windows.pushFront(focus.window);
@@ -362,7 +408,7 @@ export struct Viewport : Ui::View<Viewport> {
             g.fillStyle(surface->pixels());
             g.fill(bound(), _radii);
         } else {
-            g.blit(_bound.cast<isize>(), surface->pixels());
+            g.blit(_bound.cast<isize>(), surface);
         }
         g.pop();
     }
@@ -375,6 +421,23 @@ export struct Viewport : Ui::View<Viewport> {
 
     Math::Vec2i size(Math::Vec2i, Ui::Hint) override {
         return _window->bound(_snap).size();
+    }
+
+    Math::Vec2i _quadrantDir(Math::Vec2i pos) const {
+        return {
+            pos.x < _bound.center().x ? -1 : 1,
+            pos.y < _bound.center().y ? -1 : 1,
+        };
+    }
+
+    static App::CursorStyle _resizeCursor(Math::Vec2i dir) {
+        if (dir.x and dir.y)
+            return dir.x == dir.y
+                       ? App::CursorStyle::RESIZE_NWSE
+                       : App::CursorStyle::RESIZE_NESW;
+        if (dir.x)
+            return App::CursorStyle::RESIZE_EW;
+        return App::CursorStyle::RESIZE_NS;
     }
 
     void event(App::Event& e) override {
@@ -396,13 +459,37 @@ export struct Viewport : Ui::View<Viewport> {
                 return;
             }
 
+            if (it->type == App::MouseEvent::RELEASE and _window->resizing) {
+                Model::bubble<EndResizeWindow>(*this, {_window});
+                e.accept();
+                return;
+            }
+
+            if (it->type == App::MouseEvent::MOVE and _window->resizing) {
+                Ui::bubble<App::RequestCursorEvent>(*this, _resizeCursor(_window->resizeDir));
+                Model::bubble<ResizeWindow>(*this, {_window, it->delta});
+                e.accept();
+                return;
+            }
+
             if (bound().contains(it->pos)) {
+                // The client application decides where a resize can be
+                // initiated and requests the matching cursor as the pointer
+                // hovers these regions.
+                if (it->type == App::MouseEvent::MOVE and _window->cursor != App::CursorStyle::DEFAULT)
+                    Ui::bubble<App::RequestCursorEvent>(*this, _window->cursor);
+
                 if (it->type == App::MouseEvent::PRESS and not _window->focused) {
                     Model::bubble<FocusWindow>(*this, {_window});
                 }
 
                 if (it->type == App::MouseEvent::PRESS and it->button == App::MouseButton::LEFT and App::match(it->mods, App::KeyMod::SUPER)) {
                     Model::bubble<StartDragWindow>(*this, {_window});
+                    e.accept();
+                }
+
+                if (it->type == App::MouseEvent::PRESS and it->button == App::MouseButton::RIGHT and App::match(it->mods, App::KeyMod::SUPER) and _snap == App::Snap::NONE and not e.accepted()) {
+                    Model::bubble<StartResizeWindow>(*this, {_window, _quadrantDir(it->pos)});
                     e.accept();
                 }
 

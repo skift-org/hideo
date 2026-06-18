@@ -132,6 +132,9 @@ export Interval cos(Interval const& x) {
     return {minVal, maxVal};
 }
 
+struct Expr {
+};
+
 // MARK: Graphing --------------------------------------------------------------
 
 Rc<Gfx::Surface> graph(auto f, Interval xrange, Interval yrange) {
@@ -242,7 +245,7 @@ export Ui::Child app() {
             .icon = Mdi::GRAPH,
             .title = "Graph"s,
             .sidebar = [&] {
-                return sidenav(s);
+                return sidenav(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
             },
             .body = [&] {
                 return Ui::image(s.tile) |

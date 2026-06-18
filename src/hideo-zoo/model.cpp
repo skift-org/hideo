@@ -5,6 +5,7 @@ import Karm.Ui;
 import Karm.Gfx;
 
 using namespace Karm;
+using namespace Karm::Literals;
 
 namespace Hideo::Zoo {
 
@@ -16,19 +17,27 @@ struct Page {
 };
 
 struct State {
-    usize page;
+    Page const* selectedPage;
+    String searchQuery = ""s;
+};
+
+export struct UpdateSearch {
+    String query;
 };
 
 struct Switch {
-    usize page;
+    Page const* page;
 };
 
-export using Action = Union<Switch>;
+export using Action = Union<UpdateSearch, Switch>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(
+        [&](UpdateSearch updateSearch) {
+            s.searchQuery = updateSearch.query;
+        },
         [&](Switch action) {
-            s.page = action.page;
+            s.selectedPage = action.page;
         }
     );
 

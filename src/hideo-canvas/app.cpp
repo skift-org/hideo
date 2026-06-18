@@ -287,7 +287,7 @@ export Ui::Child app() {
                 };
             },
             .sidebar = [&] {
-                return Kr::sidenavContent({});
+                return Kr::sidenavContent({}) | Kr::resizable(Kr::ResizeHandlePosition::END);
             },
             .body = [&] {
                 if (s.propertiesVisible) {

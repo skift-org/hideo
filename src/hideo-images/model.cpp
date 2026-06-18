@@ -83,7 +83,7 @@ static Rc<Gfx::Surface> generateThumbnail(Rc<Gfx::Surface> original) {
     auto thumb = Gfx::Surface::alloc(fitThumbSize(original->bound().size()));
     Gfx::CpuCanvas g;
     g.begin(*thumb);
-    g.blit(original->bound(), thumb->bound(), *original);
+    g.blit(original->bound(), thumb->bound(), original);
     g.end();
     return thumb;
 }

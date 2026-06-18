@@ -88,7 +88,7 @@ export Ui::Child app() {
         .icon = Mdi::MESSAGE,
         .title = "Chat"s,
         .sidebar = [] {
-            return messageSidebar();
+            return messageSidebar() | Kr::resizable(Kr::ResizeHandlePosition::END);
         },
         .body = [] {
             return Ui::vflow(

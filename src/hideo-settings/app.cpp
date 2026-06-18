@@ -63,7 +63,7 @@ export Ui::Child app() {
                 };
             },
             .sidebar = [&] {
-                return sidebar(s);
+                return sidebar(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
             },
             .body = [&] {
                 return pageContent(s) | Ui::bound() | Kr::scaffoldContent() | Ui::grow();

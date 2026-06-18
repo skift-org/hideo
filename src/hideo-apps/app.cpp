@@ -31,7 +31,7 @@ export Ui::Child app() {
         .icon = Mdi::BASKET,
         .title = "Apps"s,
         .sidebar = [] {
-            return sidebar();
+            return sidebar() | Kr::resizable(Kr::ResizeHandlePosition::END);
         },
         .body = [] {
             return pageContent() | Kr::scaffoldContent() | Ui::grow();

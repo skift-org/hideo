@@ -111,7 +111,7 @@ export Ui::Child app() {
             .icon = Mdi::VIEW_DASHBOARD,
             .title = "System Monitor"s,
             .sidebar = [&] {
-                return sidebar(s);
+                return sidebar(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
             },
             .body = [] {
                 return Ui::empty() | Kr::scaffoldContent();

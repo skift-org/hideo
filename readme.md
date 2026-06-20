@@ -9,7 +9,7 @@
 <br/>
 <br/>
 
-![](doc/assets/capture.jpg)
+![](doc/assets/capture-2026-06-20.png)
 
 <br/>
 <br/>
@@ -22,4 +22,5 @@
 
 The hideo desktop environment is licensed under the **GNU Lesser General Public License v3.0 or later**.
 
-The full text of the license can be accessed via [this link](https://www.gnu.org/licenses/lgpl-3.0-standalone.html) and is also included in the [license.txt](license.txt) file of this software package.
+The full text of the license can be accessed via [this link](https://www.gnu.org/licenses/lgpl-3.0-standalone.html) and
+is also included in the [license.txt](license.txt) file of this software package.

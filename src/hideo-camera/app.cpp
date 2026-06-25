@@ -24,7 +24,7 @@ struct VideoSurface : Ui::View<VideoSurface> {
 
     void paint(Gfx::Canvas& g, Math::Recti) override {
         if (_frame)
-            g.blit(bound(), _frame.unwrap().surface->pixels());
+            g.blit(bound(), _frame.unwrap().surface);
     }
 
     void event(App::Event& e) override {

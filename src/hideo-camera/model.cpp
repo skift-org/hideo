@@ -31,7 +31,7 @@ Rc<Gfx::Surface> _generateThumbnail(Rc<Gfx::Surface> src) {
     auto thumb = Gfx::Surface::alloc(48);
     Gfx::CpuCanvas g;
     g.begin(thumb->mutPixels());
-    g.blit(thumb->bound().fit(src->bound()), thumb->bound(), src->pixels());
+    g.blit(thumb->bound().fit(src->bound()), thumb->bound(), src);
     g.end();
 
     return thumb;

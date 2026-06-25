@@ -40,7 +40,7 @@ export Ui::Child app() {
                            Math::Align::CENTER,
                            Ui::text(
                                Ui::TextStyles::codeLarge()
-                                   .withSize(48),
+                                   .withFontSize(48),
                                "{}", s.counter
                            ) | Ui::grow(),
                            Ui::hflow(16, decBtn, incBtn),

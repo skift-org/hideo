@@ -11,7 +11,7 @@ import :model;
 namespace Hideo::Calculator {
 
 Ui::Child textButton(Opt<Ui::Send<>> onPress, Ui::ButtonStyle style, String t) {
-    return Ui::text(Ui::TextStyles::labelLarge().withSize(18), t) |
+    return Ui::text(Ui::TextStyles::labelLarge().withFontSize(18), t) |
            Ui::center() |
            Ui::bound() |
            Ui::button(onPress, style);

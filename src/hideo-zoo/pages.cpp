@@ -481,20 +481,17 @@ Page PAGE_RICHTEXT{
 
         prose->append("We can change color: "s);
 
-        prose->pushSpan();
-        prose->spanColor(Gfx::RED);
+        prose->pushSpan(prose->currentSpanStyle().withColor(Gfx::RED));
         prose->append("red"s);
         prose->popSpan();
         prose->append(", "s);
 
-        prose->pushSpan();
-        prose->spanColor(Gfx::GREEN);
+        prose->pushSpan(prose->currentSpanStyle().withColor(Gfx::GREEN));
         prose->append(" green"s);
         prose->popSpan();
         prose->append(", "s);
 
-        prose->pushSpan();
-        prose->spanColor(Gfx::BLUE);
+        prose->pushSpan(prose->currentSpanStyle().withColor(Gfx::BLUE));
         prose->append("blue"s);
         prose->popSpan();
 

@@ -18,7 +18,7 @@ static Opt<Rc<Gfx::Fontface>> _blackFontface = NONE;
 
 static Rc<Gfx::Fontface> blackFontface() {
     if (not _blackFontface) {
-        _blackFontface = Font::loadFontfaceOrFallback("bundle://fonts-inter/fonts/Inter-Bold.ttf"_url).unwrap();
+        _blackFontface = Font::loadFontfaceOrFallback("bundle://fonts.inter/fonts/Inter-Bold.ttf"_url).unwrap();
     }
     return *_blackFontface;
 }
@@ -36,22 +36,12 @@ Ui::Child lockScreen(State const& state) {
     auto clock = Ui::vflow(
         0,
         Math::Align::CENTER,
+        Ui::text(Gfx::ProseProps{blackFontface()}.withFontSize(16), dateTime),
         Ui::text(
-            {
-                .font = Gfx::Font{
-                    blackFontface(),
-                    16,
-                },
-            },
-            dateTime
-        ),
-        Ui::text({
-                     .font = Gfx::Font{
-                         blackFontface(),
-                         72,
-                     },
-                 },
-                 "{02}:{02}", time.hour, time.minute)
+            Gfx::ProseProps{blackFontface()}.withFontSize(72),
+            "{02}:{02}",
+            time.hour, time.minute
+        )
     );
 
     auto hintText = Ui::vflow(

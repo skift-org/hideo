@@ -129,8 +129,8 @@ Ui::Task<Action> reduce(State& s, Action a) {
             auto dest = s.currentUrl();
             dest.append(navigate.item);
 
-            auto stat = Sys::stat(dest).unwrap();
-            if (stat.type == Sys::Type::FILE) {
+            auto stat = Sys::stat(dest);
+            if (stat and stat.unwrap().type == Sys::Type::FILE) {
                 (void)Sys::launch({
                     .action = Ref::Uti::PUBLIC_PREVIEW,
                     .objects = {dest},

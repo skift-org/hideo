@@ -1,11 +1,10 @@
 {
     "$schema": "https://schemas.cute.engineering/stable/cutekit.manifest.component.v1",
-    "id": "hideo-counter.main",
-    "props": {
-        "cpp-excluded": true
-    },
+    "id": "hideo-console",
     "type": "exe",
+    "description": "System console",
     "requires": [
-        "hideo-counter"
+        "karm-kira",
+        "karm-vte"
     ]
 }

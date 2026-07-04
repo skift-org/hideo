@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.cute.engineering/stable/cutekit.manifest.component.v1",
     "id": "hideo-apps",
-    "type": "lib",
+    "type": "exe",
     "description": "Install, update, and manage application",
     "requires": [
         "karm-kira"

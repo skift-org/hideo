@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.cute.engineering/stable/cutekit.manifest.component.v1",
     "id": "hideo-graph",
-    "type": "lib",
+    "type": "exe",
     "description": "Plan your day",
     "requires": [
         "karm-kira"

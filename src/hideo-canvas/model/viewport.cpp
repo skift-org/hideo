@@ -1,4 +1,4 @@
-export module Hideo.Canvas:viewport;
+export module Hideo.Canvas.Model:viewport;
 
 import Karm.Core;
 import Karm.Math;

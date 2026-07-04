@@ -1,4 +1,4 @@
-export module Hideo.Canvas:freehand;
+export module Hideo.Canvas.Freehand;
 
 import Karm.Core;
 import Karm.Math;
@@ -10,13 +10,13 @@ namespace Hideo::Canvas {
 constexpr f64 RATE_OF_PRESSURE_CHANGE = 0.275;
 constexpr f64 FIXED_PI = Math::PI + 0.0001;
 
-struct TaperOptions {
+export struct TaperOptions {
     bool cap = true;
     Union<bool, f64> taper = 0.;
     Math::Easing easing = Math::Easing::linear;
 };
 
-struct StrokeOptions {
+export struct StrokeOptions {
     f64 size = 6;
     f64 thinning = .6;
     f64 smoothing = .5;
@@ -36,18 +36,18 @@ export struct StrokePoint {
     f64 runningLength;
 };
 
-struct InputPoint {
+export struct InputPoint {
     Math::Vec2f pos;
     f64 pressure = 0.5;
 };
 
-f64 getStrokeRadius(f64 size, f64 thinning, f64 pressure, auto const& easing) {
+static f64 _easeStrokeRadius(f64 size, f64 thinning, f64 pressure, auto const& easing) {
     f64 t = 0.5 - thinning * (0.5 - pressure);
     t = easing(t);
     return size * t;
 }
 
-Vec<StrokePoint> getStrokePoints(Slice<InputPoint> points, StrokeOptions const& options) {
+static Vec<StrokePoint> _processInputPoints(Slice<InputPoint> points, StrokeOptions const& options) {
     if (isEmpty(points))
         return {};
 
@@ -118,7 +118,7 @@ Vec<StrokePoint> getStrokePoints(Slice<InputPoint> points, StrokeOptions const& 
     return strokePoints;
 }
 
-Vec<Math::Vec2f> getStrokeOutlinePoints(Slice<StrokePoint> points, StrokeOptions const& options) {
+static Vec<Math::Vec2f> _expandStroke(Slice<StrokePoint> points, StrokeOptions const& options) {
     if (isEmpty(points) or options.size <= 0.0)
         return {};
 
@@ -160,7 +160,7 @@ Vec<Math::Vec2f> getStrokeOutlinePoints(Slice<StrokePoint> points, StrokeOptions
         prevPressure = pressureAcc;
     }
 
-    f64 radius = getStrokeRadius(options.size, options.thinning, last(points).pressure, options.easing);
+    f64 radius = _easeStrokeRadius(options.size, options.thinning, last(points).pressure, options.easing);
     Opt<f64> firstRadius = NONE;
     Math::Vec2f prevVector = points[0].vector;
     Math::Vec2f pl = points[0].point;
@@ -185,7 +185,7 @@ Vec<Math::Vec2f> getStrokeOutlinePoints(Slice<StrokePoint> points, StrokeOptions
                 f64 rp = min(1.0, 1.0 - sp);
                 pressure = min(1.0, prevPressure + (rp - prevPressure) * (sp * RATE_OF_PRESSURE_CHANGE));
             }
-            radius = getStrokeRadius(options.size, options.thinning, pressure, options.easing);
+            radius = _easeStrokeRadius(options.size, options.thinning, pressure, options.easing);
         } else {
             radius = options.size / 2.0;
         }
@@ -356,8 +356,8 @@ export Math::Path strokeToPath(Slice<Math::Vec2f> points, bool closed = true) {
 }
 
 export Vec<Math::Vec2f> expandFreehand(Slice<InputPoint> points, StrokeOptions const& options) {
-    auto strokePoints = getStrokePoints(points, options);
-    return getStrokeOutlinePoints(strokePoints, options);
+    auto strokePoints = _processInputPoints(points, options);
+    return _expandStroke(strokePoints, options);
 }
 
 } // namespace Hideo::Canvas

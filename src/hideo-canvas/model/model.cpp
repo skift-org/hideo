@@ -2,19 +2,20 @@ module;
 
 #include <karm/macros>
 
-export module Hideo.Canvas:model;
+export module Hideo.Canvas.Model:model;
+
+import Karm.Core;
+import Karm.Math;
+import Karm.Ui;
+import Karm.App;
+
+import Hideo.Canvas.Freehand;
 
 export import :bound;
 export import :gizmo;
 export import :node;
 export import :selection;
 export import :tree;
-export import :freehand;
-
-import Karm.Core;
-import Karm.Math;
-import Karm.Ui;
-import Karm.App;
 
 using namespace Karm;
 

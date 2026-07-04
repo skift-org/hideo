@@ -6,7 +6,7 @@
         "cpp-excluded": true
     },
     "requires": [
-        "hideo-canvas",
+        "hideo-canvas.model",
         "karm-test"
     ],
     "injects": [

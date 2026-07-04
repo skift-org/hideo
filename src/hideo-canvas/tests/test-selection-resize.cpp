@@ -1,6 +1,6 @@
 #include <karm/test>
 
-import Hideo.Canvas;
+import Hideo.Canvas.Model;
 import Karm.Math;
 
 using namespace Karm;

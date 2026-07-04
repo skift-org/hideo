@@ -1,9 +1,9 @@
-export module Hideo.Canvas:node;
+export module Hideo.Canvas.Model:node;
 
 import Karm.Core;
 import Karm.Gfx;
+import Hideo.Canvas.Freehand;
 import :bound;
-import :freehand;
 
 using namespace Karm;
 

@@ -1,4 +1,4 @@
-export module Hideo.Canvas:gizmo;
+export module Hideo.Canvas.Model:gizmo;
 
 import Karm.Core;
 import Karm.Gfx;

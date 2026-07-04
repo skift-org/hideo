@@ -7,7 +7,8 @@ import Karm.Kira;
 import Karm.Gfx;
 import Karm.Math;
 import Karm.App;
-import :model;
+import Hideo.Canvas.Model;
+import Hideo.Canvas.Freehand;
 
 using namespace Karm;
 using namespace Karm::Literals;
@@ -255,18 +256,13 @@ Ui::Child toolbarZoom() {
     return Ui::button(Ui::SINK<>, Mdi::MAGNIFY, "100%");
 }
 
-Ui::Child toolbarFormat() {
-    return Ui::button(Ui::SINK<>, Mdi::FORMAT_TEXTBOX);
-}
-
 Ui::Child viewportPanel(State const& s) {
     return Ui::stack(
                viewport(s),
                Ui::stack(
                    toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER),
-                   colorBar(s) | Ui::align(Math::Align::TOP | Math::Align::HCENTER)
-                   // toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2),
-                   // toolbarFormat() | Ui::align(Math::Align::TOP | Math::Align::END) | Ui::insets(2)
+                   colorBar(s) | Ui::align(Math::Align::TOP | Math::Align::HCENTER) | Ui::cond(s.currentTool == Tool::FREEHAND),
+                   toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2)
                ) | Ui::insets(16)
            ) |
            Kr::scaffoldContent();

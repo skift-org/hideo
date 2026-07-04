@@ -1,4 +1,4 @@
-export module Hideo.Canvas:selection;
+export module Hideo.Canvas.Model:selection;
 
 import Karm.Core;
 import Karm.Gfx;

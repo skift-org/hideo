@@ -1,4 +1,4 @@
-export module Hideo.Canvas:tree;
+export module Hideo.Canvas.Model:tree;
 
 import Karm.Core;
 import Karm.Math;

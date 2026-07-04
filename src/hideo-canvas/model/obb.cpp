@@ -1,4 +1,4 @@
-export module Hideo.Canvas:bound;
+export module Hideo.Canvas.Model:bound;
 
 import Karm.Core;
 import Karm.Math;

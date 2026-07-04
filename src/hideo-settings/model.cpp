@@ -2,6 +2,7 @@ export module Hideo.Settings:model;
 
 import Karm.Core;
 import Karm.Ui;
+import Karm.Sys;
 
 using namespace Karm;
 
@@ -11,7 +12,7 @@ export enum struct Page {
     HOME,
     ACCOUNT,
     PERSONALIZATION,
-    APPLICATIONS,
+    PACKAGES,
     SYSTEM,
     NETWORK,
     SECURITY,
@@ -20,6 +21,7 @@ export enum struct Page {
 };
 
 export struct State {
+    Res<Vec<Sys::Bundle>> packages;
     Vec<Page> history = {Page::HOME};
     usize historyIndex = 0;
 

@@ -14,8 +14,11 @@ export Ui::Child app() {
     return Kr::scaffold({
         .icon = Mdi::CODE_BRACES,
         .title = "Code"s,
+        .sidebar = [] {
+            return Ui::empty(128) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandlePosition::END);
+        },
         .body = [] {
-            return Ui::empty() | Kr::scaffoldContent();
+            return Ui::vflow(Ui::empty() | Kr::scaffoldContent() | Ui::grow(), Ui::empty(128) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandlePosition::TOP));
         },
     });
 }

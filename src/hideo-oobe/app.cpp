@@ -246,7 +246,7 @@ Ui::Child accountOnlineStep(State const&) {
                 "Back"
             ),
             Ui::grow(NONE),
-            Kr::progress() | Ui::insets({0, 12}),
+            Kr::indeterminedProgress() | Ui::insets({0, 12}),
             Ui::button(
                 Model::bind(Step::DEVICE),
                 Ui::ButtonStyle::regular(),
@@ -285,7 +285,7 @@ Ui::Child accountRegisterStep(State const&) {
                 "Back"
             ),
             Ui::grow(NONE),
-            Kr::progress() | Ui::insets({0, 12}),
+            Kr::indeterminedProgress() | Ui::insets({0, 12}),
             Ui::button(
                 Model::bind(Step::DEVICE),
                 Ui::ButtonStyle::regular(),
@@ -432,7 +432,7 @@ Ui::Child finishingStep(State const&) {
         Ui::vflow(
             16,
             Math::Align::CENTER,
-            Kr::progress(32),
+            Kr::indeterminedProgress(32),
             Ui::labelMedium("Applying configurations…"),
             Ui::button(Model::bind(Step::FINISH), Ui::ButtonStyle::regular(), "Cancel"s)
         ) | Ui::center() |

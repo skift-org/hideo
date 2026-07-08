@@ -431,12 +431,35 @@ Page PAGE_PROGRESS{
     "Progress",
     "A loading indicator that spins to indicate that the application is busy.",
     [] {
-        return Ui::hflow(
-                   8,
-                   Kr::progress(12),
-                   Kr::progress(18),
-                   Kr::progress(24),
-                   Kr::progress(48)
+        return Ui::vflow(
+                   Ui::hflow(
+                       8,
+                       Kr::indeterminedProgress(12),
+                       Kr::indeterminedProgress(18),
+                       Kr::indeterminedProgress(24),
+                       Kr::indeterminedProgress(48)
+                   ),
+                   Ui::hflow(
+                       8,
+                       Kr::pieCountDown(0.25, 12),
+                       Kr::pieCountDown(0.25, 18),
+                       Kr::pieCountDown(0.25, 24),
+                       Kr::pieCountDown(0.25, 48)
+                   ),
+                   Ui::hflow(
+                       8,
+                       Kr::pieCountDown(0.5, 12),
+                       Kr::pieCountDown(0.5, 18),
+                       Kr::pieCountDown(0.5, 24),
+                       Kr::pieCountDown(0.5, 48)
+                   ),
+                   Ui::hflow(
+                       8,
+                       Kr::pieCountDown(0.75, 12),
+                       Kr::pieCountDown(0.75, 18),
+                       Kr::pieCountDown(0.75, 24),
+                       Kr::pieCountDown(0.75, 48)
+                   )
                ) |
                Ui::center();
     },

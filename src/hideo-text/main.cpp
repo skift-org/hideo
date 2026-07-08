@@ -12,7 +12,7 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     Res<String> text = Ok(""s);
     if (env.argsLen()) {
         url = Ref::parseUrlOrPath(env[0], env.cwd());
-        text = Sys::readAllUtf8(*url);
+        text = Sys::readAllText<Utf8>(*url);
     }
     co_return co_await Ui::runAsync(env, Hideo::Text::app(url, text), ct);
 }

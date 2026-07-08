@@ -110,7 +110,7 @@ Ui::Children appToolbar(State const& s) {
             n,
             Files::openDialog([](auto& n, auto url) {
                 Ui::closeDialog(n);
-                auto content = Sys::readAllUtf8(url);
+                auto content = Sys::readAllText<Utf8>(url);
                 if (content)
                     Model::bubble<Open>(n, Open{url, content.unwrap()});
             })

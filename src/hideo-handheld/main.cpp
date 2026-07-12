@@ -69,13 +69,13 @@ Rc<Gfx::Fontface> inputFontface() {
     return *_inputFontface;
 }
 
-Gfx::ProseStyle inputMedium() {
-    return {
-        .font = Gfx::Font{
-            inputFontface(),
-            16,
-        },
+Gfx::ProseProps inputMedium() {
+    Gfx::ProseProps props;
+    props.font = Gfx::Font{
+        inputFontface(),
+        16,
     };
+    return props;
 }
 
 Ui::Child buttonHint(Str button, Str description, Gfx::Color color) {

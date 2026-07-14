@@ -39,7 +39,7 @@ Ui::Child lockScreen(State const& state) {
         Ui::text(Gfx::ProseProps{blackFontface()}.withFontSize(16), dateTime),
         Ui::text(
             Gfx::ProseProps{blackFontface()}.withFontSize(72),
-            "{02}:{02}",
+            "{:02}:{:02}",
             time.hour, time.minute
         )
     );

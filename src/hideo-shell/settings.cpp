@@ -53,7 +53,7 @@ Ui::Child dateAndTime(State const& state) {
     auto [date, time] = state.dateTime;
 
     return Ui::vflow(
-               Ui::labelLarge("{02}:{03}", time.hour, time.minute),
+               Ui::labelLarge("{:02}:{:02}", time.hour, time.minute),
                Ui::labelMedium("Fri, Jul 28")
            ) |
            Ui::center() |

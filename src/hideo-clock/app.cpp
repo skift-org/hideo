@@ -23,7 +23,7 @@ Ui::Child alarmCard(Time alarm, bool enabled) {
     return Ui::hflow(
                24,
                Math::Align::CENTER,
-               Ui::displayMedium("{02}:{02}", alarm.hour, alarm.minute),
+               Ui::displayMedium("{:02}:{:02}", alarm.hour, alarm.minute),
                Ui::grow(NONE),
                Kr::toggle(enabled, Ui::SINK<bool>)
            ) |
@@ -53,7 +53,7 @@ Ui::Child clockPage(State const& s) {
     return Ui::vflow(
                12,
                Kr::clock(time) | Ui::pinSize({200, 200}),
-               Ui::displayMedium("{02}:{02}:{02}", time.hour, time.minute, time.second) | Ui::center()
+               Ui::displayMedium("{:02}:{:02}:{:02}", time.hour, time.minute, time.second) | Ui::center()
            ) |
            Ui::insets(12);
 }

@@ -13,7 +13,7 @@ namespace Hideo::Shell {
 
 Ui::Child statusbarClock(State const& s) {
     auto [_, time] = s.dateTime;
-    return Ui::labelLarge("{02}:{02}", time.hour, time.minute) | Ui::center();
+    return Ui::labelLarge("{:02}:{:02}", time.hour, time.minute) | Ui::center();
 };
 
 Ui::Child statusbarIndicator(Gfx::Icon icon) {

@@ -58,7 +58,7 @@ Ui::Child digitalWatchface(DateTime dt) {
     auto clock = Ui::vflow(
         16,
         Math::Align::CENTER,
-        Ui::displayMedium("{02}:{02}", time.hour, time.minute),
+        Ui::displayMedium("{:02}:{:02}", time.hour, time.minute),
         Ui::titleMedium(dateTime)
     );
 

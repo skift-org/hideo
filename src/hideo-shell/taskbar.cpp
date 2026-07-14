@@ -27,7 +27,7 @@ Ui::Child taskbarCalendarButton(State const& s) {
     auto [date, time] = s.dateTime;
 
     auto dateTime = Io::format(
-        "{}. {} {}, {02}:{02}",
+        "{}. {} {}, {:02}:{:02}",
         Io::toCapitalCase(date.month.abbr()),
         date.dayOfMonth() + 1,
         date.year.val(),

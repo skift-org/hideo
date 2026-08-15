@@ -132,7 +132,7 @@ export struct Tree {
         if (node.kind == Kind::FRAME)
             return NONE;
 
-        return ref;
+        return Some(ref);
     }
 
     void _objectAtRect(Ref ref, Math::Rectf rect, Vec<Ref>& out, Opt<Ref> startFrame = NONE, bool allowFrameSelection = false) const {
@@ -180,7 +180,7 @@ export struct Tree {
                 continue;
 
             if (n.kind == Kind::FRAME and n.bound.contains(pos))
-                return n.ref;
+                return Some(n.ref);
         }
 
         return NONE;

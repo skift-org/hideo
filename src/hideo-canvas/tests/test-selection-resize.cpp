@@ -47,17 +47,17 @@ test$("canvas-tree-reparent-refs") {
 
     auto a = tree.insert(Kind::FRAME, Obb{{0.0, 0.0}, {10.0, 10.0}, 0.0});
     auto b = tree.insert(Kind::RECT, Obb{{20.0, 0.0}, {10.0, 10.0}, 0.0});
-    auto c = tree.insert(Kind::TEXT, Obb{{40.0, 0.0}, {10.0, 10.0}, 0.0}, a);
+    auto c = tree.insert(Kind::TEXT, Obb{{40.0, 0.0}, {10.0, 10.0}, 0.0}, Some(a));
     auto d = tree.insert(Kind::GROUP, Obb{{60.0, 0.0}, {10.0, 10.0}, 0.0});
 
-    tree.reparentRoots(Vec<Ref>{a}, d);
+    tree.reparentRoots(Vec<Ref>{a}, Some(d));
 
-    expectEq$(tree.parentOf(a), Opt<Ref>{d});
-    expectEq$(tree.parentOf(c), Opt<Ref>{a});
+    expectEq$(tree.parentOf(a), d);
+    expectEq$(tree.parentOf(c), a);
     expectEq$(tree.parentOf(b), NONE);
 
-    tree.reparentRoots(Vec<Ref>{a}, c);
-    expectEq$(tree.parentOf(a), Opt<Ref>{d});
+    tree.reparentRoots(Vec<Ref>{a}, Some(c));
+    expectEq$(tree.parentOf(a), d);
 
     return Ok();
 }
@@ -66,11 +66,11 @@ test$("canvas-hit-test-frame-content") {
     Tree tree;
 
     auto frame = tree.insert(Kind::FRAME, Obb{{100.0, 100.0}, {120.0, 120.0}, 0.0});
-    auto child = tree.insert(Kind::RECT, Obb{{100.0, 100.0}, {40.0, 40.0}, 0.0}, frame);
-    auto nestedFrame = tree.insert(Kind::FRAME, Obb{{120.0, 120.0}, {30.0, 30.0}, 0.0}, frame);
+    auto child = tree.insert(Kind::RECT, Obb{{100.0, 100.0}, {40.0, 40.0}, 0.0}, Some(frame));
+    auto nestedFrame = tree.insert(Kind::FRAME, Obb{{120.0, 120.0}, {30.0, 30.0}, 0.0}, Some(frame));
 
     auto hitChild = tree.objectAt(Math::Vec2f{100.0, 100.0});
-    expectEq$(hitChild, Opt<Ref>{child});
+    expectEq$(hitChild, child);
 
     auto hitFrameInterior = tree.objectAt(Math::Vec2f{70.0, 70.0});
     expectEq$(hitFrameInterior, NONE);
@@ -98,8 +98,8 @@ test$("canvas-frame-gizmo-uniform-only-on-mixed-child-angles") {
     Tree tree;
 
     auto frame = tree.insert(Kind::FRAME, Obb{{100.0, 100.0}, {120.0, 120.0}, 0.0});
-    tree.insert(Kind::RECT, Obb{{90.0, 100.0}, {30.0, 20.0}, 0.1}, frame);
-    tree.insert(Kind::RECT, Obb{{110.0, 100.0}, {30.0, 20.0}, -0.2}, frame);
+    tree.insert(Kind::RECT, Obb{{90.0, 100.0}, {30.0, 20.0}, 0.1}, Some(frame));
+    tree.insert(Kind::RECT, Obb{{110.0, 100.0}, {30.0, 20.0}, -0.2}, Some(frame));
 
     Selection selection;
     selection.set(tree, {frame});
@@ -115,7 +115,7 @@ test$("canvas-frame-gizmo-uniform-only-on-child-frame-angle-mismatch") {
     Tree tree;
 
     auto frame = tree.insert(Kind::FRAME, Obb{{100.0, 100.0}, {120.0, 120.0}, 0.0});
-    tree.insert(Kind::RECT, Obb{{100.0, 100.0}, {30.0, 20.0}, 0.25}, frame);
+    tree.insert(Kind::RECT, Obb{{100.0, 100.0}, {30.0, 20.0}, 0.25}, Some(frame));
 
     Selection selection;
     selection.set(tree, {frame});
@@ -131,7 +131,7 @@ test$("canvas-uniform-gizmo-aabb-uses-roots-not-frame-children") {
     Tree tree;
 
     auto frame = tree.insert(Kind::FRAME, Obb{{100.0, 100.0}, {80.0, 80.0}, 0.0});
-    auto child = tree.insert(Kind::RECT, Obb{{220.0, 100.0}, {20.0, 20.0}, 0.25}, frame);
+    auto child = tree.insert(Kind::RECT, Obb{{220.0, 100.0}, {20.0, 20.0}, 0.25}, Some(frame));
 
     Selection selection;
     selection.set(tree, {frame, child});

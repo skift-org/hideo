@@ -4,6 +4,7 @@ import Karm.Ui;
 import Karm.Kira;
 import Karm.Core;
 import Karm.Math;
+import Karm.Signals;
 import Mdi;
 import :model;
 
@@ -18,13 +19,13 @@ export Ui::Child app() {
             .title = "Counter"s,
             .body = [&] {
                 auto decBtn = Ui::button(
-                    Model::bind<DecrementAction>(),
+                    Some(Model::bind<DecrementAction>()),
                     Ui::ButtonStyle::regular().withRadii(999),
                     Mdi::MINUS_THICK
                 );
 
                 auto incBtn = Ui::button(
-                    Model::bind<IncrementAction>(),
+                    Some(Model::bind<IncrementAction>()),
                     Ui::ButtonStyle::regular().withRadii(999),
                     Mdi::PLUS_THICK
                 );

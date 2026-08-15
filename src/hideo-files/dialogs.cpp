@@ -36,11 +36,11 @@ export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {
                     Kr::dialogCancel(),
                     Ui::button(
                         hasSelection
-                            ? Opt<Ui::Send<>>{[&, onFile](auto& n) {
+                            ? Opt<Ui::Send<>>{Some([&, onFile](auto& n) {
                                   auto url = s.currentUrl();
                                   url.append(s.inputFilename);
                                   onFile(n, url);
-                              }}
+                              })}
                             : NONE,
                         Ui::ButtonStyle::primary(),
                         "Open"s
@@ -75,11 +75,11 @@ export Ui::Child saveDialog(Ui::Send<Ref::Url> onFile) {
                     Kr::dialogCancel(),
                     Ui::button(
                         hasFilename
-                            ? Opt<Ui::Send<>>{[&, onFile](auto& n) {
+                            ? Opt<Ui::Send<>>{Some([&, onFile](auto& n) {
                                   auto url = s.currentUrl();
                                   url.append(s.inputFilename);
                                   onFile(n, url);
-                              }}
+                              })}
                             : NONE,
                         Ui::ButtonStyle::primary(),
                         "Save"s
@@ -111,9 +111,9 @@ export Ui::Child directoryDialog(Ui::Send<Ref::Url> onFile) {
                     Ui::grow(NONE),
                     Kr::dialogCancel(),
                     Kr::dialogAction(
-                        [&, onFile](auto& n) {
+                        Some([&, onFile](auto& n) {
                             onFile(n, d.currentUrl());
-                        },
+                        }),
                         "Select"s
                     ),
                 }),

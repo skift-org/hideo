@@ -20,7 +20,7 @@ Ui::Child tileButton(Ui::Send<> onPress, Gfx::Icon icon, String text) {
            Ui::insets(8) |
            Ui::bound() |
            Ui::minSize({96, 72}) |
-           Ui::button(std::move(onPress), Ui::ButtonStyle::secondary());
+           Ui::button(Some(onPress), Ui::ButtonStyle::secondary());
 }
 
 export Ui::Child pageHome(State const&) {

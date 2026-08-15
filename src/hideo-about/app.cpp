@@ -34,19 +34,19 @@ export Ui::Child app() {
                 auto inspireMe = Ui::state(Sys::instant().val(), [](auto v, auto bind) {
                     auto body = Ui::hflow(
                         8, Math::Align::CENTER,
-                        Ui::image("bundle://hideo-about/pride.qoi"_url, 4) | Ui::sizing(Ui::UNCONSTRAINED, 24),
+                        Ui::image("bundle://hideo-about/progress.qoi"_url, Some(4)) | Ui::sizing(Ui::UNCONSTRAINED, 24),
                         Ui::bodySmall(wholesome(v))
                     );
 
                     return body | Ui::insets({6, 16, 6, 12}) |
                            Ui::minSize({Ui::UNCONSTRAINED, 32}) |
-                           Ui::button(bind(v + 1), Ui::ButtonStyle::subtle());
+                           Ui::button(Some(bind(v + 1)), Ui::ButtonStyle::subtle());
                 });
 
                 auto licenseBtn = Ui::button(
-                    [](auto& n) {
+                    Some([](auto& n) {
                         Ui::showDialog(n, Kr::licenseDialog());
-                    },
+                    }),
                     Ui::ButtonStyle::outline(), Mdi::LICENSE, "License"
                 );
 

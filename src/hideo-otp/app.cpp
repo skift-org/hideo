@@ -74,11 +74,16 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::LOCK,
             .title = "Authenticator"s,
-            .startTools = [&] -> Ui::Children {
+            .startTools = Some([&] -> Ui::Children {
                 return {
-                    Ui::button(Model::bind<Update>(), Ui::ButtonStyle::primary(), Mdi::PLUS, "Add")
+                    Ui::button(
+                        Some(Model::bind<Update>()),
+                        Ui::ButtonStyle::primary(),
+                        Mdi::PLUS,
+                        "Add"
+                    )
                 };
-            },
+            }),
             .body = [&] {
                 return Ui::vflow(
                            6,

@@ -9,6 +9,7 @@ import Karm.Ref;
 import Karm.Gfx;
 import Karm.Math;
 import Karm.Logger;
+import Karm.Scene;
 
 import Hideo.Files;
 import :model;
@@ -24,7 +25,7 @@ Page PAGE_ALERT{
     "A modal dialog that interrupts the user with important content and expects a response.",
     [] {
         return Ui::button(
-                   [](auto& n) {
+                   Some([](auto& n) {
                        Ui::showDialog(
                            n,
                            Kr::dialogContent({
@@ -35,11 +36,11 @@ Page PAGE_ALERT{
                                Kr::dialogFooter({
                                    Ui::grow(NONE),
                                    Kr::dialogCancel(),
-                                   Kr::dialogAction(Ui::SINK<>, "Continue"s),
+                                   Kr::dialogAction(Some(Ui::SINK<>), "Continue"s),
                                }),
                            })
                        );
-                   },
+                   }),
                    "Show alert"
                ) |
                Ui::center();
@@ -87,15 +88,15 @@ Page PAGE_BUTTON{
         return Ui::vflow(
                    16,
                    Math::Align::CENTER,
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::regular(), "Regular button"),
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::primary(), "Primary button"),
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::secondary(), "Secondary button"),
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::outline(), "Outline button"),
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), "Subtle button"),
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::text(), "Text button"),
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::regular(), "Regular button"),
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::primary(), "Primary button"),
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::secondary(), "Secondary button"),
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::outline(), "Outline button"),
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle(), "Subtle button"),
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::text(), "Text button"),
 
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::destructive(), "Destructive button"),
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::none(), "None button")
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::destructive(), "Destructive button"),
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::none(), "None button")
                ) |
                Ui::center();
     },
@@ -163,19 +164,19 @@ Page PAGE_CONTEXT_MENU{
                Ui::bound() |
                Kr::contextMenu([] {
                    return Kr::contextMenuContent({
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::OPEN_IN_APP, "Open"),
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::PENCIL, "Edit"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::OPEN_IN_APP), "Open"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::PENCIL), "Edit"),
                        Kr::separator(),
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::CONTENT_COPY, "Copy"),
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::CONTENT_CUT, "Cut"),
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::CONTENT_PASTE, "Paste"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::CONTENT_COPY), "Copy"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::CONTENT_CUT), "Cut"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::CONTENT_PASTE), "Paste"),
                        Kr::separator(),
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::SHARE, "Interact…"),
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::CURSOR_TEXT, "Rename…"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::SHARE), "Interact…"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::CURSOR_TEXT), "Rename…"),
                        Kr::separator(),
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::DELETE, "Delete"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::DELETE), "Delete"),
                        Kr::separator(),
-                       Kr::contextMenuItem(Ui::SINK<>, Mdi::INFORMATION_OUTLINE, "Properties…"),
+                       Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::INFORMATION_OUTLINE), "Properties…"),
                    });
                });
     },
@@ -187,7 +188,7 @@ Page PAGE_DIALOG{
     "A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.",
     [] {
         return Ui::button(
-                   [](auto& n) {
+                   Some([](auto& n) {
                        Ui::showDialog(
                            n,
                            Kr::dialogContent({
@@ -195,7 +196,7 @@ Page PAGE_DIALOG{
                                Ui::labelLarge("Hello, world") | Ui::center() | Ui::pinSize({200, 160}),
                            })
                        );
-                   },
+                   }),
                    "Show dialog"
                ) |
                Ui::center();
@@ -210,36 +211,36 @@ Page PAGE_FILE_DIALOG{
         return Ui::vflow(
                    6,
                    Ui::button(
-                       [](auto& n) {
+                       Some([](auto& n) {
                            Ui::showDialog(
                                n,
                                Files::openDialog([](auto&, auto url) {
                                    logInfo("selected file: {}", url);
                                })
                            );
-                       },
+                       }),
                        "Open File..."
                    ),
                    Ui::button(
-                       [](auto& n) {
+                       Some([](auto& n) {
                            Ui::showDialog(
                                n,
                                Hideo::Files::saveDialog([](auto&, auto url) {
                                    logInfo("selected file: {}", url);
                                })
                            );
-                       },
+                       }),
                        "Save As..."
                    ),
                    Ui::button(
-                       [](auto& n) {
+                       Some([](auto& n) {
                            Ui::showDialog(
                                n,
                                Hideo::Files::directoryDialog([](auto&, auto url) {
                                    logInfo("selected directory: {}", url);
                                })
                            );
-                       },
+                       }),
                        "Open Directory..."
                    )
                ) |
@@ -270,7 +271,7 @@ Page PAGE_HSV_SQUARE{
         return Kr::hsvSquare({}, Ui::SINK<Gfx::Hsv>) |
                Ui::box({
                    .borderWidth = 1,
-                   .borderFill = Ui::GRAY800,
+                   .borderFill = Some(Ui::GRAY800),
                }) |
                Ui::center();
     },
@@ -359,25 +360,25 @@ Page PAGE_NAVBAR{
                 Ui::grow(NONE),
                 Kr::navbarContent({
                     Kr::navbarItem(
-                        bind(0),
+                        Some(bind(0)),
                         Mdi::ALARM,
                         "Alarm",
                         state == 0
                     ),
                     Kr::navbarItem(
-                        bind(1),
+                        Some(bind(1)),
                         Mdi::CLOCK_OUTLINE,
                         "Clock",
                         state == 1
                     ),
                     Kr::navbarItem(
-                        bind(2),
+                        Some(bind(2)),
                         Mdi::TIMER_SAND,
                         "Timer",
                         state == 2
                     ),
                     Kr::navbarItem(
-                        bind(3),
+                        Some(bind(3)),
                         Mdi::TIMER_OUTLINE,
                         "Stopwatch",
                         state == 3
@@ -408,18 +409,18 @@ Page PAGE_PRINT_DIALOG{
     "Prompts the user to print a document.",
     [] {
         return Ui::button(
-                   [](auto& n) {
+                   Some([](auto& n) {
                        Ui::showDialog(
                            n,
                            Print::printDialog([](Print::Settings const& s) -> Vec<Print::Page> {
                                return {
-                                   {s.pageSize().cast<f64>()},
-                                   {s.pageSize().cast<f64>()},
-                                   {s.pageSize().cast<f64>()},
+                                   {s.pageSize().cast<f64>(), makeRc<Scene::Clear>(makeRc<Scene::Node>(), Gfx::RED500)},
+                                   {s.pageSize().cast<f64>(), makeRc<Scene::Clear>(makeRc<Scene::Node>(), Gfx::BLUE500)},
+                                   {s.pageSize().cast<f64>(), makeRc<Scene::Clear>(makeRc<Scene::Node>(), Gfx::GREEN500)},
                                };
                            })
                        );
-                   },
+                   }),
                    "Show dialog"
                ) |
                Ui::center();
@@ -530,11 +531,11 @@ Page PAGE_ROWS{
     "A collection of rows that can be used to display settings.",
     [] {
         auto button = Kr::buttonRow(
-            [](auto& n) {
+            Some([](auto& n) {
                 Ui::showDialog(n, Kr::alertDialog("Message"s, "This is a message"s));
-            },
+            }),
             "Cool duck app"s,
-            "Version 1.1.0"s,
+            Some("Version 1.1.0"s),
             "Install"s
         );
 
@@ -544,9 +545,9 @@ Page PAGE_ROWS{
             button,
             Kr::separator(),
             Kr::treeRow(
-                [&] -> Ui::Child {
+                Some([&] -> Ui::Child {
                     return Ui::icon(Mdi::TOGGLE_SWITCH);
-                },
+                }),
                 "Switches"s,
                 NONE,
                 Ui::Slots{[&] -> Ui::Children {
@@ -560,9 +561,9 @@ Page PAGE_ROWS{
 
             Kr::separator(),
             Kr::treeRow(
-                [&] -> Ui::Child {
+                Some([&] -> Ui::Child {
                     return Ui::icon(Mdi::CHECKBOX_MARKED);
-                },
+                }),
                 "Checkboxs"s,
                 NONE,
                 Ui::Slots{[&] -> Ui::Children {
@@ -576,9 +577,9 @@ Page PAGE_ROWS{
 
             Kr::separator(),
             Kr::treeRow(
-                [&] -> Ui::Child {
+                Some([&] -> Ui::Child {
                     return Ui::icon(Mdi::RADIOBOX_MARKED);
-                },
+                }),
                 "Radios"s,
                 NONE,
                 Ui::Slots{[&] -> Ui::Children {
@@ -616,23 +617,23 @@ Page PAGE_SELECT{
                        return {
                            Kr::selectGroup({
                                Kr::selectLabel("Fruits"s),
-                               Kr::selectItem(Ui::SINK<>, "Apple"s),
-                               Kr::selectItem(Ui::SINK<>, "Banana"s),
-                               Kr::selectItem(Ui::SINK<>, "Cherry"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Apple"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Banana"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Cherry"s),
                            }),
                            Kr::separator(),
                            Kr::selectGroup({
                                Kr::selectLabel("Vegetables"s),
-                               Kr::selectItem(Ui::SINK<>, "Carrot"s),
-                               Kr::selectItem(Ui::SINK<>, "Cucumber"s),
-                               Kr::selectItem(Ui::SINK<>, "Tomato"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Carrot"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Cucumber"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Tomato"s),
                            }),
                            Kr::separator(),
                            Kr::selectGroup({
                                Kr::selectLabel("Meat"s),
-                               Kr::selectItem(Ui::SINK<>, "Beef"s),
-                               Kr::selectItem(Ui::SINK<>, "Chicken"s),
-                               Kr::selectItem(Ui::SINK<>, "Pork"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Beef"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Chicken"s),
+                               Kr::selectItem(Some(Ui::SINK<>), "Pork"s),
                            }),
                        };
                    }
@@ -677,16 +678,16 @@ Page PAGE_SIDENAV{
         return Ui::hflow(
             Kr::sidenavContent({
                 Kr::sidenavTitle("Navigation"s),
-                Kr::sidenavItem(true, Ui::SINK<>, Mdi::DUCK, "Item 1"s),
+                Kr::sidenavItem(true, Some(Ui::SINK<>), Mdi::DUCK, "Item 1"s),
                 Kr::sidenavTree(Mdi::TREE, "Item 2"s, [] {
                     return Ui::vflow(
                         8,
-                        Kr::sidenavItem(false, Ui::SINK<>, Mdi::DUCK, "Subitem 1"s),
-                        Kr::sidenavItem(false, Ui::SINK<>, Mdi::DUCK, "Subitem 2"s),
-                        Kr::sidenavItem(false, Ui::SINK<>, Mdi::DUCK, "Subitem 3"s)
+                        Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::DUCK, "Subitem 1"s),
+                        Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::DUCK, "Subitem 2"s),
+                        Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::DUCK, "Subitem 3"s)
                     );
                 }),
-                Kr::sidenavItem(false, Ui::SINK<>, Mdi::DUCK, "Item 3"s),
+                Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::DUCK, "Item 3"s),
             }),
             Kr::separator()
         );
@@ -699,7 +700,7 @@ Page PAGE_SIDE_PANEL{
     "A panel that slides in from the side of the screen to display aditional information or properties",
     [] {
         return Ui::state(false, [](auto state, auto bind) {
-            auto content = Ui::button(bind(!state), "Toggle Side Panel") |
+            auto content = Ui::button(Some(bind(not state)), "Toggle Side Panel") |
                            Ui::center() |
                            Ui::grow();
 
@@ -710,7 +711,7 @@ Page PAGE_SIDE_PANEL{
                 content,
                 Kr::separator(),
                 Kr::sidePanelContent({
-                    Kr::sidePanelTitle(bind(false), "Side Panel"),
+                    Kr::sidePanelTitle(Some(bind(false)), "Side Panel"),
                     Kr::separator(),
                     Ui::labelMedium(Ui::GRAY500, "This is a side panel.") |
                         Ui::center() | Ui::grow(),
@@ -757,7 +758,7 @@ Page PAGE_TABBAR{
                         Kr::tabbarItem(state == 2, bind(2), Ui::labelMedium("Tab 2"s)),
                         Kr::tabbarItem(state == 3, bind(3), Ui::labelMedium("Tab 3"s)),
                         Ui::button(
-                            bind(0),
+                            Some(bind(0)),
                             Ui::ButtonStyle::subtle(),
                             Mdi::PLUS
                         ) | Ui::center(),
@@ -766,11 +767,11 @@ Page PAGE_TABBAR{
                 },
                 Kr::toolbar({
                     Ui::button(
-                        bind(0),
+                        Some(bind(0)),
                         Ui::ButtonStyle::subtle(),
                         Mdi::ALARM
                     ),
-                }) | Ui::box({.backgroundFill = Ui::GRAY900})
+                }) | Ui::box({.backgroundFill = Some(Ui::GRAY900)})
             );
         });
     },

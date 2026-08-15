@@ -52,7 +52,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.text = makeRc<Ui::TextModel>();
         },
         [&](Open& o) {
-            s.url = o.url;
+            s.url = Some(o.url);
             s.error = NONE;
             s.text = makeRc<Ui::TextModel>();
             s.text->load(o.content);
@@ -65,7 +65,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             }
             auto file = Sys::File::create(*s.url);
             if (not file) {
-                s.error = file.none();
+                s.error = Some(file.none());
                 return;
             }
             Io::TextEncoder<> enc{file.unwrap()};
@@ -73,10 +73,10 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.text->flush();
         },
         [&](SaveAs& sa) {
-            s.url = sa.url;
+            s.url = Some(sa.url);
             auto file = Sys::File::create(*s.url);
             if (not file) {
-                s.error = file.none();
+                s.error = Some(file.none());
                 return;
             }
             Io::TextEncoder<> enc{file.unwrap()};
@@ -128,10 +128,10 @@ Ui::Children appToolbar(State const& s) {
     };
 
     return {
-        Ui::button(Model::bind<New>(), Ui::ButtonStyle::subtle(), Mdi::FILE) | Ui::keyboardShortcut(App::Key::N, App::KeyMod::CTRL),
-        Ui::button(openAction, Ui::ButtonStyle::subtle(), Mdi::FOLDER) | Ui::keyboardShortcut(App::Key::O, App::KeyMod::CTRL),
+        Ui::button(Some(Model::bind<New>()), Ui::ButtonStyle::subtle(), Mdi::FILE) | Ui::keyboardShortcut(App::Key::N, App::KeyMod::CTRL),
+        Ui::button(Some(openAction), Ui::ButtonStyle::subtle(), Mdi::FOLDER) | Ui::keyboardShortcut(App::Key::O, App::KeyMod::CTRL),
         Ui::button(Model::bindIf<Save>(s.text->dirty() and s.url), Ui::ButtonStyle::subtle(), Mdi::CONTENT_SAVE) | Ui::keyboardShortcut(App::Key::S, App::KeyMod::CTRL),
-        Ui::button(saveAsAction, Ui::ButtonStyle::subtle(), Mdi::CONTENT_SAVE_PLUS) | Ui::keyboardShortcut(App::Key::S, {App::KeyMod::CTRL, App::KeyMod::SHIFT}),
+        Ui::button(Some(saveAsAction), Ui::ButtonStyle::subtle(), Mdi::CONTENT_SAVE_PLUS) | Ui::keyboardShortcut(App::Key::S, {App::KeyMod::CTRL, App::KeyMod::SHIFT}),
     };
 }
 
@@ -142,7 +142,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
     if (str) {
         text->load(str.unwrap());
     } else {
-        error = str.none();
+        error = Some(str.none());
     }
 
     return Ui::reducer<Model>(
@@ -155,10 +155,10 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
             return Kr::scaffold({
                 .icon = Mdi::PEN,
                 .title = "Text"s,
-                .startTools = [&] -> Ui::Children {
+                .startTools = Some([&] -> Ui::Children {
                     return appToolbar(s);
-                },
-                .endTools = [&] -> Ui::Children {
+                }),
+                .endTools = Some([&] -> Ui::Children {
                     return {
                         Ui::button(
                             Model::bindIf<Ui::TextAction>(s.text->canUndo(), Ui::TextAction::UNDO),
@@ -171,7 +171,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                             Mdi::REDO
                         )
                     };
-                },
+                }),
                 .body = [=] {
                     usize ln = 1, col = 1;
                     auto head = s.text->_cur.head;
@@ -192,7 +192,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                                 0,
                                 Math::Align::CENTER,
                                 Ui::labelSmall("{}{}", s.url ? s.url->basename() : "Untitled", s.text->dirty() ? "*" : ""),
-                                Ui::icon(Mdi::CIRCLE_SMALL, Ui::GRAY700) | Ui::insets({0, -3}),
+                                Ui::icon(Mdi::CIRCLE_SMALL, Some(Ui::GRAY700)) | Ui::insets({0, -3}),
                                 Ui::text(Ui::TextStyles::labelSmall().withColor(Ui::GRAY500), "{}", s.url)
                             ) | Ui::insets({6, 16}),
                             Kr::separator(),

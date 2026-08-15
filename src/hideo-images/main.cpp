@@ -13,7 +13,7 @@ import Mdi;
 using namespace Karm;
 
 Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
-    Res<Rc<Gfx::Surface>> image = Error::invalidInput("No image provided");
+    Res<Rc<Gfx::Image>> image = Error::invalidInput("No image provided");
 
     if (env.argsLen()) {
         auto url = Ref::parseUrlOrPath(env[0], env.cwd());

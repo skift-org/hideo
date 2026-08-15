@@ -14,7 +14,7 @@ namespace Hideo::Chat {
 Ui::Child messageSidebarItem(Str name) {
     return Kr::sidenavItem(
         false,
-        Ui::SINK<>,
+        Some(Ui::SINK<>),
         Ui::hflow(
             12,
             Math::Align::CENTER,
@@ -43,7 +43,7 @@ Ui::Child messageComposer() {
     return Ui::hflow(
                4,
                Kr::input("Message"s, ""s, Ui::SINK<String>) | Ui::grow(),
-               Ui::button(Ui::SINK<>, Ui::ButtonStyle::primary(), Mdi::SEND, "Send"s)
+               Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::primary(), Mdi::SEND, "Send"s)
            ) |
            Ui::insets(6);
 }
@@ -55,7 +55,7 @@ Ui::Child messageBubble(String text, bool self) {
                .margin = {2, 12},
                .padding = {6, 12},
                .borderRadii = 16,
-               .backgroundFill = self ? Ui::ACCENT900 : Ui::GRAY900,
+               .backgroundFill = Some(self ? Ui::ACCENT900 : Ui::GRAY900),
                .foregroundFill = Ui::GRAY100,
            }) |
            Ui::align(self ? Math::Align::TOP_END : Math::Align::TOP_START);
@@ -87,9 +87,9 @@ export Ui::Child app() {
     return Kr::scaffold({
         .icon = Mdi::MESSAGE,
         .title = "Chat"s,
-        .sidebar = [] {
+        .sidebar = Some([] {
             return messageSidebar() | Kr::resizable(Kr::ResizeHandlePosition::END);
-        },
+        }),
         .body = [] {
             return Ui::vflow(
                        messageThread() | Ui::grow(),

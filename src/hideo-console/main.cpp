@@ -19,8 +19,8 @@ Ui::Child colorBubble(Gfx::Color color) {
            Ui::box({
                .borderRadii = 4,
                .borderWidth = 1,
-               .borderFill = Ui::GRAY50.withOpacity(0.2),
-               .backgroundFill = color,
+               .borderFill = Some(Ui::GRAY50.withOpacity(0.2)),
+               .backgroundFill = Some(color),
            });
 }
 
@@ -40,7 +40,7 @@ Ui::Child colorSchemeOption(Vte::ColorScheme scheme) {
                    Ui::box({
                        .padding = 6,
                        .borderRadii = 4,
-                       .backgroundFill = scheme.colors[0],
+                       .backgroundFill = Some(scheme.colors[0]),
                    }),
                Ui::vflow(
                    2,
@@ -63,7 +63,7 @@ Ui::Child settingsDialog() {
             Kr::titleRow("Color Scheme"s),
             Ui::vflow(
                 colorSchemeOption(Vte::ColorScheme::light()),
-                colorSchemeOption(Vte::ColorScheme::dark()) | Ui::button(Ui::SINK<>, Ui::ButtonStyle::regular()),
+                colorSchemeOption(Vte::ColorScheme::dark()) | Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::regular()),
                 Kr::separator(),
                 colorSchemeOption(Vte::ColorScheme::solarized()),
                 colorSchemeOption(Vte::ColorScheme::dracula()),
@@ -113,16 +113,17 @@ using Model = Ui::Model<State, Action, reduce>;
 
 Ui::Child contextMenu() {
     return Kr::contextMenuContent({
-        Kr::contextMenuItem(Ui::SINK<>, Mdi::CONTENT_COPY, "Copy"),
-        Kr::contextMenuItem(NONE, Mdi::CONTENT_PASTE, "Paste"),
+        Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::CONTENT_COPY), "Copy"),
+        Kr::contextMenuItem(NONE, Some(Mdi::CONTENT_PASTE), "Paste"),
         Kr::separator(),
-        Kr::contextMenuItem(Ui::SINK<>, Mdi::SELECT_ALL, "Select All"),
+        Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::SELECT_ALL), "Select All"),
         Kr::separator(),
         Kr::contextMenuItem(
-            [](auto& n) {
+            Some([](auto& n) {
                 Ui::showDialog(n, settingsDialog());
-            },
-            Mdi::COG, "Settings"
+            }),
+            Some(Mdi::COG),
+            "Settings"
         ),
     });
 }

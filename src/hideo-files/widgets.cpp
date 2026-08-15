@@ -66,7 +66,7 @@ export Ui::Child alert(State const& state, String title, String body) {
         Kr::errorPageBody(body),
         Kr::errorPageFooter({
             Ui::button(Model::bindIf<GoBack>(state.canGoBack()), "Go Back"),
-            Ui::button(Model::bind<Refresh>(), Ui::ButtonStyle::primary(), "Retry"),
+            Ui::button(Some(Model::bind<Refresh>()), Ui::ButtonStyle::primary(), "Retry"),
         }),
     });
 }
@@ -74,26 +74,26 @@ export Ui::Child alert(State const& state, String title, String body) {
 Ui::Child directoryContextMenu() {
     return Kr::contextMenuContent({
         Kr::contextMenuDock({
-            Kr::contextMenuIcon(Ui::SINK<>, Mdi::CONTENT_COPY),
-            Kr::contextMenuIcon(Ui::SINK<>, Mdi::CONTENT_CUT),
+            Kr::contextMenuIcon(Some(Ui::SINK<>), Mdi::CONTENT_COPY),
+            Kr::contextMenuIcon(Some(Ui::SINK<>), Mdi::CONTENT_CUT),
             // Kr::contextMenuIcon(Ui::SINK, Mdi::CONTENT_PASTE),
-            Kr::contextMenuIcon(Ui::SINK<>, Mdi::FORM_TEXTBOX),
+            Kr::contextMenuIcon(Some(Ui::SINK<>), Mdi::FORM_TEXTBOX),
             Ui::grow(NONE),
             Kr::separator(),
-            Kr::contextMenuIcon(Ui::SINK<>, Mdi::DELETE_OUTLINE),
+            Kr::contextMenuIcon(Some(Ui::SINK<>), Mdi::DELETE_OUTLINE),
         }),
         Kr::separator(),
-        Kr::contextMenuItem(Ui::SINK<>, Mdi::MAGNIFY, "Preview"),
-        Kr::contextMenuItem(Ui::SINK<>, Mdi::PENCIL, "Modify"),
-        Kr::contextMenuItem(Ui::SINK<>, Mdi::SHARE, "Interact…"),
+        Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::MAGNIFY), "Preview"),
+        Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::PENCIL), "Modify"),
+        Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::SHARE), "Interact…"),
         Kr::separator(),
-        Kr::contextMenuItem(Ui::SINK<>, Mdi::INFORMATION_OUTLINE, "Properties"),
+        Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::INFORMATION_OUTLINE), "Properties"),
     });
 }
 
 Ui::Child directorEntry(Sys::DirEntry const& entry) {
     return Ui::button(
-               Model::bind<Navigate>(entry.name),
+               Some(Model::bind<Navigate>(entry.name)),
                Ui::ButtonStyle::subtle(),
                iconFor(entry),
                entry.name
@@ -124,7 +124,7 @@ Ui::Child dialogEntry(State const& s, Sys::DirEntry const& entry) {
     auto isSelected = not isDir and s.inputFilename == entry.name;
     auto style = isSelected ? Ui::ButtonStyle::regular() : Ui::ButtonStyle::subtle();
     return Ui::button(
-        Model::bind<SetFilename>(entry.name),
+        Some(Model::bind<SetFilename>(entry.name)),
         style,
         iconFor(entry),
         entry.name
@@ -151,7 +151,7 @@ Ui::Child breadcrumbItem(Str text, isize index) {
         Math::Align::CENTER,
         Ui::icon(Mdi::CHEVRON_RIGHT),
         Ui::button(
-            Model::bind<GoParent>(index),
+            Some(Model::bind<GoParent>(index)),
             Ui::ButtonStyle::text().withPadding({2, 0}),
             Ui::text(text)
         )
@@ -202,7 +202,7 @@ String textForUrl(Ref::Url const& url) {
 
 Ui::Child breadcrumbRoot(Ref::Url const& url) {
     return Ui::button(
-        Model::bind<GoRoot>(),
+        Some(Model::bind<GoRoot>()),
         Ui::ButtonStyle::text(),
         Ui::hflow(
             8,
@@ -215,7 +215,7 @@ Ui::Child breadcrumbRoot(Ref::Url const& url) {
 
 export Ui::Child refreshTool() {
     return Ui::button(
-               Model::bind<Refresh>(),
+               Some(Model::bind<Refresh>()),
                Ui::ButtonStyle::subtle(),
                Mdi::REFRESH
            ) |
@@ -235,7 +235,7 @@ export Ui::Child breadcrumb(State const& s) {
     return Ui::box(
                {
                    .borderRadii = 4,
-                   .backgroundFill = Ui::GRAY800,
+                   .backgroundFill = Some(Ui::GRAY800),
                },
                Ui::hflow(
                    Ui::empty(12),
@@ -279,20 +279,20 @@ export Ui::Child goParentTool(State const& s) {
 export Ui::Child mainMenu([[maybe_unused]] State const& s) {
     return Kr::contextMenuContent({
         Kr::contextMenuItem(
-            Ui::SINK<>,
-            Mdi::BOOKMARK_OUTLINE, "Add bookmark..."
+            Some(Ui::SINK<>),
+            Some(Mdi::BOOKMARK_OUTLINE), "Add bookmark..."
         ),
-        Kr::contextMenuItem(Ui::SINK<>, Mdi::BOOKMARK, "Bookmarks"),
+        Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::BOOKMARK), "Bookmarks"),
         Kr::separator(),
-        Kr::contextMenuCheck(Model::bind<ToggleHidden>(), s.showHidden, "Show hidden"),
+        Kr::contextMenuCheck(Some(Model::bind<ToggleHidden>()), s.showHidden, "Show hidden"),
     });
 }
 
 export Ui::Child moreTool(State const& s) {
     return Ui::button(
-        [&](Ui::Node& n) {
+        Some([&](Ui::Node& n) {
             Ui::showPopover(n, n.bound().bottomEnd(), mainMenu(s));
-        },
+        }),
         Ui::ButtonStyle::subtle(),
         Mdi::DOTS_HORIZONTAL
     );

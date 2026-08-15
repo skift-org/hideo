@@ -30,7 +30,7 @@ Ui::Child alarmCard(Time alarm, bool enabled) {
            Ui::box({
                .padding = 12,
                .borderRadii = 12,
-               .backgroundFill = Ui::GRAY900,
+               .backgroundFill = Some(Ui::GRAY900),
            });
 }
 
@@ -94,25 +94,25 @@ export Ui::Child app() {
                 .body = [&] {
                     auto navbar = Kr::navbarContent({
                         Kr::navbarItem(
-                            Model::bind(Page::ALARM),
+                            Some(Model::bind(Page::ALARM)),
                             Mdi::ALARM,
                             "Alarm",
                             s.page == Page::ALARM
                         ),
                         Kr::navbarItem(
-                            Model::bind(Page::CLOCK),
+                            Some(Model::bind(Page::CLOCK)),
                             Mdi::CLOCK_OUTLINE,
                             "Clock",
                             s.page == Page::CLOCK
                         ),
                         Kr::navbarItem(
-                            Model::bind(Page::TIMER),
+                            Some(Model::bind(Page::TIMER)),
                             Mdi::TIMER_SAND,
                             "Timer",
                             s.page == Page::TIMER
                         ),
                         Kr::navbarItem(
-                            Model::bind(Page::STOPWATCH),
+                            Some(Model::bind(Page::STOPWATCH)),
                             Mdi::TIMER_OUTLINE,
                             "Stopwatch",
                             s.page == Page::STOPWATCH
@@ -126,7 +126,11 @@ export Ui::Child app() {
                                 Math::Align::CENTER,
                                 Ui::titleLarge(toStr(s.page)),
                                 Ui::grow(NONE),
-                                Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::DOTS_HORIZONTAL)
+                                Ui::button(
+                                    Some(Ui::SINK<>),
+                                    Ui::ButtonStyle::subtle(),
+                                    Mdi::DOTS_HORIZONTAL
+                                )
                             ) |
                                 Ui::insets(12),
                             appContent(s) | Ui::vscroll() | Ui::grow()

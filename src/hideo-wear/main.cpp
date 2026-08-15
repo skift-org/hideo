@@ -70,13 +70,18 @@ Ui::Child menu() {
     return Ui::vflow(
                6,
                Ui::titleMedium("Applications") | Ui::center() | Ui::bound() | Ui::minSize({Ui::UNCONSTRAINED, 96}),
-               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
-               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
-               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
-               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
-               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
-               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s),
-               Ui::button(Ui::SINK<>, Mdi::COG, "Settings"s)
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
+               Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s)
            ) |
            Ui::insets(16) |
            Ui::vscroll();
@@ -86,7 +91,11 @@ Ui::Child app() {
     return Ui::reducer<Model>({}, [](State const& s) {
                return Ui::stack(
                           analogWatchface(s.dateTime),
-                          menu() | Ui::box({.backgroundFill = Ui::GRAY900}) | Ui::slideIn(Ui::SlideFrom::END) | Ui::cond(s.page == Page::APPS)
+                          menu() |
+                              Ui::box({
+                                  .backgroundFill = Some(Ui::GRAY900),
+                              }) |
+                              Ui::slideIn(Ui::SlideFrom::END) | Ui::cond(s.page == Page::APPS)
                       ) |
                       Ui::keyboardShortcut(App::Key::M, Model::bind<Page>(Page::APPS)) |
                       Ui::keyboardShortcut(App::Key::ESC, Model::bind<Page>(Page::WATCH));

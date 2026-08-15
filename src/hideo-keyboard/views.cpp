@@ -11,15 +11,15 @@ namespace Hideo::Keyboard {
 
 static Ui::Child toolbar() {
     return Ui::hflow(
-               Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::EMOTICON),
+               Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle(), Mdi::EMOTICON),
                Ui::grow(NONE),
-               Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::COG_OUTLINE)
+               Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle(), Mdi::COG_OUTLINE)
            ) |
            Ui::dragRegion();
 }
 
 static Ui::Child key(auto icon) {
-    return Ui::button(Ui::SINK<>, Ui::titleMedium(icon) | Ui::center() | Ui::pinSize(32));
+    return Ui::button(Some(Ui::SINK<>), Ui::titleMedium(icon) | Ui::center() | Ui::pinSize(32));
 }
 
 static Ui::Child keyboard(State const& k) {
@@ -55,7 +55,7 @@ static Ui::Child keyboard(State const& k) {
     auto thirdRow = Ui::hflow(
         8,
         Ui::button(
-            Model::bind<ToggleShift>(),
+            Some(Model::bind<ToggleShift>()),
             Ui::ButtonStyle::secondary(),
             k.shift ? Mdi::ARROW_UP_BOLD : Mdi::ARROW_UP_BOLD_OUTLINE
         ) | Ui::grow(),
@@ -67,7 +67,7 @@ static Ui::Child keyboard(State const& k) {
         key(k.shift ? "N" : "n"),
         key(k.shift ? "M" : "m"),
         Ui::button(
-            Ui::SINK<>,
+            Some(Ui::SINK<>),
             Ui::ButtonStyle::secondary(),
             Mdi::BACKSPACE_OUTLINE
         ) | Ui::grow()
@@ -75,11 +75,11 @@ static Ui::Child keyboard(State const& k) {
 
     auto fourthRow = Ui::hflow(
                          8,
-                         Ui::button(Ui::SINK<>, Ui::ButtonStyle::secondary(), "&123") | Ui::grow(2),
+                         Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::secondary(), "&123") | Ui::grow(2),
                          key(","),
-                         Ui::button(Ui::SINK<>, Ui::empty()) | Ui::grow(6),
+                         Ui::button(Some(Ui::SINK<>), Ui::empty()) | Ui::grow(6),
                          key("."),
-                         Ui::button(Ui::SINK<>, Ui::ButtonStyle::primary(), Mdi::KEYBOARD_RETURN) | Ui::grow(2)
+                         Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::primary(), Mdi::KEYBOARD_RETURN) | Ui::grow(2)
                      ) |
                      Ui::grow();
 
@@ -105,7 +105,7 @@ export Ui::Child flyout() {
                        Ui::minSize({Ui::UNCONSTRAINED, 280}) |
                        Ui::box({
                            .padding = 8,
-                           .backgroundFill = Ui::GRAY950,
+                           .backgroundFill = Some(Ui::GRAY950),
                        })
                ) |
                Ui::align(Math::Align::HSTRETCH | Math::Align::BOTTOM) |

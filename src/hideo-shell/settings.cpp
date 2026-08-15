@@ -59,7 +59,7 @@ Ui::Child dateAndTime(State const& state) {
            Ui::center() |
            Ui::bound() |
            Ui::button(
-               Ui::SINK<>,
+               Some(Ui::SINK<>),
                Ui::ButtonStyle::subtle()
                    .withPadding({0, 12})
            );
@@ -70,7 +70,7 @@ Ui::Child quickheader(State const& state) {
         dateAndTime(state),
         Ui::grow(NONE),
         Ui::button(
-            Model::bind<ToggleSysPanel>(),
+            Some(Model::bind<ToggleSysPanel>()),
             Ui::ButtonStyle::secondary(),
             state.isSysPanelColapsed
                 ? Mdi::CHEVRON_DOWN
@@ -83,28 +83,28 @@ Ui::Child quickTools(State const&) {
     return Ui::hflow(
         8,
         Ui::button(
-            Model::bind<Lock>(),
+            Some(Model::bind<Lock>()),
             Ui::ButtonStyle::secondary(),
             Mdi::LOCK
         ),
         Ui::button(
-            [](auto& n) {
+            Some([](auto& n) {
                 Model::bubble(n, ActivatePanel{Panel::NIL});
                 Ui::showDialog(n, powerDialog());
-            },
+            }),
             Ui::ButtonStyle::secondary(), Mdi::POWER
         ),
         Ui::grow(NONE),
         Ui::button(
-            [](auto& n) {
+            Some([](auto& n) {
                 Model::bubble(n, ActivatePanel{Panel::NIL});
                 Ui::showDialog(n, Kr::aboutDialog("Shell"s));
-            },
+            }),
             Ui::ButtonStyle::secondary(),
             Mdi::INFORMATION
         ),
         Ui::button(
-            Model::bind<ToggleSysPanel>(),
+            Some(Model::bind<ToggleSysPanel>()),
             Ui::ButtonStyle::secondary(),
             Mdi::COG
         )
@@ -120,26 +120,26 @@ Ui::Child colapsedQuickSettings(State const&) {
         },
         quickSetting({
             .icon = Mdi::SWAP_VERTICAL,
-            .name = "Cellular Data",
-            .press = Ui::SINK<>,
-            .more = Ui::SINK<>,
+            .name = Some("Cellular Data"),
+            .press = Some(Ui::SINK<>),
+            .more = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = Mdi::WIFI_STRENGTH_4,
-            .name = "Wi-Fi",
-            .press = Ui::SINK<>,
-            .more = Ui::SINK<>,
+            .name = Some("Wi-Fi"),
+            .press = Some(Ui::SINK<>),
+            .more = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = Mdi::BLUETOOTH,
-            .name = "Bluetooth",
-            .press = Ui::SINK<>,
-            .more = Ui::SINK<>,
+            .name = Some("Bluetooth"),
+            .press = Some(Ui::SINK<>),
+            .more = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = Mdi::FLASHLIGHT,
-            .name = "Flashlight",
-            .press = Ui::SINK<>,
+            .name = Some("Flashlight"),
+            .press = Some(Ui::SINK<>),
         })
     );
 
@@ -179,48 +179,48 @@ Ui::Child expendedQuickSettings(State const& s) {
         },
         quickSetting({
             .icon = Mdi::SWAP_VERTICAL,
-            .name = "Cellular Data",
-            .press = Ui::SINK<>,
-            .more = Ui::SINK<>,
+            .name = Some("Cellular Data"),
+            .press = Some(Ui::SINK<>),
+            .more = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = Mdi::WIFI_STRENGTH_4,
-            .name = "Wi-Fi",
-            .press = Ui::SINK<>,
-            .more = Ui::SINK<>,
+            .name = Some("Wi-Fi"),
+            .press = Some(Ui::SINK<>),
+            .more = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = Mdi::BLUETOOTH,
-            .name = "Bluetooth",
-            .press = Ui::SINK<>,
-            .more = Ui::SINK<>,
+            .name = Some("Bluetooth"),
+            .press = Some(Ui::SINK<>),
+            .more = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = Mdi::FLASHLIGHT,
-            .name = "Flashlight",
-            .press = Ui::SINK<>,
+            .name = Some("Flashlight"),
+            .press = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = Mdi::MAP_MARKER_OUTLINE,
-            .name = "Location",
-            .press = Ui::SINK<>,
+            .name = Some("Location"),
+            .press = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = App::formFactor == App::FormFactor::MOBILE ? Mdi::LAPTOP : Mdi::CELLPHONE,
-            .name = "Tablet Mode",
+            .name = Some("Tablet Mode"),
             .state = App::formFactor == App::FormFactor::MOBILE,
-            .press = Model::bind<ToggleTablet>(),
+            .press = Some(Model::bind<ToggleTablet>()),
         }),
         quickSetting({
             .icon = Mdi::CIRCLE_HALF_FULL,
-            .name = "Dark Mode",
-            .press = Ui::SINK<>,
+            .name = Some("Dark Mode"),
+            .press = Some(Ui::SINK<>),
         }),
         quickSetting({
             .icon = Mdi::BRIGHTNESS_2,
-            .name = "Night Light",
+            .name = Some("Night Light"),
             .state = s.nightLight,
-            .press = Model::bind<ToggleNightLight>(),
+            .press = Some(Model::bind<ToggleNightLight>()),
         })
     );
 
@@ -268,8 +268,8 @@ export Ui::Child sysFlyout(State const& state) {
                .padding = {12, 12, 0, 12},
                .borderRadii = 8,
                .borderWidth = 1,
-               .borderFill = Ui::GRAY800,
-               .backgroundFill = Ui::GRAY950,
+               .borderFill = Some(Ui::GRAY800),
+               .backgroundFill = Some(Ui::GRAY950),
            }) |
            Ui::bound() |
            Ui::dismisable(

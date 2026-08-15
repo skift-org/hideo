@@ -138,7 +138,7 @@ struct PlacingDragMode final : DragMode {
             } else {
                 n.bound = Obb{Math::Rectf::fromTwoPoint(_start, drag->pos)};
             }
-            return makeRc<PlacingDragMode>(_ref, _start, drag->pos);
+            return Some(makeRc<PlacingDragMode>(_ref, _start, drag->pos));
         }
 
         if (auto release = a.is<CanvasRelease>()) {
@@ -148,10 +148,10 @@ struct PlacingDragMode final : DragMode {
             }
 
             s.currentTool = Tool::SELECT;
-            return makeIdleDragMode();
+            return Some(makeIdleDragMode());
         }
 
-        return makeRc<PlacingDragMode>(_ref, _start, _end);
+        return Some(makeRc<PlacingDragMode>(_ref, _start, _end));
     }
 };
 
@@ -173,7 +173,7 @@ struct FreehandDragMode final : DragMode {
         }
 
         if (a.is<CanvasRelease>())
-            return makeIdleDragMode();
+            return Some(makeIdleDragMode());
 
         return NONE;
     }
@@ -191,16 +191,16 @@ struct ResizingDragMode final : DragMode {
         if (auto drag = a.is<CanvasDrag>()) {
             auto scale = _gizmo.resizeScale(_handle, drag->pos, App::match(drag->mods, App::KeyMod::SHIFT));
             s.selection.resize(s.tree, _gizmo.bound, _pivot, scale);
-            return makeRc<ResizingDragMode>(_gizmo, _handle);
+            return Some(makeRc<ResizingDragMode>(_gizmo, _handle));
         }
 
         if (a.is<CanvasRelease>()) {
             s.selection.commitTransform(s.tree);
             s.currentTool = Tool::SELECT;
-            return makeIdleDragMode();
+            return Some(makeIdleDragMode());
         }
 
-        return makeRc<ResizingDragMode>(_gizmo, _handle);
+        return Some(makeRc<ResizingDragMode>(_gizmo, _handle));
     }
 
     Opt<Gizmo> gizmo(State const& s) const override {
@@ -227,7 +227,7 @@ struct RotatingSelectionDragMode final : DragMode {
         if (a.is<CanvasRelease>()) {
             s.selection.commitTransform(s.tree);
             s.currentTool = Tool::SELECT;
-            return makeIdleDragMode();
+            return Some(makeIdleDragMode());
         }
 
         return NONE;
@@ -254,14 +254,14 @@ struct SelectingDragMode final : DragMode {
 
         if (a.is<CanvasRelease>()) {
             s.currentTool = Tool::SELECT;
-            return makeIdleDragMode();
+            return Some(makeIdleDragMode());
         }
 
         return NONE;
     }
 
     Opt<Math::Rectf> selectionRect() const override {
-        return Math::Rectf::fromTwoPoint(start, end);
+        return Some(Math::Rectf::fromTwoPoint(start, end));
     }
 };
 
@@ -287,10 +287,10 @@ struct MovingSelectionDragMode final : DragMode {
         if (a.is<CanvasRelease>()) {
             s.selection.commitTransform(s.tree);
             s.currentTool = Tool::SELECT;
-            return makeIdleDragMode();
+            return Some(makeIdleDragMode());
         }
 
-        return makeRc<MovingSelectionDragMode>(start, parent);
+        return Some(makeRc<MovingSelectionDragMode>(start, parent));
     }
 };
 
@@ -324,10 +324,10 @@ struct IdleDragMode final : DragMode {
 
                 if (s.currentTool == Tool::FREEHAND) {
                     s.tree.byRef(ref).freehandColor = s.freehandColor;
-                    return makeRc<FreehandDragMode>(ref, press->pos);
+                    return Some(makeRc<FreehandDragMode>(ref, press->pos));
                 } else {
                     s.selection.set(s.tree, {ref});
-                    return makeRc<PlacingDragMode>(ref, press->pos, press->pos);
+                    return Some(makeRc<PlacingDragMode>(ref, press->pos, press->pos));
                 }
             }
 
@@ -337,12 +337,12 @@ struct IdleDragMode final : DragMode {
                 if (rotate) {
                     s.selection.beginTransform(s.tree);
                     auto startAngle = Math::atan2(press->pos.y - gizmo->bound.center.y, press->pos.x - gizmo->bound.center.x);
-                    return makeRc<RotatingSelectionDragMode>(gizmo->bound.center, startAngle);
+                    return Some(makeRc<RotatingSelectionDragMode>(gizmo->bound.center, startAngle));
                 }
 
                 if (hitHandle != GizmoHandle::NONE) {
                     s.selection.beginTransform(s.tree);
-                    return makeRc<ResizingDragMode>(*gizmo, hitHandle);
+                    return Some(makeRc<ResizingDragMode>(*gizmo, hitHandle));
                 }
             }
 
@@ -355,24 +355,24 @@ struct IdleDragMode final : DragMode {
                 if (press->resize) {
                     if (auto gizmo = s.selection.createGizmo(s.tree); gizmo) {
                         s.selection.beginTransform(s.tree);
-                        return makeRc<ResizingDragMode>(*gizmo, GizmoHandle::SE);
+                        return Some(makeRc<ResizingDragMode>(*gizmo, GizmoHandle::SE));
                     }
                 }
 
                 s.selection.beginTransform(s.tree);
-                return makeRc<MovingSelectionDragMode>(press->pos);
+                return Some(makeRc<MovingSelectionDragMode>(press->pos));
             }
 
             if (auto frame = s.tree.frameAt(press->pos); frame and s.selection.selected(frame.unwrap())) {
                 s.selection.beginTransform(s.tree);
-                return makeRc<MovingSelectionDragMode>(press->pos);
+                return Some(makeRc<MovingSelectionDragMode>(press->pos));
             }
 
             s.selection.unselectAll();
-            return makeRc<SelectingDragMode>(press->pos);
+            return Some(makeRc<SelectingDragMode>(press->pos));
         }
 
-        return makeIdleDragMode();
+        return Some(makeIdleDragMode());
     }
 
     Opt<Gizmo> gizmo(State const& s) const override {
@@ -393,28 +393,28 @@ Ui::Task<Action> reduce(State& s, Action action) {
         s.selection.selectAll(s.tree);
     } else if (auto a = action.is<CopySelection>()) {
         if (not s.selection.empty())
-            s.clipboard = s.selection.copy(s.tree);
+            s.clipboard = Some(s.selection.copy(s.tree));
     } else if (auto a = action.is<CutSelection>()) {
         if (not s.selection.empty()) {
-            s.clipboard = s.selection.cut(s.tree);
-            s.dragMode = makeIdleDragMode();
+            s.clipboard = Some(s.selection.cut(s.tree));
+            s.dragMode = Some(makeIdleDragMode());
         }
     } else if (auto a = action.is<PasteSelection>()) {
         if (s.clipboard) {
             s.selection.paste(s.tree, s.clipboard.unwrap());
-            s.dragMode = makeIdleDragMode();
+            s.dragMode = Some(makeIdleDragMode());
         }
     } else if (auto a = action.is<FrameSelection>()) {
         if (not s.selection.empty()) {
             auto obb = s.selection.obb(s.tree);
             auto parentRef = s.tree.insert(Kind::FRAME, obb);
-            s.tree.reparentRoots(s.selection.roots(), parentRef);
+            s.tree.reparentRoots(s.selection.roots(), Some(parentRef));
             s.selection.unselectAll();
             s.selection.select(s.tree, parentRef);
         }
     } else if (auto a = action.is<DeleteSelection>()) {
         s.selection.remove(s.tree);
-        s.dragMode = makeIdleDragMode();
+        s.dragMode = Some(makeIdleDragMode());
     } else if (auto c = action.is<ChooseFreeHandColor>()) {
         s.freehandColor = c->color;
     } else if (
@@ -423,7 +423,7 @@ Ui::Task<Action> reduce(State& s, Action action) {
         action.is<CanvasRelease>()
     ) {
         if (not s.dragMode)
-            s.dragMode = makeIdleDragMode();
+            s.dragMode = Some(makeIdleDragMode());
         auto nextMode = s.dragMode.unwrap()->reduce(s, action);
         if (nextMode)
             s.dragMode = nextMode;

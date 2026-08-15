@@ -46,10 +46,10 @@ Ui::Task<Action> reduce(State& s, Action a) {
             }
         },
         [&](SelectFamily a) {
-            s.fontFamily = a.family;
+            s.fontFamily = Some(a.family);
         },
         [&](SelectFace a) {
-            s.fontFace = a.id;
+            s.fontFace = Some(a.id);
         }
     );
 
@@ -75,11 +75,11 @@ Ui::Child allFamiliesItem(State const& s, Symbol family) {
     return Ui::vflow(
                8,
                Ui::labelMedium(Ui::GRAY500, "{} · {} {}", family, nStyle, nStyle == 1 ? "Style" : "Styles"),
-               Ui::text(Gfx::ProseStyle{font}, PANGRAM)
+               Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), PANGRAM)
            ) |
            Ui::insets({8, 0, 8, 12}) |
            Ui::hclip() |
-           Ui::button(Model::bind<SelectFamily>(family), Ui::ButtonStyle::outline());
+           Ui::button(Some(Model::bind<SelectFamily>(family)), Ui::ButtonStyle::outline());
 }
 
 Ui::Child allFamiliesContent(State const& s) {
@@ -133,12 +133,12 @@ Ui::Child familyItem(State const&, Rc<Gfx::Fontface> fontface) {
     return Ui::vflow(
                8,
                Ui::labelMedium(Ui::GRAY500, "{}", attrs.family),
-               Ui::text(Gfx::ProseStyle{font}, PANGRAM),
+               Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), PANGRAM),
                fontfaceTags(attrs)
            ) |
            Ui::insets({8, 0, 8, 12}) |
            Ui::hclip() |
-           Ui::button(Model::bind<SelectFace>(fontface), Ui::ButtonStyle::outline());
+           Ui::button(Some(Model::bind<SelectFace>(fontface)), Ui::ButtonStyle::outline());
 }
 
 Ui::Child familyContent(State const& s) {
@@ -170,7 +170,7 @@ Ui::Child pangrams(Rc<Gfx::Fontface> fontface) {
             .fontface = fontface,
             .fontsize = size,
         };
-        children.pushBack(Ui::text(Gfx::ProseStyle{font}, PANGRAM));
+        children.pushBack(Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), PANGRAM));
         size *= 1.2;
     }
 
@@ -210,13 +210,15 @@ Ui::Child app(Font::Database db) {
         return Kr::scaffold({
             .icon = Mdi::FORMAT_FONT,
             .title = "Fonts"s,
-            .startTools = [&] -> Ui::Children {
-                return {Ui::button(
-                    Model::bindIf<GoBack>(s.canGoBack()),
-                    Ui::ButtonStyle::subtle(),
-                    Mdi::ARROW_LEFT
-                )};
-            },
+            .startTools = Some([&] -> Ui::Children {
+                return {
+                    Ui::button(
+                        Model::bindIf<GoBack>(s.canGoBack()),
+                        Ui::ButtonStyle::subtle(),
+                        Mdi::ARROW_LEFT
+                    )
+                };
+            }),
             .body = [&] {
                 return appContent(s) | Kr::scaffoldContent();
             },

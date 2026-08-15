@@ -29,8 +29,8 @@ Ui::Child errorScope(Str what, auto callback) {
             .padding = 4,
             .borderRadii = 6,
             .borderWidth = 1,
-            .borderFill = Gfx::RED700,
-            .backgroundFill = Gfx::RED900,
+            .borderFill = Some(Gfx::RED700),
+            .backgroundFill = Some(Gfx::RED900),
             .foregroundFill = Gfx::RED100,
         },
         Ui::hflow(
@@ -46,15 +46,44 @@ Ui::Child errorScope(Str what, auto callback) {
 
 Ui::Child userInfos() {
     return Kr::treeRow(
-        [&] {
-            return Ui::icon(Mdi::ACCOUNT);
-        },
+        Some(
+            [&] {
+                return Ui::icon(Mdi::ACCOUNT);
+            }
+        ),
         "User"s,
         NONE,
         Ui::Slot{[&] {
             return errorScope("user informations", [&] -> Res<Ui::Child> {
                 auto userinfo = try$(Sys::userinfo());
-                return Ok(Ui::vflow(Kr::rowContent(NONE, "Username"s, NONE, Ui::text(userinfo.name)), Kr::rowContent(NONE, "Home"s, NONE, Ui::text(userinfo.home.str())), Kr::rowContent(NONE, "Shell"s, NONE, Ui::text(userinfo.shell.str()))));
+                return Ok(
+                    Ui::vflow(
+                        Kr::rowContent(
+                            NONE,
+                            "Username"s,
+                            NONE,
+                            Some(Ui::text(userinfo.name))
+                        ),
+                        Kr::rowContent(
+                            NONE,
+                            "Home"s,
+                            NONE,
+                            Some(
+                                Ui::text(
+                                    userinfo.home.str()
+                                )
+                            )
+                        ),
+                        Kr::rowContent(
+                            NONE,
+                            "Shell"s,
+                            NONE,
+                            Some(
+                                Ui::text(userinfo.shell.str())
+                            )
+                        )
+                    )
+                );
             });
         }}
     );
@@ -62,15 +91,44 @@ Ui::Child userInfos() {
 
 Ui::Child sysInfos() {
     return Kr::treeRow(
-        [&] {
-            return Ui::icon(Mdi::INFORMATION_OUTLINE);
-        },
+        Some(
+            [&] {
+                return Ui::icon(Mdi::INFORMATION_OUTLINE);
+            }
+        ),
         "System"s,
         NONE,
         Ui::Slot{[&] {
             return errorScope("system informations", [] -> Res<Ui::Child> {
                 auto sysinfo = try$(Sys::sysinfo());
-                return Ok(Ui::vflow(Kr::rowContent(NONE, "System"s, NONE, Ui::text(sysinfo.sysName)), Kr::rowContent(NONE, "System Version"s, NONE, Ui::text(sysinfo.sysVersion)), Kr::rowContent(NONE, "Kernel"s, NONE, Ui::text(sysinfo.kernelName)), Kr::rowContent(NONE, "Kernel Version"s, NONE, Ui::text(sysinfo.kernelVersion))));
+                return Ok(
+                    Ui::vflow(
+                        Kr::rowContent(
+                            NONE,
+                            "System"s,
+                            NONE,
+                            Some(Ui::text(sysinfo.sysName))
+                        ),
+                        Kr::rowContent(
+                            NONE,
+                            "System Version"s,
+                            NONE,
+                            Some(Ui::text(sysinfo.sysVersion))
+                        ),
+                        Kr::rowContent(
+                            NONE,
+                            "Kernel"s,
+                            NONE,
+                            Some(Ui::text(sysinfo.kernelName))
+                        ),
+                        Kr::rowContent(
+                            NONE,
+                            "Kernel Version"s,
+                            NONE,
+                            Some(Ui::text(sysinfo.kernelVersion))
+                        )
+                    )
+                );
             });
         }}
     );
@@ -78,18 +136,32 @@ Ui::Child sysInfos() {
 
 Ui::Child memInfos() {
     return Kr::treeRow(
-        [&] {
-            return Ui::icon(Mdi::MEMORY);
-        },
+        Some(
+            [&] {
+                return Ui::icon(Mdi::MEMORY);
+            }
+        ),
         "Memory"s,
         NONE,
         Ui::Slot{[&] {
             return errorScope("memory informations"s, [&] -> Res<Ui::Child> {
                 auto meminfo = try$(Sys::meminfo());
-                return Ok(vflow(
-                    Kr::rowContent(NONE, "Physical"s, NONE, Ui::text("{}bytes", meminfo.physicalUsed)),
-                    Kr::rowContent(NONE, "Swap"s, NONE, Ui::text("{}bytes", meminfo.swapUsed))
-                ));
+                return Ok(
+                    Ui::vflow(
+                        Kr::rowContent(
+                            NONE,
+                            "Physical"s,
+                            NONE,
+                            Some(Ui::text("{}bytes", meminfo.physicalUsed))
+                        ),
+                        Kr::rowContent(
+                            NONE,
+                            "Swap"s,
+                            NONE,
+                            Some(Ui::text("{}bytes", meminfo.swapUsed))
+                        )
+                    )
+                );
             });
         }}
     );
@@ -97,9 +169,11 @@ Ui::Child memInfos() {
 
 Ui::Child cpuInfos() {
     return Kr::treeRow(
-        [&] {
-            return Ui::icon(Mdi::CPU_64_BIT);
-        },
+        Some(
+            [&] {
+                return Ui::icon(Mdi::CPU_64_BIT);
+            }
+        ),
         "CPU"s,
         NONE,
         Ui::Slot{[&] {
@@ -109,7 +183,14 @@ Ui::Child cpuInfos() {
                 Ui::Children children;
 
                 for (auto& cpu : cpusinfo) {
-                    children.pushBack(Kr::rowContent(NONE, "CPU"s, NONE, Ui::text("{} {} {} MHz", cpu.name, cpu.brand, cpu.freq)));
+                    children.pushBack(
+                        Kr::rowContent(
+                            NONE,
+                            "CPU"s,
+                            NONE,
+                            Some(Ui::text("{} {} {} MHz", cpu.name, cpu.brand, cpu.freq))
+                        )
+                    );
                 }
 
                 return Ok(Ui::vflow(children));

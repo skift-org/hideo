@@ -18,7 +18,7 @@ using namespace Karm::Ref::Literals;
 namespace Hideo::Greeter {
 
 struct Account {
-    Opt<Rc<Gfx::Surface>> avatar;
+    Opt<Rc<Gfx::Image>> avatar;
     String name;
 };
 
@@ -44,7 +44,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.selected = NONE;
         },
         [&](Select const& select) {
-            s.selected = select.account;
+            s.selected = Some(select.account);
         },
         [&](Login) {
 
@@ -63,8 +63,8 @@ Ui::Child userLogin() {
                Ui::headlineLarge("Geraldine") | Ui::center(),
                Ui::hflow(
                    4,
-                   Kr::input(Mdi::LOCK, "Password"s, ""s, Ui::SINK<String>) | Ui::box({.backgroundFill = Ui::GRAY950}) | Ui::grow(),
-                   Ui::button(Ui::SINK<>, Ui::ButtonStyle::regular(), Mdi::CHEVRON_RIGHT)
+                   Kr::input(Mdi::LOCK, "Password"s, ""s, Ui::SINK<String>) | Ui::box({.backgroundFill = Some(Ui::GRAY950)}) | Ui::grow(),
+                   Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::regular(), Mdi::CHEVRON_RIGHT)
                ) | Ui::pinSize({260, Ui::UNCONSTRAINED})
            ) |
            Ui::insets(32);

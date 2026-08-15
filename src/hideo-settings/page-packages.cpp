@@ -25,28 +25,30 @@ Ui::Child packageDetails(Sys::Bundle const& b) {
             NONE,
             "URL"s,
             NONE,
-            Ui::labelMedium(b.url().str())
+            Some(Ui::labelMedium(b.url().str()))
         ),
         Kr::rowContent(
             NONE,
             "Actions"s,
             NONE,
-            Ui::hflow(
-                6,
-                Ui::button(
-                    Ui::SINK<>,
-                    Ui::ButtonStyle::destructive(),
-                    "Uninstall"
-                ),
-                Ui::button(
-                    Ui::SINK<>,
-                    Ui::ButtonStyle::text(),
-                    "Explore Files"
-                ),
-                Ui::button(
-                    Ui::SINK<>,
-                    Ui::ButtonStyle::regular(),
-                    "Launch"
+            Some(
+                Ui::hflow(
+                    6,
+                    Ui::button(
+                        Some(Ui::SINK<>),
+                        Ui::ButtonStyle::destructive(),
+                        "Uninstall"
+                    ),
+                    Ui::button(
+                        Some(Ui::SINK<>),
+                        Ui::ButtonStyle::text(),
+                        "Explore Files"
+                    ),
+                    Ui::button(
+                        Some(Ui::SINK<>),
+                        Ui::ButtonStyle::regular(),
+                        "Launch"
+                    )
                 )
             )
         )
@@ -55,9 +57,9 @@ Ui::Child packageDetails(Sys::Bundle const& b) {
 
 Ui::Child packageItem(Sys::Bundle const& b) {
     return Kr::treeRow(
-               [] {
+               Some([] {
                    return Ui::icon(Mdi::WIDGETS_OUTLINE);
-               },
+               }),
                b.id,
                NONE,
                Ui::Slot{[&] -> Ui::Child {

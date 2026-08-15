@@ -79,8 +79,8 @@ static Math::Vec2i fitThumbSize(Math::Vec2i src, Math::Vec2i box = {512, 512}) {
     };
 }
 
-static Rc<Gfx::Surface> generateThumbnail(Rc<Gfx::Surface> original) {
-    auto thumb = Gfx::Surface::alloc(fitThumbSize(original->bound().size()));
+static Rc<Gfx::Image> generateThumbnail(Rc<Gfx::Image> original) {
+    auto thumb = Gfx::Image::alloc(fitThumbSize(original->bound().size()));
     Gfx::CpuCanvas g;
     g.begin(*thumb);
     g.blit(original->bound(), thumb->bound(), original);
@@ -94,10 +94,10 @@ enum struct Panel {
 };
 
 struct Editor {
-    Rc<Gfx::Surface> original;
-    Rc<Gfx::Surface> in;
-    Rc<Gfx::Surface> out;
-    Rc<Gfx::Surface> waveform;
+    Rc<Gfx::Image> original;
+    Rc<Gfx::Image> in;
+    Rc<Gfx::Image> out;
+    Rc<Gfx::Image> waveform;
     Kernel kernel{};
     Flags<KernelFlags> flags{};
     Hist histogram{};
@@ -115,14 +115,14 @@ struct Editor {
         }
     }
 
-    static Editor create(Rc<Gfx::Surface> original) {
+    static Editor create(Rc<Gfx::Image> original) {
         auto in = generateThumbnail(original);
-        auto out = Gfx::Surface::alloc(in->bound().size());
+        auto out = Gfx::Image::alloc(in->bound().size());
         Editor ed{
             original,
             in,
             out,
-            Gfx::Surface::alloc({512, 255}),
+            Gfx::Image::alloc({512, 255}),
         };
         ed.refresh();
         return ed;
@@ -132,7 +132,7 @@ struct Editor {
 // MARK: Viewer ----------------------------------------------------------------
 
 struct Viewer {
-    Rc<Gfx::Surface> image;
+    Rc<Gfx::Image> image;
 };
 
 // MARK: State -----------------------------------------------------------------

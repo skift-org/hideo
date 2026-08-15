@@ -15,7 +15,7 @@ namespace Hideo::Shell {
 
 Ui::Child taskbarSearchButton() {
     return Ui::button(
-               Model::bind<ActivatePanel>(Panel::APPS),
+               Some(Model::bind<ActivatePanel>(Panel::APPS)),
                Ui::ButtonStyle::subtle().withRadii(99),
                Mdi::MAGNIFY,
                "Search…"
@@ -36,7 +36,7 @@ Ui::Child taskbarCalendarButton(State const& s) {
     );
 
     return Ui::button(
-        Model::bind<ActivatePanel>(Panel::NOTIS),
+        Some(Model::bind<ActivatePanel>(Panel::NOTIS)),
         Ui::ButtonStyle::subtle().withRadii(99),
         dateTime
     );
@@ -44,7 +44,7 @@ Ui::Child taskbarCalendarButton(State const& s) {
 
 Ui::Child taskbarStatusButton() {
     return Ui::button(
-        Model::bind<ActivatePanel>(Panel::SYS),
+        Some(Model::bind<ActivatePanel>(Panel::SYS)),
         Ui::ButtonStyle::subtle().withRadii(99),
         Ui::hflow(
             6,
@@ -67,7 +67,7 @@ Ui::Child taskbar(State const& s) {
            ) |
            Ui::box({
                .padding = 4,
-               .backgroundFill = Gfx::BLACK,
+               .backgroundFill = Some(Gfx::BLACK),
            });
 }
 

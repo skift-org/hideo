@@ -7,7 +7,7 @@ import :viewer;
 
 namespace Hideo::Images {
 
-export Ui::Child app(Rc<Gfx::Surface> initial) {
+export Ui::Child app(Rc<Gfx::Image> initial) {
     return Ui::reducer<Model>(
         State{Viewer{initial}},
         [](State const& s) {

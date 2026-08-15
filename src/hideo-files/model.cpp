@@ -33,7 +33,7 @@ struct State {
         directoryError = NONE;
 
         if (not dir) {
-            directoryError = dir.none();
+            directoryError = Some(dir.none());
             return;
         }
 

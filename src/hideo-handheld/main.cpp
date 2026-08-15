@@ -63,9 +63,8 @@ static Opt<Rc<Gfx::Fontface>> _inputFontface = NONE;
 Ui::Child appMenu();
 
 Rc<Gfx::Fontface> inputFontface() {
-    if (not _inputFontface) {
-        _inputFontface = Font::loadFontfaceOrFallback("bundle://hideo-handheld/fonts/BPreplayBold.ttf"_url).unwrap();
-    }
+    if (not _inputFontface)
+        _inputFontface = Font::loadFontfaceOrFallback("bundle://hideo-handheld/fonts/BPreplayBold.ttf"_url).ok();
     return *_inputFontface;
 }
 
@@ -84,7 +83,7 @@ Ui::Child buttonHint(Str button, Str description, Gfx::Color color) {
             Ui::box({
                 .margin = 4,
                 .borderRadii = 999,
-                .backgroundFill = color,
+                .backgroundFill = Some(color),
                 .foregroundFill = color.luminance() > 0.6 ? Gfx::BLACK : Gfx::WHITE,
             }),
         Ui::labelLarge(description) |
@@ -114,7 +113,7 @@ Ui::Child statusWidget(Gfx::Icon icon) {
                .padding = 8,
                .borderRadii = 999,
                .borderWidth = 1,
-               .backgroundFill = Ui::GRAY900,
+               .backgroundFill = Some(Ui::GRAY900),
            });
 }
 
@@ -124,7 +123,7 @@ Ui::Child statusWidget(Str description) {
                .padding = {8, 16},
                .borderRadii = 999,
                .borderWidth = 1,
-               .backgroundFill = Ui::GRAY900,
+               .backgroundFill = Some(Ui::GRAY900),
            });
 }
 
@@ -137,7 +136,7 @@ Ui::Child statusWidget(Gfx::Icon icon, Str description) {
                .padding = {8, 16, 8, 8},
                .borderRadii = 999,
                .borderWidth = 1,
-               .backgroundFill = Ui::GRAY900,
+               .backgroundFill = Some(Ui::GRAY900),
            });
 }
 
@@ -152,7 +151,7 @@ Ui::Child status() {
 }
 
 Ui::Child tileGameCover(Ref::Url image) {
-    return Ui::image(image, 6);
+    return Ui::image(image, Some(6));
 }
 
 Ui::Child tileAppCover(Gfx::Icon icon, Gfx::ColorRamp ramp) {
@@ -160,7 +159,7 @@ Ui::Child tileAppCover(Gfx::Icon icon, Gfx::ColorRamp ramp) {
            Ui::center() | Ui::bound() |
            Ui::box({
                .borderRadii = 6,
-               .backgroundFill = ramp[6],
+               .backgroundFill = Some(ramp[6]),
                .foregroundFill = ramp[1],
            });
 }
@@ -170,24 +169,24 @@ Ui::Child tileContent(Ui::Child child) {
            Ui::pinSize(192) |
            Ui::box({
                .borderRadii = 6,
-               .shadowStyle = Gfx::BoxShadow::elevated(8),
+               .shadowStyle = Some(Gfx::BoxShadow::elevated(8)),
            }) |
            Ui::align(Math::Align::BOTTOM | Math::Align::START);
 }
 
 Ui::Child tileButton(Ui::Send<> onPress, Ui::Child child) {
     return Ui::button(
-        onPress,
+        Some(onPress),
         Ui::ButtonStyle{
             .hoverStyle = {
                 .borderRadii = 6,
                 .borderWidth = 2,
-                .borderFill = Ui::ACCENT500,
+                .borderFill = Some(Ui::ACCENT500),
             },
             .pressStyle = {
                 .borderRadii = 6,
                 .borderWidth = 2,
-                .borderFill = Ui::ACCENT400,
+                .borderFill = Some(Ui::ACCENT400),
             },
         },
         child
@@ -225,11 +224,11 @@ Ui::Child runningAppItem() {
         6,
         Ui::hflow(
             12,
-            Ui::image("bundle://hideo-handheld/tiles/celeste.qoi"_url, 6) |
+            Ui::image("bundle://hideo-handheld/tiles/celeste.qoi"_url, Some(6)) |
                 Ui::box({
                     .borderRadii = 6,
                     .borderWidth = 1,
-                    .borderFill = Ui::GRAY50.withOpacity(0.4),
+                    .borderFill = Some(Ui::GRAY50.withOpacity(0.4)),
                 }) |
                 Ui::pinSize(48) | Ui::vcenter(),
             Ui::vflow(
@@ -238,13 +237,13 @@ Ui::Child runningAppItem() {
             ) | Ui::grow()
         ) | Ui::grow(),
         Ui::button(
-            [&](auto& n) {
+            Some([&](auto& n) {
                 Ui::showDialog(n, appMenu() | Ui::center());
-            },
+            }),
             Mdi::DOTS_HORIZONTAL
         ) | Ui::vcenter(),
         Ui::button(
-            Model::bind<State::QuitGame>(),
+            Some(Model::bind<State::QuitGame>()),
             Mdi::CLOSE
         ) | Ui::vcenter()
     );
@@ -258,7 +257,14 @@ Ui::Child quickSettings(State const& s) {
     );
 
     if (s.inGame) {
-        items.pushBack(Kr::rowContent(Ui::button(Model::bind<State::LaunchHome>(), "Open home")));
+        items.pushBack(
+            Kr::rowContent(
+                Ui::button(
+                    Some(Model::bind<State::LaunchHome>()),
+                    "Open home"
+                )
+            )
+        );
         items.pushBack(Kr::titleRow("Running"s));
         items.pushBack(
             Ui::vflow(
@@ -294,7 +300,12 @@ Ui::Child quickSettings(State const& s) {
         Ui::vflow(
             Kr::toggleRow(true, Ui::SINK<bool>, "NFC"s),
             Kr::toggleRow(true, Ui::SINK<bool>, "RaftShare™"s),
-            Kr::rowContent(Ui::text(Ui::TextStyles::bodyMedium().withColor(Ui::GRAY400), "RaftShare™ keeps consoles together like otters in a raft, letting you share games and apps with the ones around you, wirelessly."))
+            Kr::rowContent(
+                Ui::text(
+                    Ui::TextStyles::bodyMedium().withColor(Ui::GRAY400),
+                    "RaftShare™ keeps consoles together like otters in a raft, letting you share games and apps with the ones around you, wirelessly."
+                )
+            )
         ) |
         Kr::card()
     );
@@ -312,9 +323,9 @@ Ui::Child quickSettings(State const& s) {
         Ui::vflow(
             Kr::rowContent(
                 Ui::button(
-                    [](auto& n) {
+                    Some([](auto& n) {
                         Ui::showDialog(n, Kr::aboutDialog("Ottercat"s));
-                    },
+                    }),
                     "About Ottercat"
                 )
             )
@@ -340,11 +351,13 @@ Ui::Child quickSettings(State const& s) {
                            buttonHint("B", "BACK", Ui::GRAY50) | Ui::cond(s.quickMenuVisible),
                        })
                    ) |
-                       Ui::box({.backgroundFill = Ui::GRAY950}) | Ui::grow()
+                       Ui::box({.backgroundFill = Some(Ui::GRAY950)}) | Ui::grow()
                ) |
                    Ui::slideIn(Ui::SlideFrom::END) | Ui::pinSize(320)
            ) |
-           Ui::box({.backgroundFill = Gfx::BLACK.withOpacity(0.4)});
+           Ui::box({
+               .backgroundFill = Some(Gfx::BLACK.withOpacity(0.4)),
+           });
 }
 
 Ui::Child topBar() {
@@ -361,11 +374,11 @@ Ui::Child appMenu() {
         Kr::dialogHeader({
             Ui::hflow(
                 12,
-                Ui::image("bundle://hideo-handheld/tiles/celeste.qoi"_url, 6) |
+                Ui::image("bundle://hideo-handheld/tiles/celeste.qoi"_url, Some(6)) |
                     Ui::box({
                         .borderRadii = 6,
                         .borderWidth = 1,
-                        .borderFill = Ui::GRAY50.withOpacity(0.4),
+                        .borderFill = Some(Ui::GRAY50.withOpacity(0.4)),
                     }) |
                     Ui::pinSize(64) | Ui::vcenter(),
                 Ui::vflow(
@@ -376,11 +389,11 @@ Ui::Child appMenu() {
             ),
         }),
         Kr::separator(),
-        Kr::contextMenuItem(Ui::closeDialog, Mdi::PLAY, "Open"s),
-        Kr::contextMenuItem(Ui::closeDialog, Mdi::PLAYLIST_REMOVE, "Remove from recents"s),
-        Kr::contextMenuItem(Ui::closeDialog, Mdi::DELETE_FOREVER, "Uninstall"s),
+        Kr::contextMenuItem(Some(Ui::closeDialog), Some(Mdi::PLAY), "Open"s),
+        Kr::contextMenuItem(Some(Ui::closeDialog), Some(Mdi::PLAYLIST_REMOVE), "Remove from recents"s),
+        Kr::contextMenuItem(Some(Ui::closeDialog), Some(Mdi::DELETE_FOREVER), "Uninstall"s),
         Kr::separator(),
-        Kr::contextMenuItem(Ui::closeDialog, Mdi::CANCEL, "Cancel"s),
+        Kr::contextMenuItem(Some(Ui::closeDialog), Some(Mdi::CANCEL), "Cancel"s),
     });
 }
 

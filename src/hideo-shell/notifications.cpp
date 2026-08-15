@@ -28,7 +28,7 @@ Ui::Child noti(Noti const& noti, usize i) {
            Ui::box({
                .padding = 12,
                .borderRadii = 4,
-               .backgroundFill = Ui::GRAY900,
+               .backgroundFill = Some(Ui::GRAY900),
            }) |
            Ui::dragRegion() |
            Ui::dismisable(

@@ -20,8 +20,8 @@ Ui::Child appIcon(Gfx::Icon const& icon, Gfx::ColorRamp ramp, isize size = 22) {
            Ui::box({
                .borderRadii = size * 0.25,
                .borderWidth = 1,
-               .borderFill = ramp[5],
-               .backgroundFill = ramp[6],
+               .borderFill = Some(ramp[5]),
+               .backgroundFill = Some(ramp[6]),
                .foregroundFill = ramp[1],
            });
 }
@@ -34,7 +34,10 @@ Ui::Child appRow(Rc<Launcher> launcher, bool selected) {
                      Ui::labelMedium(launcher->name)
                  ) |
                  Ui::insets(6) |
-                 Ui::button(Model::bind<StartApplication>(launcher), selected ? Ui::ButtonStyle::regular() : Ui::ButtonStyle::subtle());
+                 Ui::button(
+                     Some(Model::bind<StartApplication>(launcher)),
+                     selected ? Ui::ButtonStyle::regular() : Ui::ButtonStyle::subtle()
+                 );
 
     if (selected) {
         child |= Ui::keyboardShortcut(App::Key::ENTER);
@@ -65,10 +68,14 @@ Ui::Child runningApp(Rc<Window> instance) {
                Ui::image(instance->surface()) |
                    Ui::box({
                        .borderWidth = 1,
-                       .borderFill = Ui::GRAY800,
+                       .borderFill = Some(Ui::GRAY800),
                    }) |
-                   Ui::button(Model::bind<FocusWindow>(instance)),
-               Ui::button(Model::bind<RemoveWindow>(instance), Ui::ButtonStyle::secondary(), Mdi::CLOSE) |
+                   Ui::button(Some(Model::bind<FocusWindow>(instance))),
+               Ui::button(
+                   Some(Model::bind<RemoveWindow>(instance)),
+                   Ui::ButtonStyle::secondary(),
+                   Mdi::CLOSE
+               ) |
                    Ui::align(Math::Align::TOP_END) |
                    Ui::insets({6, 6, 0, 0})
            ) |
@@ -127,9 +134,9 @@ export Ui::Child appsLauncher(State const& state) {
            Ui::box({
                .borderRadii = 12,
                .borderWidth = 1,
-               .borderFill = Ui::GRAY800,
-               .backgroundFill = Ui::GRAY900,
-               .shadowStyle = Gfx::BoxShadow::elevated(16),
+               .borderFill = Some(Ui::GRAY800),
+               .backgroundFill = Some(Ui::GRAY900),
+               .shadowStyle = Some(Gfx::BoxShadow::elevated(16)),
            }) |
            Ui::pinSize({500, 400}) | Ui::focusable({.visual = false, .steal = true});
 }
@@ -145,8 +152,8 @@ export Ui::Child appsFlyout(State const& state) {
                 .margin = 8,
                 .borderRadii = 8,
                 .borderWidth = 1,
-                .borderFill = Ui::GRAY800,
-                .backgroundFill = Ui::GRAY950,
+                .borderFill = Some(Ui::GRAY800),
+                .backgroundFill = Some(Ui::GRAY950),
             }) |
             Ui::bound() |
             Ui::dismisable(

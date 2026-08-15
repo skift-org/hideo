@@ -14,10 +14,30 @@ export Ui::Child powerDialog() {
     return Kr::dialogContent({
         Kr::dialogTitleBar("Power Options"s),
         Kr::dialogBody({
-            Ui::button(Ui::closeDialog, Ui::ButtonStyle::subtle(), Mdi::LOGOUT, "Logout"),
-            Ui::button(Ui::closeDialog, Ui::ButtonStyle::subtle(), Mdi::SLEEP, "Sleep"),
-            Ui::button(Ui::closeDialog, Ui::ButtonStyle::subtle(), Mdi::RESTART, "Restart"),
-            Ui::button(Ui::closeDialog, Ui::ButtonStyle::subtle(), Mdi::POWER_STANDBY, "Shutdown"),
+            Ui::button(
+                Some(Ui::closeDialog),
+                Ui::ButtonStyle::subtle(),
+                Mdi::LOGOUT,
+                "Logout"
+            ),
+            Ui::button(
+                Some(Ui::closeDialog),
+                Ui::ButtonStyle::subtle(),
+                Mdi::SLEEP,
+                "Sleep"
+            ),
+            Ui::button(
+                Some(Ui::closeDialog),
+                Ui::ButtonStyle::subtle(),
+                Mdi::RESTART,
+                "Restart"
+            ),
+            Ui::button(
+                Some(Ui::closeDialog),
+                Ui::ButtonStyle::subtle(),
+                Mdi::POWER_STANDBY,
+                "Shutdown"
+            ),
         }) |
             Ui::minSize({260, Ui::UNCONSTRAINED}),
     });

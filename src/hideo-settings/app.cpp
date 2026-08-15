@@ -15,16 +15,16 @@ namespace Hideo::Settings {
 Ui::Child sidebar(State const& state) {
     Ui::Children items = {
         Kr::searchbar(""s) | Ui::insets({6, 0}),
-        Kr::sidenavItem(state.page() == Page::ACCOUNT, Model::bind<GoTo>(Page::ACCOUNT), Mdi::ACCOUNT, "Accounts"s),
-        Kr::sidenavItem(state.page() == Page::PERSONALIZATION, Model::bind<GoTo>(Page::PERSONALIZATION), Mdi::PALETTE, "Personalization"s),
-        Kr::sidenavItem(state.page() == Page::PACKAGES, Model::bind<GoTo>(Page::PACKAGES), Mdi::WIDGETS_OUTLINE, "Packages"s),
+        Kr::sidenavItem(state.page() == Page::ACCOUNT, Some(Model::bind<GoTo>(Page::ACCOUNT)), Mdi::ACCOUNT, "Accounts"s),
+        Kr::sidenavItem(state.page() == Page::PERSONALIZATION, Some(Model::bind<GoTo>(Page::PERSONALIZATION)), Mdi::PALETTE, "Personalization"s),
+        Kr::sidenavItem(state.page() == Page::PACKAGES, Some(Model::bind<GoTo>(Page::PACKAGES)), Mdi::WIDGETS_OUTLINE, "Packages"s),
 
-        Kr::sidenavItem(state.page() == Page::SYSTEM, Model::bind<GoTo>(Page::SYSTEM), Mdi::LAPTOP, "System"s),
-        Kr::sidenavItem(state.page() == Page::NETWORK, Model::bind<GoTo>(Page::NETWORK), Mdi::WIFI, "Network"s),
-        Kr::sidenavItem(state.page() == Page::SECURITY, Model::bind<GoTo>(Page::SECURITY), Mdi::SECURITY, "Security & Privacy"s),
+        Kr::sidenavItem(state.page() == Page::SYSTEM, Some(Model::bind<GoTo>(Page::SYSTEM)), Mdi::LAPTOP, "System"s),
+        Kr::sidenavItem(state.page() == Page::NETWORK, Some(Model::bind<GoTo>(Page::NETWORK)), Mdi::WIFI, "Network"s),
+        Kr::sidenavItem(state.page() == Page::SECURITY, Some(Model::bind<GoTo>(Page::SECURITY)), Mdi::SECURITY, "Security & Privacy"s),
 
-        Kr::sidenavItem(state.page() == Page::UPDATES, Model::bind<GoTo>(Page::UPDATES), Mdi::UPDATE, "Updates"s),
-        Kr::sidenavItem(state.page() == Page::ABOUT, Model::bind<GoTo>(Page::ABOUT), Mdi::INFORMATION_OUTLINE, "About"s),
+        Kr::sidenavItem(state.page() == Page::UPDATES, Some(Model::bind<GoTo>(Page::UPDATES)), Mdi::UPDATE, "Updates"s),
+        Kr::sidenavItem(state.page() == Page::ABOUT, Some(Model::bind<GoTo>(Page::ABOUT)), Mdi::INFORMATION_OUTLINE, "About"s),
     };
 
     return Kr::sidenavContent(items);
@@ -44,11 +44,9 @@ Ui::Child pageContent(State const& state) {
         return pageAbout(state);
 
     default:
-        return Ui::grow(
-            Ui::center(
-                Ui::text("Content")
-            )
-        );
+        return Ui::text("Content") |
+               Ui::center() |
+               Ui::grow();
     }
 }
 
@@ -63,16 +61,16 @@ export Ui::Child app() {
             return Kr::scaffold({
                 .icon = Mdi::COG,
                 .title = "Settings"s,
-                .startTools = [&] -> Ui::Children {
+                .startTools = Some([&] -> Ui::Children {
                     return {
                         Ui::button(Model::bindIf<GoBack>(s.canGoBack()), Ui::ButtonStyle::subtle(), Mdi::ARROW_LEFT),
                         Ui::button(Model::bindIf<GoForward>(s.canGoForward()), Ui::ButtonStyle::subtle(), Mdi::ARROW_RIGHT),
-                        Ui::button(Model::bind<GoTo>(Page::HOME), Ui::ButtonStyle::subtle(), Mdi::HOME),
+                        Ui::button(Some(Model::bind<GoTo>(Page::HOME)), Ui::ButtonStyle::subtle(), Mdi::HOME),
                     };
-                },
-                .sidebar = [&] {
+                }),
+                .sidebar = Some([&] {
                     return sidebar(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
-                },
+                }),
                 .body = [&] {
                     return pageContent(s) | Ui::bound() | Kr::scaffoldContent() | Ui::grow();
                 },

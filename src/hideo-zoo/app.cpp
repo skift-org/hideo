@@ -17,7 +17,7 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::DUCK,
             .title = "Zoo"s,
-            .sidebar = [&] {
+            .sidebar = Some([&] {
                 Vec<Tuple<Page const*, int>> pages;
                 pages.ensure(PAGES.len());
                 for (auto p : PAGES) {
@@ -43,7 +43,7 @@ export Ui::Child app() {
                         auto page = item.v0;
                         return Kr::sidenavItem(
                             page == s.selectedPage,
-                            Model::bind<Switch>(page),
+                            Some(Model::bind<Switch>(page)),
                             item.v0->icon,
                             item.v0->name
                         );
@@ -55,7 +55,7 @@ export Ui::Child app() {
                            Ui::vflow(8, items) | Ui::grow(),
                        }) |
                        Kr::resizable(Kr::ResizeHandlePosition::END);
-            },
+            }),
             .body = [&] {
                 auto page = s.selectedPage;
                 return Ui::vflow(

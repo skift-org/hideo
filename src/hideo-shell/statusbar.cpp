@@ -43,15 +43,16 @@ export Ui::Child statusbar(State const& s) {
            }) |
            Ui::box({
                .padding = {0, 12},
-               .backgroundFill = s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.6),
+               .backgroundFill = Some(s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.6)),
            });
 }
 
 export Ui::Child statusbarButton(State const& s) {
-    return statusbar(s) | Ui::button(
-                              Model::bind<ActivatePanel>(Panel::SYS),
-                              Ui::ButtonStyle::none()
-                          );
+    return statusbar(s) | 
+        Ui::button(
+            Some(Model::bind<ActivatePanel>(Panel::SYS)),
+            Ui::ButtonStyle::none()
+        );
 }
 
 } // namespace Hideo::Shell

@@ -137,8 +137,8 @@ struct Expr {
 
 // MARK: Graphing --------------------------------------------------------------
 
-Rc<Gfx::Surface> graph(auto f, Interval xrange, Interval yrange) {
-    auto surface = Gfx::Surface::alloc(1024);
+Rc<Gfx::Image> graph(auto f, Interval xrange, Interval yrange) {
+    auto surface = Gfx::Image::alloc(1024);
     surface->mutPixels().clear(Gfx::BLUE.withOpacity(0.5));
 
     Vec<Math::Recti> u = {
@@ -190,7 +190,7 @@ struct Relation {
 };
 
 struct State {
-    Rc<Gfx::Surface> tile;
+    Rc<Gfx::Image> tile;
     Vec<Relation> relations = {
         Relation{.color = Gfx::BLUE, .expression = "1/x=y"s}
     };
@@ -216,10 +216,10 @@ export Ui::Child relationRow(Relation const& relation) {
     return Ui::hflow(
         4,
         Ui::icon(Mdi::DRAG_VERTICAL_VARIANT) | Ui::vcenter(),
-        Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle().withForegroundFill(relation.color), Mdi::CIRCLE),
+        Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle().withForegroundFill(relation.color), Mdi::CIRCLE),
         Ui::codeMedium(relation.expression) | Ui::vcenter() | Ui::grow(),
-        Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::FUNCTION_VARIANT),
-        Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::DOTS_HORIZONTAL)
+        Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle(), Mdi::FUNCTION_VARIANT),
+        Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle(), Mdi::DOTS_HORIZONTAL)
     );
 }
 
@@ -227,7 +227,7 @@ export Ui::Child sidenav(State const& s) {
     Ui::Children items;
     for (auto const& relation : s.relations)
         items.pushBack(relationRow(relation));
-    items.pushBack(Ui::button(Model::bind<AddRelation>(), Mdi::PLUS, "Add Relation"s));
+    items.pushBack(Ui::button(Some(Model::bind<AddRelation>()), Mdi::PLUS, "Add Relation"s));
     return Kr::sidenavContent(std::move(items));
 }
 
@@ -244,15 +244,15 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::GRAPH,
             .title = "Graph"s,
-            .sidebar = [&] {
+            .sidebar = Some([&] {
                 return sidenav(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
-            },
+            }),
             .body = [&] {
                 return Ui::image(s.tile) |
                        Ui::bound() |
                        Ui::box({
                            .borderRadii = 6,
-                           .backgroundFill = Gfx::WHITE,
+                           .backgroundFill = Some(Gfx::WHITE),
                            .overflow = Ui::BoxOverflow::HIDDEN,
                        });
             },

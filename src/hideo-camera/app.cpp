@@ -107,14 +107,14 @@ Ui::Child appContent(State const& s) {
         Ui::vflow(
             8,
             Ui::button(
-                [&](auto& n) {
+                Some([&](auto& n) {
                     Ui::showDialog(n, cameraInfoDialog(s));
-                },
+                }),
                 Ui::ButtonStyle::regular().withForegroundFill(Gfx::WHITE).withRadii(999),
                 Mdi::BUG
             ),
             Ui::button(
-                Ui::SINK<>,
+                Some(Ui::SINK<>),
                 Ui::ButtonStyle::regular().withForegroundFill(Gfx::WHITE).withRadii(999),
                 Mdi::COG
             ),
@@ -122,7 +122,7 @@ Ui::Child appContent(State const& s) {
             Ui::grow(NONE),
 
             Ui::button(
-                Ui::SINK<>,
+                Some(Ui::SINK<>),
                 Ui::ButtonStyle::regular().withForegroundFill(Gfx::WHITE).withRadii(999),
                 Mdi::TUNE
             )
@@ -131,13 +131,13 @@ Ui::Child appContent(State const& s) {
     auto bottomBar =
         Ui::vflow(
             Ui::button(
-                Ui::SINK<>,
+                Some(Ui::SINK<>),
                 Ui::ButtonStyle::regular().withRadii(999).withPadding(12),
                 Ui::icon(Mdi::CAMERA_FLIP, 24)
             ) | Ui::center(),
 
             Ui::button(
-                Model::bind<Capture>(),
+                Some(Model::bind<Capture>()),
                 Ui::ButtonStyle::regular().withRadii(999).withPadding(16),
                 Ui::icon(Mdi::CAMERA, 38)
             ) | Ui::center() |
@@ -147,7 +147,7 @@ Ui::Child appContent(State const& s) {
                 Model::bindIf<OpenLast>(s.lastImage.has()),
                 Ui::ButtonStyle::regular().withRadii(999),
                 (s.lastImage
-                     ? Ui::image(s.lastImage.unwrap(), 999) | Ui::cover()
+                     ? Ui::image(s.lastImage.unwrap(), Some(999)) | Ui::cover()
                      : Ui::empty()) |
                     Ui::pinSize(48)
             ) | Ui::center()

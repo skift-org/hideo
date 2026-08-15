@@ -38,12 +38,12 @@ Ui::Child audioContent() {
 
     auto cover = Ui::image(
                      image,
-                     8
+                     Some(8)
                  ) |
                  Ui::box({
                      .borderRadii = 8,
                      .borderWidth = 2,
-                     .borderFill = Ui::GRAY100.withOpacity(0.1),
+                     .borderFill = Some(Ui::GRAY100.withOpacity(0.1)),
                  }) |
                  Ui::pinSize(256);
 
@@ -67,15 +67,15 @@ Ui::Child nomedia(Error err) {
 
 Ui::Child transportControls(State const& s) {
     return Ui::hflow(
-               Ui::button(Model::bind<Previous>(), Ui::ButtonStyle::subtle(), Mdi::SKIP_PREVIOUS),
+               Ui::button(Some(Model::bind<Previous>()), Ui::ButtonStyle::subtle(), Mdi::SKIP_PREVIOUS),
                Kr::separator(),
-               Ui::button(Model::bind<TogglePause>(), Ui::ButtonStyle::primary(), s.player->status() == Av::Player::PLAYING ? Mdi::PAUSE : Mdi::PLAY),
+               Ui::button(Some(Model::bind<TogglePause>()), Ui::ButtonStyle::primary(), s.player->status() == Av::Player::PLAYING ? Mdi::PAUSE : Mdi::PLAY),
                Kr::separator(),
-               Ui::button(Ui::SINK<>, Ui::ButtonStyle::subtle(), Mdi::SKIP_NEXT)
+               Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle(), Mdi::SKIP_NEXT)
            ) |
            Ui::box({
                .borderRadii = 4,
-               .backgroundFill = Ui::GRAY800,
+               .backgroundFill = Some(Ui::GRAY800),
            });
 }
 
@@ -90,10 +90,10 @@ Ui::Child scrubberControls(State const& s) {
         duration(s.player->tell()),
         Kr::slider(
             s.player->tell().toMSecs() / static_cast<f64>(s.player->duration().toMSecs()),
-            [&](auto& n, f64 v) {
+            Some([&](auto& n, f64 v) {
                 auto durr = Duration::fromMSecs(s.player->duration().toMSecs() * v);
                 Model::bubble<Scrub>(n, Scrub{durr});
-            }
+            })
         ) |
             Ui::grow(),
         duration(s.player->duration())
@@ -105,18 +105,21 @@ Ui::Child volumeControls(State const& s) {
                0,
                Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
                Ui::button(
-                   Model::bind<ToggleMute>(),
+                   Some(Model::bind<ToggleMute>()),
                    Ui::ButtonStyle::subtle(),
                    s.player->mute() ? Mdi::VOLUME_MUTE : Mdi::VOLUME_HIGH
                ),
-               Kr::slider(s.player->volume(), [](auto& n, f64 v) {
-                   Model::bubble<ChangeVolume>(n, ChangeVolume{v});
-               })
+               Kr::slider(
+                   s.player->volume(),
+                   Some([](auto& n, f64 v) {
+                       Model::bubble<ChangeVolume>(n, ChangeVolume{v});
+                   })
+               )
            ) |
            Ui::box({
                .padding = {0, 6, 0, 0},
                .borderRadii = 4,
-               .backgroundFill = Ui::GRAY800,
+               .backgroundFill = Some(Ui::GRAY800),
            });
 }
 
@@ -129,7 +132,11 @@ Ui::Child mediaControls(State const& s) {
                scrubberControls(s) | Ui::grow(),
                Ui::empty(4),
                volumeControls(s),
-               Ui::button(Ui::bindBubble<App::RequestSnapeEvent>(App::Snap::FULL), Ui::ButtonStyle::regular(), Mdi::FULLSCREEN)
+               Ui::button(
+                   Some(Ui::bindBubble<App::RequestSnapeEvent>(App::Snap::FULL)),
+                   Ui::ButtonStyle::regular(),
+                   Mdi::FULLSCREEN
+               )
            ) |
            Ui::insets(8);
 }

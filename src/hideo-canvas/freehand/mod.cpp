@@ -137,8 +137,8 @@ static Vec<Math::Vec2f> _expandStroke(Slice<StrokePoint> points, StrokeOptions c
         );
     };
 
-    f64 taperStart = resolveTaper(options.start.taper);
-    f64 taperEnd = resolveTaper(options.end.taper);
+    f64 taperStart = resolveTaper(Some(options.start.taper));
+    f64 taperEnd = resolveTaper(Some(options.end.taper));
 
     f64 minDistance = Math::pow(options.size * options.smoothing, 2.0);
 
@@ -191,7 +191,7 @@ static Vec<Math::Vec2f> _expandStroke(Slice<StrokePoint> points, StrokeOptions c
         }
 
         if (not firstRadius)
-            firstRadius = radius;
+            firstRadius = Some(radius);
 
         f64 ts = (runningLength < taperStart) ? options.start.easing(runningLength / taperStart) : 1.0;
         f64 te = (totalLength - runningLength < taperEnd) ? options.end.easing((totalLength - runningLength) / taperEnd) : 1.0;

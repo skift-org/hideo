@@ -34,41 +34,41 @@ Ui::Child keypad(State const& state) {
                     4,
                     Ui::button(Model::bindIf<MemClearAction>(state.hasMem), Ui::ButtonStyle::subtle(), "MC"),
                     Ui::button(Model::bindIf<MemRecallAction>(state.hasMem), Ui::ButtonStyle::subtle(), "MR"),
-                    Ui::button(Model::bind<MemAddAction>(), Ui::ButtonStyle::subtle(), "M+"),
-                    Ui::button(Model::bind<MemSubAction>(), Ui::ButtonStyle::subtle(), "M-"),
-                    Ui::button(Model::bind<MemStoreAction>(), Ui::ButtonStyle::subtle(), "MS")
+                    Ui::button(Some(Model::bind<MemAddAction>()), Ui::ButtonStyle::subtle(), "M+"),
+                    Ui::button(Some(Model::bind<MemSubAction>()), Ui::ButtonStyle::subtle(), "M-"),
+                    Ui::button(Some(Model::bind<MemStoreAction>()), Ui::ButtonStyle::subtle(), "MS")
                 )
             ),
 
-            textButton(Model::bind<ClearAllAction>(), Ui::ButtonStyle::secondary(), "CE"s),
-            textButton(Model::bind<ClearAction>(), Ui::ButtonStyle::secondary(), "C"s),
-            Ui::button(Model::bind(Operator::TO_PERCENT), Ui::ButtonStyle::secondary(), Mdi::PERCENT),
-            Ui::button(Model::bind<BackspaceAction>(), Ui::ButtonStyle::secondary(), Mdi::BACKSPACE_OUTLINE),
+            textButton(Some(Model::bind<ClearAllAction>()), Ui::ButtonStyle::secondary(), "CE"s),
+            textButton(Some(Model::bind<ClearAction>()), Ui::ButtonStyle::secondary(), "C"s),
+            Ui::button(Some(Model::bind(Operator::TO_PERCENT)), Ui::ButtonStyle::secondary(), Mdi::PERCENT),
+            Ui::button(Some(Model::bind<BackspaceAction>()), Ui::ButtonStyle::secondary(), Mdi::BACKSPACE_OUTLINE),
 
-            textButton(Model::bind(Operator::RESIPROCAL), Ui::ButtonStyle::secondary(), "1/x"s),
-            textButton(Model::bind(Operator::SQUARE), Ui::ButtonStyle::secondary(), "x²"s),
-            textButton(Model::bind(Operator::SQRT), Ui::ButtonStyle::secondary(), "√x"s),
-            Ui::button(Model::bind(Operator::DIV), Ui::ButtonStyle::secondary(), Mdi::DIVISION),
+            textButton(Some(Model::bind(Operator::RESIPROCAL)), Ui::ButtonStyle::secondary(), "1/x"s),
+            textButton(Some(Model::bind(Operator::SQUARE)), Ui::ButtonStyle::secondary(), "x²"s),
+            textButton(Some(Model::bind(Operator::SQRT)), Ui::ButtonStyle::secondary(), "√x"s),
+            Ui::button(Some(Model::bind(Operator::DIV)), Ui::ButtonStyle::secondary(), Mdi::DIVISION),
 
-            textButton(Model::bind<Number>(7), "7"s),
-            textButton(Model::bind<Number>(8), "8"s),
-            textButton(Model::bind<Number>(9), "9"s),
-            Ui::button(Model::bind(Operator::MULT), Ui::ButtonStyle::secondary(), Mdi::MULTIPLICATION),
+            textButton(Some(Model::bind<Number>(7)), "7"s),
+            textButton(Some(Model::bind<Number>(8)), "8"s),
+            textButton(Some(Model::bind<Number>(9)), "9"s),
+            Ui::button(Some(Model::bind(Operator::MULT)), Ui::ButtonStyle::secondary(), Mdi::MULTIPLICATION),
 
-            textButton(Model::bind<Number>(4), "4"s),
-            textButton(Model::bind<Number>(5), "5"s),
-            textButton(Model::bind<Number>(6), "6"s),
-            Ui::button(Model::bind(Operator::SUB), Ui::ButtonStyle::secondary(), Mdi::MINUS),
+            textButton(Some(Model::bind<Number>(4)), "4"s),
+            textButton(Some(Model::bind<Number>(5)), "5"s),
+            textButton(Some(Model::bind<Number>(6)), "6"s),
+            Ui::button(Some(Model::bind(Operator::SUB)), Ui::ButtonStyle::secondary(), Mdi::MINUS),
 
-            textButton(Model::bind<Number>(1), "1"s),
-            textButton(Model::bind<Number>(2), "2"s),
-            textButton(Model::bind<Number>(3), "3"s),
-            Ui::button(Model::bind(Operator::ADD), Ui::ButtonStyle::secondary(), Mdi::PLUS),
+            textButton(Some(Model::bind<Number>(1)), "1"s),
+            textButton(Some(Model::bind<Number>(2)), "2"s),
+            textButton(Some(Model::bind<Number>(3)), "3"s),
+            Ui::button(Some(Model::bind(Operator::ADD)), Ui::ButtonStyle::secondary(), Mdi::PLUS),
 
-            textButton(Model::bind(Operator::INVERT_SIGN), "+/-"s),
-            textButton(Model::bind<Number>(0), "0"s),
-            Ui::button(Model::bind<EnterDecimalAction>(), Mdi::CIRCLE_SMALL),
-            Ui::button(Model::bind<EqualAction>(), Ui::ButtonStyle::primary(), Mdi::EQUAL)
+            textButton(Some(Model::bind(Operator::INVERT_SIGN)), "+/-"s),
+            textButton(Some(Model::bind<Number>(0)), "0"s),
+            Ui::button(Some(Model::bind<EnterDecimalAction>()), Mdi::CIRCLE_SMALL),
+            Ui::button(Some(Model::bind<EqualAction>()), Ui::ButtonStyle::primary(), Mdi::EQUAL)
         )
     );
 }

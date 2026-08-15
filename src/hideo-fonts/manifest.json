@@ -5,6 +5,6 @@
     "description": "View and manage fonts",
     "requires": [
         "karm-kira",
-        "fonts-all"
+        "fonts"
     ]
 }

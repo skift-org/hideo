@@ -40,16 +40,16 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::CODE_BRACES,
             .title = "Code"s,
-            .endTools = [&] -> Ui::Children {
+            .endTools = Some([&] -> Ui::Children {
                 return {
-                    Ui::button(Model::bind<ToggleTerminalPanel>(), Ui::ButtonStyle::subtle(), Mdi::CONSOLE),
+                    Ui::button(Some(Model::bind<ToggleTerminalPanel>()), Ui::ButtonStyle::subtle(), Mdi::CONSOLE),
                 };
-            },
-            .sidebar = [&] {
+            }),
+            .sidebar = Some([&] {
                 return Ui::empty(128) |
                        Kr::scaffoldContent() |
                        Kr::resizable(Kr::ResizeHandlePosition::END);
-            },
+            }),
             .body = [&] {
                 return Ui::vflow(
                     Ui::empty() |

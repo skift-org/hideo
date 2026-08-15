@@ -21,8 +21,8 @@ auto desktopPanel(Math::Vec2i size = {500, 400}) {
                    .padding = 8,
                    .borderRadii = 12,
                    .borderWidth = 1,
-                   .borderFill = Ui::GRAY800,
-                   .backgroundFill = Ui::GRAY950,
+                   .borderFill = Some(Ui::GRAY800),
+                   .backgroundFill = Some(Ui::GRAY950),
                });
     };
 }
@@ -38,8 +38,8 @@ Ui::Child desktopStack(State const& state) {
                    Ui::box({
                        .borderRadii = 8,
                        .borderWidth = 1.,
-                       .borderFill = Ui::GRAY800,
-                       .shadowStyle = Gfx::BoxShadow::elevated(topLevel ? 16 : 4).withSkipOccluded(true),
+                       .borderFill = Some(Ui::GRAY800),
+                       .shadowStyle = Some(Gfx::BoxShadow::elevated(topLevel ? 16 : 4).withSkipOccluded(true)),
                    }) |
                    Ui::placed(window->_floatingBound);
         }
@@ -91,9 +91,9 @@ Ui::Child desktopScreen(State const& state) {
         background(state) |
             Kr::contextMenu([] {
                 return Kr::contextMenuContent({
-                    Kr::contextMenuItem(Ui::SINK<>, Mdi::PALETTE, "Personalize..."),
+                    Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::PALETTE), "Personalize..."),
                     Kr::separator(),
-                    Kr::contextMenuItem(Ui::SINK<>, Mdi::COG, "Settings"),
+                    Kr::contextMenuItem(Some(Ui::SINK<>), Some(Mdi::COG), "Settings"),
                 });
             }),
         Ui::vflow(

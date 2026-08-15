@@ -15,7 +15,7 @@ namespace Hideo::Files {
 
 Ui::Child sidenavItem(State const& s, Gfx::Icon icon, String title, Ref::Url url) {
     bool selected = url.parentOf(s.currentUrl());
-    return Kr::sidenavItem(selected, Model::bind<GoTo>(url), icon, title);
+    return Kr::sidenavItem(selected, Some(Model::bind<GoTo>(url)), icon, title);
 }
 
 Ui::Child sidebar(State const& s) {
@@ -53,28 +53,28 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::FOLDER,
             .title = "Files"s,
-            .startTools = [&] -> Ui::Children {
+            .startTools = Some([&] -> Ui::Children {
                 return {
                     goBackTool(s),
                     goForwardTool(s),
                     goParentTool(s),
                 };
-            },
-            .middleTools = [&] -> Ui::Children {
+            }),
+            .middleTools = Some([&] -> Ui::Children {
                 return {
                     Ui::empty(36),
                     breadcrumb(s) | Ui::maxSize({480, Ui::UNCONSTRAINED}) | Ui::grow(),
                     Ui::empty(36),
                 };
-            },
-            .endTools = [&] -> Ui::Children {
+            }),
+            .endTools = Some([&] -> Ui::Children {
                 return {
                     moreTool(s),
                 };
-            },
-            .sidebar = [&] {
+            }),
+            .sidebar = Some([&] {
                 return sidebar(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
-            },
+            }),
             .body = [&] {
                 return pageContent(s) | Kr::scaffoldContent();
             },

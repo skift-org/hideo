@@ -17,9 +17,8 @@ namespace Hideo::Shell {
 static Opt<Rc<Gfx::Fontface>> _blackFontface = NONE;
 
 static Rc<Gfx::Fontface> blackFontface() {
-    if (not _blackFontface) {
-        _blackFontface = Font::loadFontfaceOrFallback("bundle://fonts.inter/fonts/Inter-Bold.ttf"_url).unwrap();
-    }
+    if (not _blackFontface) 
+        _blackFontface = Font::loadFontfaceOrFallback("bundle://fonts.inter/fonts/Inter-Bold.ttf"_url).ok();
     return *_blackFontface;
 }
 

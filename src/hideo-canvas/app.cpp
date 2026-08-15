@@ -36,14 +36,14 @@ Gfx::Color _kindColor(Kind kind) {
 
 Ui::Child canvasContextMenu(State const& s) {
     return Kr::contextMenuContent({
-        Kr::contextMenuItem(Model::bindIf<CopySelection>(not s.selection.empty()), Mdi::CONTENT_COPY, "Copy"s),
-        Kr::contextMenuItem(Model::bindIf<CutSelection>(not s.selection.empty()), Mdi::CONTENT_CUT, "Cut"s),
-        Kr::contextMenuItem(Model::bindIf<PasteSelection>(s.clipboard.has()), Mdi::CONTENT_PASTE, "Paste"s),
-        Kr::contextMenuItem(Model::bindIf<DeleteSelection>(not s.selection.empty()), Mdi::TRASH_CAN, "Delete"),
+        Kr::contextMenuItem(Model::bindIf<CopySelection>(not s.selection.empty()), Some(Mdi::CONTENT_COPY), "Copy"s),
+        Kr::contextMenuItem(Model::bindIf<CutSelection>(not s.selection.empty()), Some(Mdi::CONTENT_CUT), "Cut"s),
+        Kr::contextMenuItem(Model::bindIf<PasteSelection>(s.clipboard.has()), Some(Mdi::CONTENT_PASTE), "Paste"s),
+        Kr::contextMenuItem(Model::bindIf<DeleteSelection>(not s.selection.empty()), Some(Mdi::TRASH_CAN), "Delete"),
         Kr::separator(),
-        Kr::contextMenuItem(Model::bind<SelectAll>(), Mdi::SELECT_ALL, "Select All"),
+        Kr::contextMenuItem(Some(Model::bind<SelectAll>()), Some(Mdi::SELECT_ALL), "Select All"),
         Kr::separator(),
-        Kr::contextMenuItem(Model::bindIf<FrameSelection>(not s.selection.empty()), Mdi::ARTBOARD, "Frame Selection"),
+        Kr::contextMenuItem(Model::bindIf<FrameSelection>(not s.selection.empty()), Some(Mdi::ARTBOARD), "Frame Selection"),
     });
 }
 
@@ -186,13 +186,23 @@ Ui::Child viewport(State const& s) {
 }
 
 Ui::Child colorButton(State const& s, Gfx::Color color) {
-    return (s.freehandColor == color ? Ui::icon(Mdi::CHECK, color.luminance() > 0.7 ? Gfx::BLACK : Gfx::WHITE) : Ui::empty(18)) |
+    return (
+               s.freehandColor == color
+                   ? Ui::icon(
+                         Mdi::CHECK,
+                         Some(color.luminance() > 0.7 ? Gfx::BLACK : Gfx::WHITE)
+                     )
+                   : Ui::empty(18)
+           ) |
            Ui::box({
                .padding = 2,
                .borderRadii = 99,
-               .backgroundFill = color,
+               .backgroundFill = Some(color),
            }) |
-           Ui::button(Model::bind<ChooseFreeHandColor>(color), Ui::ButtonStyle::subtle().withRadii(99));
+           Ui::button(
+               Some(Model::bind<ChooseFreeHandColor>(color)),
+               Ui::ButtonStyle::subtle().withRadii(99)
+           );
 }
 
 Ui::Child colorBar(State const& s) {
@@ -222,13 +232,13 @@ Ui::Child colorBar(State const& s) {
                .margin = 4,
                .padding = 4,
                .borderRadii = 99,
-               .backgroundFill = Ui::GRAY900,
+               .backgroundFill = Some(Ui::GRAY900),
            });
 }
 
 Ui::Child toolbarButton(State const& s, Tool tool, Gfx::Icon icon) {
     return Ui::button(
-        Model::bind<SelectTool>(tool),
+        Some(Model::bind<SelectTool>(tool)),
         s.currentTool == tool
             ? Ui::ButtonStyle::subtle().withForegroundFill(Ui::ACCENT500)
             : Ui::ButtonStyle::subtle(),
@@ -248,12 +258,16 @@ Ui::Child toolbar(State const& s) {
            Ui::box({
                .padding = 2,
                .borderRadii = 4,
-               .backgroundFill = Ui::GRAY900,
+               .backgroundFill = Some(Ui::GRAY900),
            });
 }
 
 Ui::Child toolbarZoom() {
-    return Ui::button(Ui::SINK<>, Mdi::MAGNIFY, "100%");
+    return Ui::button(
+        Some(Ui::SINK<>),
+        Mdi::MAGNIFY,
+        "100%"
+    );
 }
 
 Ui::Child viewportPanel(State const& s) {
@@ -277,14 +291,18 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::DRAW,
             .title = "Canvas"s,
-            .endTools = [&] -> Ui::Children {
+            .endTools = Some([&] -> Ui::Children {
                 return {
-                    Ui::button(Model::bind<ToggleProperties>(), Ui::ButtonStyle::subtle(), Mdi::TUNE)
+                    Ui::button(
+                        Some(Model::bind<ToggleProperties>()),
+                        Ui::ButtonStyle::subtle(),
+                        Mdi::TUNE
+                    )
                 };
-            },
-            .sidebar = [&] {
+            }),
+            .sidebar = Some([&] {
                 return Kr::sidenavContent({}) | Kr::resizable(Kr::ResizeHandlePosition::END);
-            },
+            }),
             .body = [&] {
                 if (s.propertiesVisible) {
                     return Ui::hflow(

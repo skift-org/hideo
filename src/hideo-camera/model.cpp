@@ -22,13 +22,13 @@ struct Guidelines {
 struct State {
     Rc<Av::Camera> camera;
     Rc<Av::VideoStream> stream;
-    Opt<Rc<Gfx::Surface>> lastImage = NONE;
+    Opt<Rc<Gfx::Image>> lastImage = NONE;
     Ref::Url lastImageUrl = ""_url;
     Guidelines guidelines = {};
 };
 
-Rc<Gfx::Surface> _generateThumbnail(Rc<Gfx::Surface> src) {
-    auto thumb = Gfx::Surface::alloc(48);
+Rc<Gfx::Image> _generateThumbnail(Rc<Gfx::Image> src) {
+    auto thumb = Gfx::Image::alloc(48);
     Gfx::CpuCanvas g;
     g.begin(thumb->mutPixels());
     g.blit(thumb->bound().fit(src->bound()), thumb->bound(), src);
@@ -50,7 +50,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
         [&](Capture) {
             auto videoFrame = s.stream->next();
             if (videoFrame) {
-                s.lastImage = _generateThumbnail(videoFrame->surface);
+                s.lastImage = Some(_generateThumbnail(videoFrame->surface));
                 auto now = Sys::now();
                 auto dt = DateTime::fromInstant(now);
                 auto filename = Io::format(

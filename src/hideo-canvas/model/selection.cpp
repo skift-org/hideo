@@ -149,7 +149,7 @@ export struct Selection {
                 if (oldNode.parent) {
                     for (usize i = 0; i < oldRefs.len(); i++) {
                         if (oldRefs[i] == oldNode.parent.unwrap()) {
-                            newParent = newRefs[i];
+                            newParent = Some(newRefs[i]);
                             break;
                         }
                     }
@@ -179,7 +179,7 @@ export struct Selection {
             if (oldNode.parent) {
                 for (usize i = 0; i < oldRefs.len(); i++) {
                     if (oldRefs[i] == oldNode.parent.unwrap()) {
-                        newParent = newRefs[i];
+                        newParent = Some(newRefs[i]);
                         break;
                     }
                 }
@@ -203,11 +203,11 @@ export struct Selection {
             freehand.pushBack(tree.byRef(ref).freehand);
         }
 
-        _transform = TransformContext{
+        _transform = Some(TransformContext{
             .refs = std::move(refs),
             .initial = std::move(initial),
             .freehand = std::move(freehand),
-        };
+        });
     }
 
     void move(Tree& tree, Math::Vec2f delta) {
@@ -293,10 +293,10 @@ export struct Selection {
             return NONE;
 
         bool mixedAngles = hasMixedAngles(from);
-        return Gizmo{
+        return Some(Gizmo{
             .bound = mixedAngles ? aabb(from) : obb(from),
             .uniformOnly = mixedAngles,
-        };
+        });
     }
 
     void commitTransform(Tree const& tree) {

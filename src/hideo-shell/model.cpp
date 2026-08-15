@@ -57,7 +57,7 @@ export struct Window {
 
     virtual ~Window() = default;
 
-    virtual Rc<Gfx::Surface> surface() const = 0;
+    virtual Rc<Gfx::Image> surface() const = 0;
 
     virtual void event(App::Event&) = 0;
 
@@ -103,7 +103,7 @@ export struct State : Meta::NoCopy {
 
     DateTime dateTime;
 
-    Rc<Gfx::Surface> background;
+    Rc<Gfx::Image> background;
     Vec<Noti> noti;
     Vec<Rc<Launcher>> launchers;
     Vec<Rc<Launcher>> filtered;
@@ -405,7 +405,7 @@ export struct Viewport : Ui::View<Viewport> {
         auto surface = _window->surface();
         g.push();
         if (not _radii.zero()) {
-            g.fillStyle(surface->pixels());
+            g.fillStyle(surface);
             g.fill(bound(), _radii);
         } else {
             g.blit(_bound.cast<isize>(), surface);
@@ -519,8 +519,8 @@ export struct MockWindow : Window {
     MockWindow(Gfx::Icon icon, String name, Gfx::ColorRamp ramp)
         : icon(icon), name(name), ramp(ramp) {}
 
-    Rc<Gfx::Surface> surface() const override {
-        return Gfx::Surface::fallback();
+    Rc<Gfx::Image> surface() const override {
+        return Gfx::Image::fallback();
     }
 
     void event(App::Event&) override {}

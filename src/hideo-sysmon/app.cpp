@@ -19,15 +19,15 @@ Ui::Child graph(Gfx::Color color) {
            Ui::box({
                .borderRadii = 4,
                .borderWidth = 1,
-               .borderFill = color,
-               .backgroundFill = color.withOpacity(0.25),
+               .borderFill = Some(color),
+               .backgroundFill = Some(color.withOpacity(0.25)),
            });
 }
 
 Ui::Child sidebarItem(bool selected, Ui::Send<> onPress, Gfx::Color color, String title, String description) {
     return Kr::sidenavItem(
         selected,
-        onPress,
+        Some(onPress),
         Ui::hflow(
             4,
             graph(color),
@@ -46,19 +46,19 @@ Ui::Child sidebar(State const& s) {
         Kr::sidenavTitle("Software"s),
         Kr::sidenavItem(
             s.tab == Tab::APPLICATIONS,
-            Model::bind<GoTo>(Tab::APPLICATIONS),
+            Some(Model::bind<GoTo>(Tab::APPLICATIONS)),
             Mdi::APPS,
             "Applications"s
         ),
         Kr::sidenavItem(
             s.tab == Tab::SERVICES,
-            Model::bind<GoTo>(Tab::SERVICES),
+            Some(Model::bind<GoTo>(Tab::SERVICES)),
             Mdi::COG,
             "Services"s
         ),
         Kr::sidenavItem(
             s.tab == Tab::KERNEL,
-            Model::bind<GoTo>(Tab::KERNEL),
+            Some(Model::bind<GoTo>(Tab::KERNEL)),
             Mdi::ATOM,
             "Kernel"s
         ),
@@ -110,9 +110,9 @@ export Ui::Child app() {
         return Kr::scaffold({
             .icon = Mdi::VIEW_DASHBOARD,
             .title = "System Monitor"s,
-            .sidebar = [&] {
+            .sidebar = Some([&] {
                 return sidebar(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
-            },
+            }),
             .body = [] {
                 return Ui::empty() | Kr::scaffoldContent();
             },

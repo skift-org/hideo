@@ -17,7 +17,7 @@ namespace Hideo::Shell {
 static Opt<Rc<Gfx::Fontface>> _blackFontface = NONE;
 
 static Rc<Gfx::Fontface> blackFontface() {
-    if (not _blackFontface) 
+    if (not _blackFontface)
         _blackFontface = Font::loadFontfaceOrFallback("bundle://fonts.inter/fonts/Inter-Bold.ttf"_url).ok();
     return *_blackFontface;
 }
@@ -44,8 +44,14 @@ Ui::Child lockScreen(State const& state) {
     );
 
     auto hintText = Ui::vflow(
-        Ui::center(Ui::icon(Mdi::CHEVRON_UP, 48)),
-        Ui::center(Ui::labelLarge(App::formFactor == App::FormFactor::MOBILE ? "Swipe up to unlock" : "Swipe up or press the space key to unlock"))
+        Ui::icon(Mdi::CHEVRON_UP, 48) |
+            Ui::center(),
+        Ui::labelLarge(
+            App::formFactor == App::FormFactor::MOBILE
+                ? "Swipe up to unlock"
+                : "Swipe up or press the space key to unlock"
+        ) |
+            Ui::center()
     );
 
     return Ui::stack(

@@ -412,12 +412,13 @@ Page PAGE_PRINT_DIALOG{
                    Some([](auto& n) {
                        Ui::showDialog(
                            n,
-                           Print::printDialog([](Print::Settings const& s) -> Vec<Print::Page> {
-                               return {
-                                   {s.pageSize().cast<f64>(), makeRc<Scene::Clear>(makeRc<Scene::Node>(), Gfx::RED500)},
-                                   {s.pageSize().cast<f64>(), makeRc<Scene::Clear>(makeRc<Scene::Node>(), Gfx::BLUE500)},
-                                   {s.pageSize().cast<f64>(), makeRc<Scene::Clear>(makeRc<Scene::Node>(), Gfx::GREEN500)},
-                               };
+                           Print::printDialog([](Print::Settings const& s) -> Vec<Gfx::Snapshot> {
+                               auto size = s.pageSize().cast<isize>();
+                               Vec<Gfx::Snapshot> pages;
+                               pages.pushBack(Gfx::Snapshot::from(size, Gfx::RED500));
+                               pages.pushBack(Gfx::Snapshot::from(size, Gfx::BLUE500));
+                               pages.pushBack(Gfx::Snapshot::from(size, Gfx::GREEN500));
+                               return pages;
                            })
                        );
                    }),

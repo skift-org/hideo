@@ -231,14 +231,14 @@ Ui::Child expendedQuickSettings(State const& s) {
             [](auto& n, auto value) {
                 Model::bubble(n, ChangeBrightness{value});
             },
-            _iconForBrightnessValue(s.brightness), "Brightness"
+            _iconForBrightnessValue(s.brightness)
         ),
         Kr::slider(
             s.volume,
             [](auto& n, auto value) {
                 Model::bubble(n, ChangeVolume{value});
             },
-            _iconForVolumeValue(s.volume), "Volume"
+            _iconForVolumeValue(s.volume)
         ),
         settings | Ui::grow(), quickTools(s)
     );

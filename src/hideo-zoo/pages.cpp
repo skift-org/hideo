@@ -729,9 +729,7 @@ Page PAGE_SLIDER{
     [] {
         return Kr::slider(
                    0.5,
-                   Ui::SINK<f64>,
-                   Mdi::CAT,
-                   "Cuteness"
+                   Some(Ui::SINK<f64>)
                ) |
                Ui::minSize({320, Ui::UNCONSTRAINED}) |
                Ui::center();
@@ -744,46 +742,27 @@ Page PAGE_TABBAR{
     "A horizontal navigation bar that displays a list of tabs",
     [] {
         return Ui::state(0, [](auto state, auto bind) {
-            return Ui::vflow(
-                Kr::tabbarContent({
-                    Kr::tabbarItem(state == 0, bind(0), Ui::labelMedium("Alarm"s)),
-                    Kr::tabbarItem(state == 1, bind(1), Ui::labelMedium("Clock"s)),
-                    Kr::tabbarItem(state == 2, bind(2), Ui::labelMedium("Timer"s)),
-                    Kr::tabbarItem(state == 3, bind(3), Ui::labelMedium("Stopwatch"s)),
-                }),
-                Kr::TitlebarContent{
-                    .start = Kr::titlebarTitle(Mdi::SURFING, "Cool App"s),
-                    .middle = Kr::tabbarWrapper({
-                        Kr::tabbarItem(state == 0, bind(0), Ui::labelMedium("Tab 0"s)),
-                        Kr::tabbarItem(state == 1, bind(1), Ui::labelMedium("Tab 1"s)),
-                        Kr::tabbarItem(state == 2, bind(2), Ui::labelMedium("Tab 2"s)),
-                        Kr::tabbarItem(state == 3, bind(3), Ui::labelMedium("Tab 3"s)),
-                        Ui::button(
-                            Some(bind(0)),
-                            Ui::ButtonStyle::subtle(),
-                            Mdi::PLUS
-                        ) | Ui::center(),
-                    }),
-                    .end = Kr::titlebarClose(),
-                },
-                Kr::toolbar({
-                    Ui::button(
-                        Some(bind(0)),
-                        Ui::ButtonStyle::subtle(),
-                        Mdi::ALARM
-                    ),
-                }) | Ui::box({.backgroundFill = Some(Ui::GRAY900)})
-            );
-        });
-    },
-};
+                   auto noIcons = Kr::tabbarContent({
+                       Kr::tabbarItem(state == 0, bind(0), Kr::tabarItemLabel(NONE, "Alarm"s)),
+                       Kr::tabbarItem(state == 1, bind(1), Kr::tabarItemLabel(NONE, "Clock"s)),
+                       Kr::tabbarItem(state == 2, bind(2), Kr::tabarItemLabel(NONE, "Timer"s)),
+                   });
 
-Page PAGE_TITLEBAR{
-    Mdi::DOCK_TOP,
-    "Titlebar"s,
-    "An area at the top of a window that displays the title of the window and may include other elements such as a menu button, close button, and minimize button.",
-    [] {
-        return Kr::titlebar(Mdi::DUCK, "Cool App"s) | Ui::center();
+                   auto withIcon = Kr::tabbarContent({
+                       Kr::tabbarItem(state == 0, bind(0), Kr::tabarItemLabel(Some(Mdi::CODE_BRACES), "Code"s)),
+                       Kr::tabbarItem(state == 1, bind(1), Kr::tabarItemLabel(Some(Mdi::APPLICATION_OUTLINE), "Preview"s)),
+                       Kr::tabbarItem(state == 2, bind(2), Kr::tabarItemLabel(Some(Mdi::VIEW_SPLIT_VERTICAL), "Split"s)),
+                   });
+
+                   auto onlyIcon = Kr::tabbarContent({
+                       Kr::tabbarItem(state == 0, bind(0), Kr::tabarItemIcon(Mdi::FORMAT_ALIGN_LEFT)),
+                       Kr::tabbarItem(state == 1, bind(1), Kr::tabarItemIcon(Mdi::FORMAT_ALIGN_CENTER)),
+                       Kr::tabbarItem(state == 2, bind(2), Kr::tabarItemIcon(Mdi::FORMAT_ALIGN_RIGHT)),
+                   });
+
+                   return Ui::vflow(32, Math::Align::CENTER, noIcons, withIcon, onlyIcon);
+               }) |
+               Ui::center();
     },
 };
 
@@ -870,7 +849,6 @@ export Array PAGES = {
     &PAGE_SIDENAV,
     &PAGE_SLIDER,
     &PAGE_TABBAR,
-    &PAGE_TITLEBAR,
     &PAGE_TOGGLE,
     &PAGE_TYPOGRAPHY,
 };

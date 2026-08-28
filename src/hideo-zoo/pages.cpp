@@ -9,7 +9,6 @@ import Karm.Ref;
 import Karm.Gfx;
 import Karm.Math;
 import Karm.Logger;
-import Karm.Scene;
 
 import Hideo.Files;
 import :model;

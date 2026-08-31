@@ -56,14 +56,10 @@ export Ui::Child app(State state) {
                     Model::bubble<ActivatePanel>(n, {Panel::NOTIS});
                 });
 
-            if (state.nightLight) {
-                content = Ui::foregroundFilter(Gfx::SepiaFilter{0.7}, content);
-            }
-
-            content = Ui::foregroundFilter(
-                Gfx::BrightnessFilter{state.brightness},
-                content
-            );
+            auto colorMatrix = Gfx::ColorMatrix::identity();
+            colorMatrix *= Gfx::ColorMatrix::sepia(state.nightLight ? 0.7 : 0);
+            colorMatrix *= Gfx::ColorMatrix::brightness(state.brightness);
+            content = Ui::foregroundFilter(Gfx::ColorMatrixFilter{colorMatrix}, content);
 
             return content;
         }

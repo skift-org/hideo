@@ -62,7 +62,7 @@ Ui::Child audioContent() {
 }
 
 Ui::Child nomedia(Error err) {
-    return Kr::errorPage(Mdi::ALERT_CIRCLE_OUTLINE, "Could not start media playback"s, Str{err.msg()});
+    return Kr::emptyError(Mdi::ALERT_CIRCLE_OUTLINE, "Could not start media playback"s, Str{err.msg()});
 }
 
 Ui::Child transportControls(State const& s) {

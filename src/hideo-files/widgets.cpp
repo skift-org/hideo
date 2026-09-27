@@ -61,10 +61,10 @@ Gfx::Icon iconFor(Sys::DirEntry const& entry) {
 // MARK: Common Widgets --------------------------------------------------------
 
 export Ui::Child alert(State const& state, String title, String body) {
-    return Kr::errorPageContent({
-        Kr::errorPageTitle(Mdi::ALERT_DECAGRAM, title),
-        Kr::errorPageBody(body),
-        Kr::errorPageFooter({
+    return Kr::emptyContent({
+        Kr::emptyTitle(Mdi::ALERT_DECAGRAM, title),
+        Kr::emptyBody(body),
+        Kr::emptyFooter({
             Ui::button(Model::bindIf<GoBack>(state.canGoBack()), "Go Back"),
             Ui::button(Some(Model::bind<Refresh>()), Ui::ButtonStyle::primary(), "Retry"),
         }),

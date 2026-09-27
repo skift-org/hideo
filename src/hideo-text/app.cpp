@@ -198,7 +198,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                             Kr::separator(),
 
                             s.error
-                                ? Kr::errorPage(Mdi::ALERT_DECAGRAM, "Unable to load text"s, Io::toStr(s.error)) | Ui::grow()
+                                ? Kr::emptyError(Mdi::ALERT_DECAGRAM, "Unable to load text"s, Io::toStr(s.error)) | Ui::grow()
                                 : editor(s.text)
                         ) |
                             Kr::scaffoldContent() | Ui::grow(),

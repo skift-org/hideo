@@ -49,8 +49,8 @@ Ui::Child appRow(Rc<Launcher> launcher, bool selected) {
 
 Ui::Child appsList(State const& state) {
     if (state.filtered.len() == 0)
-        return Kr::errorPageContent({
-            Kr::errorPageSubTitle("No result found matching your query."s),
+        return Kr::emptyContent({
+            Kr::emptySubTitle("No result found matching your query."s),
         });
 
     return Ui::vflow(

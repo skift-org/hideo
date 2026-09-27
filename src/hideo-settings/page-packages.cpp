@@ -71,7 +71,7 @@ Ui::Child packageItem(Sys::Bundle const& b) {
 
 Ui::Child packageList(State const& s) {
     if (not s.packages)
-        return Kr::errorPage(Mdi::WIDGETS_OUTLINE, "Could not list packages"s, s.packages.none().msg());
+        return Kr::emptyError(Mdi::WIDGETS_OUTLINE, "Could not list packages"s, s.packages.none().msg());
 
     return Ui::vflow(
         6,

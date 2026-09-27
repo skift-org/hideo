@@ -51,11 +51,17 @@ Page PAGE_AVATAR{
     "Avatar",
     "An image element with a fallback for representing the user.",
     [] {
-        return Ui::hflow(
+        return Ui::vflow(
                    16,
                    Kr::avatar(),
                    Kr::avatar(String{"CV"s}),
-                   Kr::avatar(Gfx::Icon{Mdi::CAT})
+                   Kr::avatar(Gfx::Icon{Mdi::CAT}),
+                   Kr::avatarGroup({
+                       Kr::avatar(String{"CV"s}),
+                       Kr::avatar(Gfx::Icon{Mdi::CAT}),
+                       Kr::avatar(Gfx::Icon{Mdi::DOG}),
+                       Kr::avatar(String{"+3"s}),
+                   })
                ) |
                Ui::center();
     },

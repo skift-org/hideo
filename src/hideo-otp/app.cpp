@@ -38,7 +38,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
     a.visit([&](Update) {
         auto now = Sys::now();
         for (auto& otp : s.otps) {
-            auto secret = Crypto::base32Decode(otp.secret.str()).unwrap();
+            auto secret = Crypto::base32Decode(otp.secret.str()).expect();
             otp.code = Crypto::totp<Crypto::Sha1>(secret, now, otp.ndigit, otp.step);
             otp.countDown = (now.val() % otp.step.val()) / (f64)otp.step.val();
         }

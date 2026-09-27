@@ -120,11 +120,11 @@ struct Viewport : Ui::View<Viewport> {
         }
 
         if (auto selectionRect = _state.selectionRect(); selectionRect) {
-            Kr::paintSelection(g, selectionRect.unwrap());
+            Kr::paintSelection(g, selectionRect.expect());
         }
 
         if (auto gizmo = _state.gizmo(); gizmo) {
-            gizmo.unwrap().paint(g);
+            gizmo.expect().paint(g);
         }
 
         g.pop();

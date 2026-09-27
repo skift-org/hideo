@@ -23,7 +23,7 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     auto device = co_try$(Av::Device::create());
     auto player = makeRc<Av::Player>();
     if (audio)
-        player->play(audio.unwrap());
+        player->play(audio.expect());
     device->play(player);
     device->pause(false);
 

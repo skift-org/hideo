@@ -108,14 +108,14 @@ export struct State {
         if (not dragMode)
             return NONE;
 
-        return dragMode.unwrap()->gizmo(*this);
+        return dragMode.expect()->gizmo(*this);
     }
 
     Opt<Math::Rectf> selectionRect() const {
         if (not dragMode)
             return NONE;
 
-        return dragMode.unwrap()->selectionRect();
+        return dragMode.expect()->selectionRect();
     }
 };
 
@@ -347,7 +347,7 @@ struct IdleDragMode final : DragMode {
             }
 
             if (auto ref = s.tree.objectAt(press->pos); ref) {
-                auto const pressedRef = ref.unwrap();
+                auto const pressedRef = ref.expect();
                 if (not s.selection.selected(pressedRef)) {
                     s.selection.set(s.tree, {pressedRef});
                 }
@@ -363,7 +363,7 @@ struct IdleDragMode final : DragMode {
                 return Some(makeRc<MovingSelectionDragMode>(press->pos));
             }
 
-            if (auto frame = s.tree.frameAt(press->pos); frame and s.selection.selected(frame.unwrap())) {
+            if (auto frame = s.tree.frameAt(press->pos); frame and s.selection.selected(frame.expect())) {
                 s.selection.beginTransform(s.tree);
                 return Some(makeRc<MovingSelectionDragMode>(press->pos));
             }
@@ -401,7 +401,7 @@ Ui::Task<Action> reduce(State& s, Action action) {
         }
     } else if (auto a = action.is<PasteSelection>()) {
         if (s.clipboard) {
-            s.selection.paste(s.tree, s.clipboard.unwrap());
+            s.selection.paste(s.tree, s.clipboard.expect());
             s.dragMode = Some(makeIdleDragMode());
         }
     } else if (auto a = action.is<FrameSelection>()) {
@@ -424,7 +424,7 @@ Ui::Task<Action> reduce(State& s, Action action) {
     ) {
         if (not s.dragMode)
             s.dragMode = Some(makeIdleDragMode());
-        auto nextMode = s.dragMode.unwrap()->reduce(s, action);
+        auto nextMode = s.dragMode.expect()->reduce(s, action);
         if (nextMode)
             s.dragMode = nextMode;
     }

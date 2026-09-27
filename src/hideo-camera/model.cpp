@@ -60,7 +60,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
                     now.val() % 100000
                 );
                 s.lastImageUrl = "location://pictures/Camera"_url / filename;
-                Image::save(videoFrame->surface->pixels(), s.lastImageUrl, {.format = Ref::Uti::PUBLIC_JPEG}).unwrap("could not save picture");
+                Image::save(videoFrame->surface->pixels(), s.lastImageUrl, {.format = Ref::Uti::PUBLIC_JPEG}).expect("could not save picture");
             }
         },
         [&](OpenLast) {
@@ -70,7 +70,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
                     .objects = {s.lastImageUrl},
                 }
             )
-                .unwrap("could not launch intent");
+                .expect("could not launch intent");
         }
     );
 

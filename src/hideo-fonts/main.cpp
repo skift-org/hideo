@@ -58,14 +58,32 @@ Ui::Task<Action> reduce(State& s, Action a) {
 
 using Model = Ui::Model<State, Action, reduce>;
 
-static constexpr Str PANGRAM = "All beings born free, equal in dignity, rights—justice demanded, voice exhorted, zealously championed worldwide";
+static constexpr Str LATIN_PANGRAM = "All beings born free, equal in dignity, rights—justice demanded, voice exhorted, zealously championed worldwide";
+static constexpr Str EMOJI_PANGRAM = "🥰💀✌️🌴🐢🐐🍄⚽🍻👑📸😬👀🚨🏡🕊️🏆😻🌟🧿🍀🎨🍜";
+static constexpr Str MATH_PANGRAM = "𝞉𝞩𝟃𞻰⟥⦀⦁ 𝚢𝚣𝚤𝖿𝗀𝗁𝗂 𝑻𝑼𝑽𝗔𝗕𝗖𝗗 ϑϕϰϱϵℊℎ ⊰⊱⊲⊳⊴⊵⫕ 𞹴𞹵𞹶𞹷𞹹𞹺𞹻";
+
+bool textInFont(Gfx::Fontface& ff, Str text) {
+    for (auto r : iterRunes(text)) {
+        if (ff.glyph(r) == Gfx::Glyph::TOFU)
+            return false;
+    }
+    return true;
+}
+
+Str pangramFor(Gfx::Fontface& ff) {
+    if (textInFont(ff, LATIN_PANGRAM))
+        return LATIN_PANGRAM;
+    if (textInFont(ff, MATH_PANGRAM))
+        return MATH_PANGRAM;
+    return EMOJI_PANGRAM;
+}
 
 // MARK: All Families ----------------------------------------------------------
 
 Ui::Child allFamiliesItem(State const& s, Symbol family) {
     auto& fontBook = s.fontBook;
     auto nStyle = s.fontBook.queryFamily(family).len();
-    auto fontface = fontBook.queryClosest(family).unwrap();
+    auto fontface = fontBook.queryClosest(family).expect();
 
     Gfx::Font font{
         .fontface = fontface,
@@ -75,7 +93,7 @@ Ui::Child allFamiliesItem(State const& s, Symbol family) {
     return Ui::vflow(
                8,
                Ui::labelMedium(Ui::GRAY500, "{} · {} {}", family, nStyle, nStyle == 1 ? "Style" : "Styles"),
-               Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), PANGRAM)
+               Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), pangramFor(*fontface))
            ) |
            Ui::insets({8, 0, 8, 12}) |
            Ui::hclip() |
@@ -98,7 +116,7 @@ Ui::Child allFamiliesContent(State const& s) {
 // MARK: Family ----------------------------------------------------------------
 
 Ui::Child fontfaceTag(Str str) {
-    return Kr::badge(Ui::GRAY400, Io::toParamCase(str).unwrap());
+    return Kr::badge(Ui::GRAY400, Io::toParamCase(str).expect());
 }
 
 Ui::Child fontfaceTags(Gfx::FontAttrs const& attrs) {
@@ -133,7 +151,7 @@ Ui::Child familyItem(State const&, Rc<Gfx::Fontface> fontface) {
     return Ui::vflow(
                8,
                Ui::labelMedium(Ui::GRAY500, "{}", attrs.family),
-               Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), PANGRAM),
+               Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), pangramFor(*fontface)),
                fontfaceTags(attrs)
            ) |
            Ui::insets({8, 0, 8, 12}) |
@@ -144,9 +162,9 @@ Ui::Child familyItem(State const&, Rc<Gfx::Fontface> fontface) {
 Ui::Child familyContent(State const& s) {
     Ui::Children children;
     auto& fontBook = s.fontBook;
-    auto fontfaces = fontBook.queryFamily(s.fontFamily.unwrap());
+    auto fontfaces = fontBook.queryFamily(s.fontFamily.expect());
 
-    auto header = Ui::labelSmall("{}", s.fontFamily.unwrap()) | Ui::insets({6, 16});
+    auto header = Ui::labelSmall("{}", s.fontFamily.expect()) | Ui::insets({6, 16});
 
     for (auto const& fontface : fontfaces) {
         children.pushBack(familyItem(s, fontface));
@@ -170,7 +188,7 @@ Ui::Child pangrams(Rc<Gfx::Fontface> fontface) {
             .fontface = fontface,
             .fontsize = size,
         };
-        children.pushBack(Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), PANGRAM));
+        children.pushBack(Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), pangramFor(*fontface)));
         size *= 1.2;
     }
 
@@ -180,7 +198,7 @@ Ui::Child pangrams(Rc<Gfx::Fontface> fontface) {
 }
 
 Ui::Child fontfaceContent(State const& s) {
-    auto fontface = s.fontFace.unwrap();
+    auto fontface = s.fontFace.expect();
     auto attrs = fontface->attrs();
 
     return Ui::vflow(

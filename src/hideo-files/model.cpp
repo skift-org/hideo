@@ -37,7 +37,7 @@ struct State {
             return;
         }
 
-        for (auto const& entry : dir.unwrap().entries()) {
+        for (auto const& entry : dir.expect().entries()) {
             if (entry.hidden() and not showHidden)
                 continue;
             directoryListing.pushBack(entry);
@@ -130,7 +130,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             dest.append(navigate.item);
 
             auto stat = Sys::stat(dest);
-            if (stat and stat.unwrap().type == Sys::Type::FILE) {
+            if (stat and stat.expect().type == Sys::Type::FILE) {
                 (void)Sys::launch({
                     .action = Ref::Uti::PUBLIC_PREVIEW,
                     .objects = {dest},

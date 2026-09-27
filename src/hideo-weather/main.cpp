@@ -16,7 +16,7 @@ Ui::Child app() {
         .icon = Mdi::WEATHER_PARTLY_CLOUDY,
         .title = "Weather"s,
         .body = [&] {
-            auto image = Image::load("bundle://hideo-weather/images/weather-few-clouds.jpg"_url).unwrap();
+            auto image = Image::load("bundle://hideo-weather/images/weather-few-clouds.jpg"_url).expect();
             return Ui::image(image) | Ui::cover() | Ui::vhclip();
         },
     });

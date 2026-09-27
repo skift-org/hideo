@@ -15,9 +15,9 @@ using namespace Karm::Literals;
 namespace Hideo::Images {
 
 Ui::Child histogram(Hist const& hist) {
-    return Ui::canvas([hist](Gfx::Canvas& g, Math::Vec2i size) {
+    return Ui::onPaint([hist](Gfx::Canvas& g, Math::Vec2i size) {
         usize n = hist.len();
-        if (n < 2 || size.x <= 1 || size.y <= 1)
+        if (n < 2 or size.x <= 1 or size.y <= 1)
             return;
 
         auto maxC = [&](usize c) {
@@ -271,8 +271,8 @@ Ui::Child editorProperties(Editor const& editor) {
 Ui::Child editorSidepanel(State const& s) {
     Ui::Child panel =
         s.panel == Panel::ADJUST
-            ? editorProperties(s.mode.unwrap<Editor>())
-            : editorPresets(s.mode.unwrap<Editor>());
+            ? editorProperties(s.mode.expect<Editor>())
+            : editorPresets(s.mode.expect<Editor>());
 
     return Ui::hflow(
         4,
@@ -331,7 +331,7 @@ Ui::Child editorApp(State const& s) {
         }),
         .body = [&] {
             return Ui::hflow(
-                editorPreview(s.mode.unwrap<Editor>()) | Ui::bound() | Kr::scaffoldContent() | Ui::grow(),
+                editorPreview(s.mode.expect<Editor>()) | Ui::bound() | Kr::scaffoldContent() | Ui::grow(),
                 editorSidepanel(s) | Kr::resizable(Kr::ResizeHandlePosition::START, {320}, NONE)
             );
         },

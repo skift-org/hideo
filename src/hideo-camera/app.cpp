@@ -24,7 +24,7 @@ struct VideoSurface : Ui::View<VideoSurface> {
 
     void paint(Gfx::Canvas& g, Math::Recti) override {
         if (_frame)
-            g.blit(bound(), _frame.unwrap().surface);
+            g.blit(bound(), _frame.expect().surface);
     }
 
     void event(App::Event& e) override {
@@ -72,7 +72,7 @@ Ui::Child appContent(State const& s) {
     auto viewport =
         Ui::stack(
             makeRc<VideoSurface>(s.stream),
-            Ui::canvas([guidelines = s.guidelines](Gfx::Canvas& g, Math::Vec2i size) {
+            Ui::onPaint([guidelines = s.guidelines](Gfx::Canvas& g, Math::Vec2i size) {
                 g.strokeStyle(Gfx::Stroke{
                     .fill = Gfx::WHITE.withOpacity(0.5),
                     .width = 1,
@@ -147,7 +147,7 @@ Ui::Child appContent(State const& s) {
                 Model::bindIf<OpenLast>(s.lastImage.has()),
                 Ui::ButtonStyle::regular().withRadii(999),
                 (s.lastImage
-                     ? Ui::image(s.lastImage.unwrap(), Some(999)) | Ui::cover()
+                     ? Ui::image(s.lastImage.expect(), Some(999)) | Ui::cover()
                      : Ui::empty()) |
                     Ui::pinSize(48)
             ) | Ui::center()

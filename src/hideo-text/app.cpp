@@ -68,7 +68,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
                 s.error = Some(file.none());
                 return;
             }
-            Io::TextEncoder<> enc{file.unwrap()};
+            Io::TextEncoder<> enc{file.expect()};
             (void)enc.writeStr(s.text->string().str());
             s.text->flush();
         },
@@ -79,7 +79,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
                 s.error = Some(file.none());
                 return;
             }
-            Io::TextEncoder<> enc{file.unwrap()};
+            Io::TextEncoder<> enc{file.expect()};
             (void)enc.writeStr(s.text->string().str());
             s.text->flush();
         }
@@ -112,7 +112,7 @@ Ui::Children appToolbar(State const& s) {
                 Ui::closeDialog(n);
                 auto content = Sys::readAllText<Utf8>(url);
                 if (content)
-                    Model::bubble<Open>(n, Open{url, content.unwrap()});
+                    Model::bubble<Open>(n, Open{url, content.expect()});
             })
         );
     };
@@ -140,7 +140,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
     Opt<Error> error = NONE;
 
     if (str) {
-        text->load(str.unwrap());
+        text->load(str.expect());
     } else {
         error = Some(str.none());
     }

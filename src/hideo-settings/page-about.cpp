@@ -20,7 +20,7 @@ Ui::Child errorScope(Str what, auto callback) {
     Res<Ui::Child> child = callback();
 
     if (child) {
-        return child.unwrap();
+        return child.expect();
     }
 
     return Ui::box(
@@ -38,7 +38,7 @@ Ui::Child errorScope(Str what, auto callback) {
             Ui::icon(Mdi::ALERT_OCTAGON_OUTLINE, 24) | Ui::center(),
             Ui::vflow(
                 Ui::text(Ui::TextStyles::labelMedium().withColor(Gfx::WHITE), "Can't display {}", what),
-                Ui::text(Ui::TextStyles::bodySmall(), Io::toSentenceCase(child.none().msg()).unwrap())
+                Ui::text(Ui::TextStyles::bodySmall(), Io::toSentenceCase(child.none().msg()).expect())
             )
         )
     );

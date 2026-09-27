@@ -12,7 +12,7 @@ using namespace Karm::Literals;
 namespace Hideo::Images {
 
 Ui::Child viewerPreview(State const& state) {
-    return Ui::image(state.mode.unwrap<Viewer>().image) |
+    return Ui::image(state.mode.expect<Viewer>().image) |
            Ui::box({
                .borderWidth = 1,
                .borderFill = Some(Ui::GRAY50.withOpacity(0.1)),

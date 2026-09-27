@@ -75,7 +75,7 @@ Ui::Child packageList(State const& s) {
 
     return Ui::vflow(
         6,
-        iter(s.packages.unwrap()) |
+        iter(s.packages.expect()) |
             Select(packageItem) |
             Collect<Ui::Children>()
     );

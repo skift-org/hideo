@@ -19,9 +19,9 @@ test$("canvas-selection-resize-multi-node") {
     selection.beginTransform(tree);
 
     auto gizmo = selection.createGizmo(tree);
-    expect$(gizmo != NONE);
+    assert$(gizmo != NONE);
 
-    auto const giz = gizmo.unwrap();
+    auto const giz = gizmo.expect();
     auto pivot = giz.oppositePivot(GizmoHandle::SE);
     selection.resize(tree, giz.bound, pivot, {2.0, 2.0});
     selection.commitTransform(tree);
@@ -29,15 +29,15 @@ test$("canvas-selection-resize-multi-node") {
     auto const& a = tree.byRef(refA).bound;
     auto const& b = tree.byRef(refB).bound;
 
-    expect$(Math::abs(a.center.x - 10.0) < 1e-6);
-    expect$(Math::abs(a.center.y - 5.0) < 1e-6);
-    expect$(Math::abs(b.center.x - 210.0) < 1e-6);
-    expect$(Math::abs(b.center.y - 5.0) < 1e-6);
+    assert$(Math::abs(a.center.x - 10.0) < 1e-6);
+    assert$(Math::abs(a.center.y - 5.0) < 1e-6);
+    assert$(Math::abs(b.center.x - 210.0) < 1e-6);
+    assert$(Math::abs(b.center.y - 5.0) < 1e-6);
 
-    expect$(Math::abs(a.size.x - 40.0) < 1e-6);
-    expect$(Math::abs(a.size.y - 20.0) < 1e-6);
-    expect$(Math::abs(b.size.x - 40.0) < 1e-6);
-    expect$(Math::abs(b.size.y - 20.0) < 1e-6);
+    assert$(Math::abs(a.size.x - 40.0) < 1e-6);
+    assert$(Math::abs(a.size.y - 20.0) < 1e-6);
+    assert$(Math::abs(b.size.x - 40.0) < 1e-6);
+    assert$(Math::abs(b.size.y - 20.0) < 1e-6);
 
     return Ok();
 }
@@ -52,12 +52,12 @@ test$("canvas-tree-reparent-refs") {
 
     tree.reparentRoots(Vec<Ref>{a}, Some(d));
 
-    expectEq$(tree.parentOf(a), d);
-    expectEq$(tree.parentOf(c), a);
-    expectEq$(tree.parentOf(b), NONE);
+    assertEq$(tree.parentOf(a), d);
+    assertEq$(tree.parentOf(c), a);
+    assertEq$(tree.parentOf(b), NONE);
 
     tree.reparentRoots(Vec<Ref>{a}, Some(c));
-    expectEq$(tree.parentOf(a), d);
+    assertEq$(tree.parentOf(a), d);
 
     return Ok();
 }
@@ -70,26 +70,26 @@ test$("canvas-hit-test-frame-content") {
     auto nestedFrame = tree.insert(Kind::FRAME, Obb{{120.0, 120.0}, {30.0, 30.0}, 0.0}, Some(frame));
 
     auto hitChild = tree.objectAt(Math::Vec2f{100.0, 100.0});
-    expectEq$(hitChild, child);
+    assertEq$(hitChild, child);
 
     auto hitFrameInterior = tree.objectAt(Math::Vec2f{70.0, 70.0});
-    expectEq$(hitFrameInterior, NONE);
+    assertEq$(hitFrameInterior, NONE);
 
     auto lasso = tree.objectAt(Math::Rectf::fromTwoPoint({60.0, 60.0}, {140.0, 140.0}));
-    expect$(contains(lasso, child));
-    expectNot$(contains(lasso, frame));
+    assert$(contains(lasso, child));
+    assertNot$(contains(lasso, frame));
 
     auto lassoFromRoot = tree.objectAt(
         Math::Rectf::fromTwoPoint({20.0, 20.0}, {160.0, 160.0}),
         Math::Vec2f{20.0, 20.0}
     );
-    expect$(contains(lassoFromRoot, frame));
+    assert$(contains(lassoFromRoot, frame));
 
     auto lassoFromParent = tree.objectAt(
         Math::Rectf::fromTwoPoint({80.0, 80.0}, {140.0, 140.0}),
         Math::Vec2f{80.0, 80.0}
     );
-    expect$(contains(lassoFromParent, nestedFrame));
+    assert$(contains(lassoFromParent, nestedFrame));
 
     return Ok();
 }
@@ -105,8 +105,8 @@ test$("canvas-frame-gizmo-uniform-only-on-mixed-child-angles") {
     selection.set(tree, {frame});
 
     auto gizmo = selection.createGizmo(tree);
-    expect$(gizmo != NONE);
-    expect$(gizmo.unwrap().uniformOnly);
+    assert$(gizmo != NONE);
+    assert$(gizmo.expect().uniformOnly);
 
     return Ok();
 }
@@ -121,8 +121,8 @@ test$("canvas-frame-gizmo-uniform-only-on-child-frame-angle-mismatch") {
     selection.set(tree, {frame});
 
     auto gizmo = selection.createGizmo(tree);
-    expect$(gizmo != NONE);
-    expect$(gizmo.unwrap().uniformOnly);
+    assert$(gizmo != NONE);
+    assert$(gizmo.expect().uniformOnly);
 
     return Ok();
 }
@@ -137,14 +137,14 @@ test$("canvas-uniform-gizmo-aabb-uses-roots-not-frame-children") {
     selection.set(tree, {frame, child});
 
     auto gizmo = selection.createGizmo(tree);
-    expect$(gizmo != NONE);
-    expect$(gizmo.unwrap().uniformOnly);
+    assert$(gizmo != NONE);
+    assert$(gizmo.expect().uniformOnly);
 
     auto expected = tree.byRef(frame).bound.aabb();
-    expect$(Math::abs(gizmo.unwrap().bound.center.x - expected.center().x) < 1e-6);
-    expect$(Math::abs(gizmo.unwrap().bound.center.y - expected.center().y) < 1e-6);
-    expect$(Math::abs(gizmo.unwrap().bound.size.x - expected.width) < 1e-6);
-    expect$(Math::abs(gizmo.unwrap().bound.size.y - expected.height) < 1e-6);
+    assert$(Math::abs(gizmo.expect().bound.center.x - expected.center().x) < 1e-6);
+    assert$(Math::abs(gizmo.expect().bound.center.y - expected.center().y) < 1e-6);
+    assert$(Math::abs(gizmo.expect().bound.size.x - expected.width) < 1e-6);
+    assert$(Math::abs(gizmo.expect().bound.size.y - expected.height) < 1e-6);
 
     return Ok();
 }

@@ -192,7 +192,7 @@ Gfx::Icon iconForUrl(Ref::Url const& url) {
 
 String textForUrl(Ref::Url const& url) {
     if (url.scheme == "location")
-        return Io::toTitleCase(url.host.str()).unwrap();
+        return Io::toTitleCase(url.host.str()).expect();
 
     if (url.scheme == "device")
         return url.host.str();

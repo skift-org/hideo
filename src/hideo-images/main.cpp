@@ -24,5 +24,5 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
         }
     }
 
-    co_return co_await Ui::runAsync(env, Hideo::Images::app(image.unwrap()), ct);
+    co_return co_await Ui::runAsync(env, Hideo::Images::app(image.expect()), ct);
 }

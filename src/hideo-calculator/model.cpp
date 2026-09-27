@@ -219,14 +219,14 @@ Ui::Task<Action> reduce(State& s, Action action) {
         },
         [&](MemAddAction) {
             if (not s.hasMem) {
-                reduce(s, MemStoreAction{}).unwrap();
+                reduce(s, MemStoreAction{}).expect();
             } else {
                 s.mem += s.hasRhs ? s.rhs : s.lhs;
             }
         },
         [&](MemSubAction) {
             if (not s.hasMem) {
-                reduce(s, MemStoreAction{}).unwrap();
+                reduce(s, MemStoreAction{}).expect();
                 s.mem = -s.mem;
             } else {
                 s.mem -= s.hasRhs ? s.rhs : s.lhs;

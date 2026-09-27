@@ -30,10 +30,10 @@ Ui::Child videoContent() {
 }
 
 Ui::Child audioContent() {
-    auto image = Image::load("bundle://hideo-avplayer/images/missing.png"_url).unwrap();
+    auto image = Image::load("bundle://hideo-avplayer/images/missing.png"_url).expect();
     auto background = Ui::image(image) |
                       Ui::foregroundFilter(Gfx::BlurFilter{8}) |
-                      Ui::foregroundFilter(Gfx::BrightnessFilter{0.2}) |
+                      Ui::foregroundFilter(Gfx::ColorMatrixFilter(Gfx::ColorMatrix::brightness(0.2))) |
                       Ui::cover();
 
     auto cover = Ui::image(

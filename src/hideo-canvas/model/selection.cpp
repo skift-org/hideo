@@ -57,11 +57,11 @@ export struct Selection {
             bool foundSelectedAncestor = false;
             auto ancestor = tree.parentOf(ref);
             while (ancestor) {
-                if (contains(_refs, ancestor.unwrap())) {
+                if (contains(_refs, ancestor.expect())) {
                     foundSelectedAncestor = true;
                     break;
                 }
-                ancestor = tree.parentOf(ancestor.unwrap());
+                ancestor = tree.parentOf(ancestor.expect());
             }
 
             if (not foundSelectedAncestor)
@@ -148,7 +148,7 @@ export struct Selection {
                 Opt<Ref> newParent = NONE;
                 if (oldNode.parent) {
                     for (usize i = 0; i < oldRefs.len(); i++) {
-                        if (oldRefs[i] == oldNode.parent.unwrap()) {
+                        if (oldRefs[i] == oldNode.parent.expect()) {
                             newParent = Some(newRefs[i]);
                             break;
                         }
@@ -178,7 +178,7 @@ export struct Selection {
             Opt<Ref> newParent = NONE;
             if (oldNode.parent) {
                 for (usize i = 0; i < oldRefs.len(); i++) {
-                    if (oldRefs[i] == oldNode.parent.unwrap()) {
+                    if (oldRefs[i] == oldNode.parent.expect()) {
                         newParent = Some(newRefs[i]);
                         break;
                     }
@@ -214,7 +214,7 @@ export struct Selection {
         if (not _transform)
             return;
 
-        auto const& transform = _transform.unwrap();
+        auto const& transform = _transform.expect();
         for (usize i = 0; i < transform.refs.len(); i++) {
             auto& n = tree.byRef(transform.refs[i]);
             n.bound.center = transform.initial[i].center + delta;
@@ -232,7 +232,7 @@ export struct Selection {
         if (not _transform)
             return;
 
-        auto const& transform = _transform.unwrap();
+        auto const& transform = _transform.expect();
 
         for (usize i = 0; i < transform.refs.len(); i++) {
             auto localObb = source.toLocal(transform.initial[i]);
@@ -256,7 +256,7 @@ export struct Selection {
         if (not _transform)
             return;
 
-        auto const& transform = _transform.unwrap();
+        auto const& transform = _transform.expect();
         for (usize i = 0; i < transform.refs.len(); i++) {
             auto& n = tree.byRef(transform.refs[i]);
             n.bound.center = center + (transform.initial[i].center - center).rotate(delta);
@@ -308,7 +308,7 @@ export struct Selection {
         if (not _transform)
             return;
 
-        auto const& transform = _transform.unwrap();
+        auto const& transform = _transform.expect();
         for (usize i = 0; i < transform.refs.len(); i++) {
             auto& n = tree.byRef(transform.refs[i]);
             n.bound = transform.initial[i];

@@ -59,7 +59,7 @@ using Model = Ui::Model<State, Action, reduce>;
 Ui::Child userLogin() {
     return Ui::vflow(
                32,
-               Kr::avatar(Karm::Image::loadOrFallback("bundle://hideo-images/images/geraldine.png"_url).unwrap(), 160),
+               Kr::avatar(Karm::Image::loadOrFallback("bundle://hideo-images/images/geraldine.png"_url).expect(), 160),
                Ui::headlineLarge("Geraldine") | Ui::center(),
                Ui::hflow(
                    4,

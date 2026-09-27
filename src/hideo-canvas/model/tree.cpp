@@ -99,11 +99,11 @@ export struct Tree {
             return;
 
         if (newParent)
-            byRef(newParent.unwrap());
+            byRef(newParent.expect());
 
         for (auto ref : refs) {
             if (newParent) {
-                auto parentRef = newParent.unwrap();
+                auto parentRef = newParent.expect();
                 if (parentRef == ref)
                     continue;
 
@@ -149,7 +149,7 @@ export struct Tree {
 
             if (not node.parent and not startFrame) {
                 selectable = true;
-            } else if (node.parent and startFrame and node.parent.unwrap() == startFrame.unwrap()) {
+            } else if (node.parent and startFrame and node.parent.expect() == startFrame.expect()) {
                 selectable = true;
             }
 

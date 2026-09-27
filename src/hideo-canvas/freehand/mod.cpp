@@ -127,7 +127,7 @@ static Vec<Math::Vec2f> _expandStroke(Slice<StrokePoint> points, StrokeOptions c
     auto resolveTaper = [&](Opt<Union<bool, f64>> const& t) -> f64 {
         if (not t)
             return 0.0;
-        return t.unwrap().visit(
+        return t.expect().visit(
             [&](bool b) {
                 return b ? max(options.size, totalLength) : 0.0;
             },

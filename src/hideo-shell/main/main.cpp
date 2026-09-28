@@ -35,5 +35,7 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
         .windows = {}
     };
 
-    co_return co_await Ui::runAsync(env, Hideo::Shell::app(std::move(state)), ct);
+    auto app = Hideo::Shell::app(std::move(state));
+    Async::detach(Hideo::Shell::timerTask(*app, ct));
+    co_return co_await Ui::runAsync(env, app, ct);
 }

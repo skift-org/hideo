@@ -1,3 +1,7 @@
+module;
+
+#include <karm/macros>
+
 export module Hideo.Shell:app;
 
 import Mdi;
@@ -7,6 +11,7 @@ import Karm.App;
 import Karm.Gfx;
 import Hideo.Keyboard;
 import Karm.Math;
+import Karm.Sys;
 
 import :model;
 import :mobile;
@@ -64,6 +69,14 @@ export Ui::Child app(State state) {
             return content;
         }
     );
+}
+
+export Async::Task<> timerTask(Ui::Node& app, Async::CancellationToken ct) {
+    while (not ct.cancelled()) {
+        Model::event<TimeTick>(app);
+        co_trya$(Sys::globalSched().sleepAsync(Sys::instant() + Duration::fromSecs(1), ct));
+    }
+    co_return Ok();
 }
 
 } // namespace Hideo::Shell

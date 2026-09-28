@@ -8,6 +8,7 @@ import Karm.Image;
 import Karm.Gfx;
 import Karm.Math;
 import Karm.Glob;
+import Karm.Sys;
 
 using namespace Karm;
 using namespace Karm::Literals;
@@ -241,6 +242,8 @@ export struct ActivatePanel {
     Panel panel;
 };
 
+export struct TimeTick {};
+
 export using Action = Union<
     UpdateSearch,
     SelectSearch,
@@ -264,7 +267,8 @@ export using Action = Union<
     StartResizeWindow,
     FocusWindow,
     ActivatePanel,
-    ToggleSysPanel>;
+    ToggleSysPanel,
+    TimeTick>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
     a.visit(
@@ -298,6 +302,9 @@ Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](ChangeVolume m) {
             s.volume = m.value;
+        },
+        [&](TimeTick) {
+            s.dateTime = Sys::dateTime();
         },
         [&](Lock) {
             s.locked = true;

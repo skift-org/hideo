@@ -2,36 +2,40 @@ export module Hideo.Sysmon:model;
 
 import Karm.Ui;
 import Karm.Core;
+import Karm.Sys;
 
 using namespace Karm;
 
 namespace Hideo::Sysmon {
 
-export enum struct Tab {
-    APPLICATIONS,
-    SERVICES,
-    KERNEL,
-
-    PROCESSORS,
-    MEMORY,
-    DRIVES,
-    NETWORK,
-    GRAPHICS,
-};
-
 export struct State {
-    Tab tab = Tab::APPLICATIONS;
+    Opt<usize> selected = NONE;
+    Vec<Rc<Sys::ProcessStat>> processes;
 };
 
-export struct GoTo {
-    Tab tab;
+export struct SelectProcess {
+    usize id;
 };
 
-export using Action = Union<GoTo>;
+export struct KillProcess {
+};
+
+export struct Refresh {
+};
+
+export using Action = Union<SelectProcess, Refresh>;
 
 Ui::Task<Action> reduce(State& s, Action a) {
-    if (auto goTo = a.is<GoTo>())
-        s.tab = goTo->tab;
+    if (auto const& [select] = a.is<SelectProcess>()) {
+        s.selected = Some(select.id);
+    } else if (a.is<Refresh>()) {
+        s.processes.clear();
+        for (auto p : Sys::Process::list().expect()) {
+            if (auto const& [stat] = p->stat(Sys::ProcessStat::ALL).ok())
+                s.processes.pushBack(stat);
+        }
+        reverse(mutSub(s.processes));
+    }
     return NONE;
 }
 

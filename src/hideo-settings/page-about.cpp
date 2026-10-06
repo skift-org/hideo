@@ -152,13 +152,13 @@ Ui::Child memInfos() {
                             NONE,
                             "Physical"s,
                             NONE,
-                            Some(Ui::text("{}bytes", meminfo.physicalUsed))
+                            Some(Ui::text("{}", DataSize{meminfo.physicalTotal}))
                         ),
                         Kr::rowContent(
                             NONE,
                             "Swap"s,
                             NONE,
-                            Some(Ui::text("{}bytes", meminfo.swapUsed))
+                            Some(Ui::text("{}", DataSize{meminfo.swapTotal}))
                         )
                     )
                 );
@@ -178,7 +178,7 @@ Ui::Child cpuInfos() {
         NONE,
         Ui::Slot{[&] {
             return errorScope("CPU informations", [&] -> Res<Ui::Child> {
-                auto cpusinfo = try$(Sys::cpusinfo());
+                auto cpusinfo = try$(Sys::Cpu::list());
 
                 Ui::Children children;
 

@@ -355,45 +355,6 @@ Page PAGE_INPUT{
     },
 };
 
-Page PAGE_NAVBAR{
-    Mdi::DOCK_BOTTOM,
-    "Navigation Bar"s,
-    "A horizontal navigation bar that displays a list of links.",
-    [] {
-        return Ui::state(0, [](auto state, auto bind) {
-            return Ui::vflow(
-                Ui::grow(NONE),
-                Kr::navbarContent({
-                    Kr::navbarItem(
-                        Some(bind(0)),
-                        Mdi::ALARM,
-                        "Alarm",
-                        state == 0
-                    ),
-                    Kr::navbarItem(
-                        Some(bind(1)),
-                        Mdi::CLOCK_OUTLINE,
-                        "Clock",
-                        state == 1
-                    ),
-                    Kr::navbarItem(
-                        Some(bind(2)),
-                        Mdi::TIMER_SAND,
-                        "Timer",
-                        state == 2
-                    ),
-                    Kr::navbarItem(
-                        Some(bind(3)),
-                        Mdi::TIMER_OUTLINE,
-                        "Stopwatch",
-                        state == 3
-                    ),
-                })
-            );
-        });
-    },
-};
-
 Page PAGE_NUMBER{
     Mdi::COUNTER,
     "Number",
@@ -840,7 +801,6 @@ export Array PAGES = {
     &PAGE_FOCUS,
     &PAGE_HSV_SQUARE,
     &PAGE_INPUT,
-    &PAGE_NAVBAR,
     &PAGE_NUMBER,
     &PAGE_PRINT_DIALOG,
     &PAGE_PROGRESS,

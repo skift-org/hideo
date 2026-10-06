@@ -1,20 +1,95 @@
-module;
-
-#include <karm/macros>
-
-export module Hideo.Sysmon;
+export module Hideo.Sysmon:app;
 
 import Mdi;
 import Karm.Ui;
 import Karm.Kira;
 import Karm.Core;
 import Karm.Gfx;
+import Karm.Math;
 
 import :model;
 
 using namespace Karm::Literals;
 
 namespace Hideo::Sysmon {
+
+// MARK: Sidebar ---------------------------------------------------------------
+
+Ui::Child graph(Gfx::Color color) {
+    return Ui::empty({72, 0}) |
+           Ui::box({
+               .borderRadii = 4,
+               .borderWidth = 1,
+               .borderFill = Some(color),
+               .backgroundFill = Some(color.withOpacity(0.25)),
+           });
+}
+
+Ui::Child sidebarItem(bool selected, Ui::Send<> onPress, Gfx::Color color, String title, String description) {
+    return Kr::sidenavItem(
+        selected,
+        Some(onPress),
+        Ui::hflow(
+            4,
+            graph(color),
+            Ui::vflow(
+                Ui::titleSmall(title),
+                Ui::labelMedium(description)
+            ) |
+                Ui::insets(4) |
+                Ui::minSize({112, Ui::UNCONSTRAINED})
+        )
+    );
+}
+
+Ui::Child sidebar(State const& s) {
+    return Kr::sidenavContent({
+        Kr::sidenavItem(
+            s.page == Page::PROCESSES,
+            Some(Model::bind(Page::PROCESSES)),
+            Mdi::FILE_TREE,
+            "Processes"s
+        ),
+
+        sidebarItem(
+            s.page == Page::PROCESSORS,
+            Model::bind(Page::PROCESSORS),
+            Gfx::BLUE,
+            "Processors"s,
+            "AMD Ryzen 7 7700X"s
+        ),
+        sidebarItem(
+            s.page == Page::MEMORY,
+            Model::bind(Page::MEMORY),
+            Gfx::CYAN,
+            "Memory"s,
+            "32GB DDR5 3200MHz"s
+        ),
+        sidebarItem(
+            s.page == Page::DRIVES,
+            Model::bind(Page::DRIVES),
+            Gfx::GREEN,
+            "Drives"s,
+            "1TB NVMe SSD"s
+        ),
+        sidebarItem(
+            s.page == Page::NETWORK,
+            Model::bind(Page::NETWORK),
+            Gfx::PINK,
+            "Network"s,
+            "10GbE NIC"s
+        ),
+        sidebarItem(
+            s.page == Page::GRAPHICS,
+            Model::bind(Page::GRAPHICS),
+            Gfx::ORANGE,
+            "Graphics"s,
+            "AMD Radeon RX 7900 XT"s
+        ),
+    });
+}
+
+// MARK: Processes -------------------------------------------------------------
 
 Ui::Child processListItem(State const& s, Rc<Sys::ProcessStat> const& process) {
     return Ui::button(
@@ -38,24 +113,30 @@ Ui::Child processListContent(State const& s) {
            Ui::vscroll();
 }
 
+// MARK: App -------------------------------------------------------------------
+
 export Ui::Child app() {
     return Ui::reducer<Model>({}, [](State const& s) {
         return Kr::scaffold({
             .icon = Mdi::VIEW_DASHBOARD,
             .title = "System Monitor"s,
-            .body = [&] {
-                return processListContent(s) | Kr::scaffoldContent();
+            .sidebar = Some([&] {
+                return sidebar(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
+            }),
+            .body = [s] {
+                return Ui::vflow(
+                    4,
+                    processListContent(s) | Kr::scaffoldContent() | Ui::grow(),
+                    Ui::hflow(
+                        4,
+                        Math::Align::END | Math::Align::VFILL,
+                        Ui::button(Model::bindIf<DetailProcess>(s.selectedProcess().has()), Ui::ButtonStyle::subtle(), Mdi::INFORMATION_OUTLINE),
+                        Ui::button(Model::bindIf<KillProcess>(s.selectedProcess().has()), Ui::ButtonStyle::destructive(), "End Task")
+                    ) | Ui::end()
+                );
             },
         });
     });
-}
-
-export Async::Task<> refreshTask(Ui::Child app, Async::CancellationToken ct) {
-    while (not ct.cancelled()) {
-        Model::event<Refresh>(*app);
-        co_trya$(Sys::globalSched().sleepAsync(Sys::instant() + Duration::fromSecs(3), ct));
-    }
-    co_return Ok();
 }
 
 } // namespace Hideo::Sysmon

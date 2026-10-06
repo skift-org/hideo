@@ -91,54 +91,35 @@ export Ui::Child app() {
             return Kr::scaffold({
                 .icon = Mdi::CLOCK,
                 .title = "Clock"s,
+                .middleTools = Some([&] -> Ui::Children {
+                    return {
+                        Kr::tabbarContent({
+                            Kr::tabbarItem(s.page == Page::ALARM, Model::bind(Page::ALARM), Kr::tabarItemLabel(Some(Mdi::ALARM), "Alarm"s)),
+                            Kr::tabbarItem(s.page == Page::CLOCK, Model::bind(Page::CLOCK), Kr::tabarItemLabel(Some(Mdi::CLOCK_OUTLINE), "Clock"s)),
+                            Kr::tabbarItem(s.page == Page::TIMER, Model::bind(Page::TIMER), Kr::tabarItemLabel(Some(Mdi::TIMER_SAND), "Timer"s)),
+                            Kr::tabbarItem(s.page == Page::STOPWATCH, Model::bind(Page::STOPWATCH), Kr::tabarItemLabel(Some(Mdi::TIMER_OUTLINE), "Stopwatch"s)),
+                        }) |
+                        Ui::center() | Ui::grow()
+                    };
+                }),
                 .body = [&] {
-                    auto navbar = Kr::navbarContent({
-                        Kr::navbarItem(
-                            Some(Model::bind(Page::ALARM)),
-                            Mdi::ALARM,
-                            "Alarm",
-                            s.page == Page::ALARM
-                        ),
-                        Kr::navbarItem(
-                            Some(Model::bind(Page::CLOCK)),
-                            Mdi::CLOCK_OUTLINE,
-                            "Clock",
-                            s.page == Page::CLOCK
-                        ),
-                        Kr::navbarItem(
-                            Some(Model::bind(Page::TIMER)),
-                            Mdi::TIMER_SAND,
-                            "Timer",
-                            s.page == Page::TIMER
-                        ),
-                        Kr::navbarItem(
-                            Some(Model::bind(Page::STOPWATCH)),
-                            Mdi::TIMER_OUTLINE,
-                            "Stopwatch",
-                            s.page == Page::STOPWATCH
-                        ),
-                    });
-
                     return Ui::vflow(
-                        Ui::vflow(
-                            Ui::hflow(
-                                0,
-                                Math::Align::CENTER,
-                                Ui::titleLarge(toStr(s.page)),
-                                Ui::grow(NONE),
-                                Ui::button(
-                                    Some(Ui::SINK<>),
-                                    Ui::ButtonStyle::subtle(),
-                                    Mdi::DOTS_HORIZONTAL
-                                )
-                            ) |
-                                Ui::insets(12),
-                            appContent(s) | Ui::vscroll() | Ui::grow()
-                        ) |
-                            Kr::scaffoldContent() |
-                            Ui::grow(),
-                        navbar
-                    );
+                               Ui::hflow(
+                                   0,
+                                   Math::Align::CENTER,
+                                   Ui::titleLarge(toStr(s.page)),
+                                   Ui::grow(NONE),
+                                   Ui::button(
+                                       Some(Ui::SINK<>),
+                                       Ui::ButtonStyle::subtle(),
+                                       Mdi::DOTS_HORIZONTAL
+                                   )
+                               ) |
+                                   Ui::insets(12),
+                               appContent(s) | Ui::vscroll() | Ui::grow()
+                           ) |
+                           Kr::scaffoldContent() |
+                           Ui::grow();
                 },
             });
         }

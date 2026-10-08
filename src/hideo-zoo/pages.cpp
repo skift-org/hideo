@@ -8,6 +8,7 @@ import Karm.Print.Dialog;
 import Karm.Ref;
 import Karm.Gfx;
 import Karm.Math;
+import Karm.Chart;
 import Karm.Logger;
 
 import Hideo.Files;
@@ -120,6 +121,47 @@ Page PAGE_CARD{
                Ui::pinSize({400, 300}) |
                Kr::card() | Ui::center();
     },
+};
+
+Page PAGE_CHART{
+    Mdi::CHART_LINE,
+    "Charts",
+    "",
+    [] {
+        Chart::Chart chart = {};
+        chart.data.series = {
+            {
+                .values = {
+                    10.,
+                    30.,
+                    40.,
+                    70.,
+                    90.,
+                },
+            },
+            {
+                .values = {
+                    90.,
+                    40.,
+                    10.,
+                    30.,
+                    70.,
+                },
+            },
+            {
+                .values = {
+                    40.,
+                    30.,
+                    10.,
+                    90.,
+                    70.,
+                },
+            },
+        };
+        chart.style.min = Some(0.f);
+
+        return Kr::chart(std::move(chart));
+    }
 };
 
 Page PAGE_CHECKBOX{
@@ -792,6 +834,7 @@ export Array PAGES = {
     &PAGE_BADGE,
     &PAGE_BUTTON,
     &PAGE_CARD,
+    &PAGE_CHART,
     &PAGE_CHECKBOX,
     &PAGE_CLOCK,
     &PAGE_COLOR_INPUT,

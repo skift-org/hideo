@@ -704,33 +704,6 @@ Page PAGE_SIDENAV{
     },
 };
 
-Page PAGE_SIDE_PANEL{
-    Mdi::DOCK_RIGHT,
-    "Side Panel",
-    "A panel that slides in from the side of the screen to display aditional information or properties",
-    [] {
-        return Ui::state(false, [](auto state, auto bind) {
-            auto content = Ui::button(Some(bind(not state)), "Toggle Side Panel") |
-                           Ui::center() |
-                           Ui::grow();
-
-            if (not state)
-                return content;
-
-            return Ui::hflow(
-                content,
-                Kr::separator(),
-                Kr::sidePanelContent({
-                    Kr::sidePanelTitle(Some(bind(false)), "Side Panel"),
-                    Kr::separator(),
-                    Ui::labelMedium(Ui::GRAY500, "This is a side panel.") |
-                        Ui::center() | Ui::grow(),
-                })
-            );
-        });
-    },
-};
-
 Page PAGE_SLIDER{
     Mdi::TUNE_VARIANT,
     "Slider",
@@ -854,7 +827,6 @@ export Array PAGES = {
     &PAGE_ROWS,
     &PAGE_SELECT,
     &PAGE_SELECTION,
-    &PAGE_SIDE_PANEL,
     &PAGE_SIDENAV,
     &PAGE_SLIDER,
     &PAGE_TABBAR,

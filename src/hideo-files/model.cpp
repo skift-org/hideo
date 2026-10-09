@@ -30,12 +30,9 @@ struct State {
     void reloadDirectoryListing() {
         auto dir = Sys::Dir::open(currentUrl());
         directoryListing.clear();
-        directoryError = NONE;
-
-        if (not dir) {
-            directoryError = Some(dir.none());
+        directoryError = dir.error();
+        if (not dir)
             return;
-        }
 
         for (auto const& entry : dir.expect().entries()) {
             if (entry.hidden() and not showHidden)

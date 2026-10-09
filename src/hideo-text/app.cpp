@@ -64,25 +64,15 @@ Ui::Task<Action> reduce(State& s, Action a) {
                 //       once the user picks a url, a SaveAs is dispatched.
                 return;
             }
-            auto file = Sys::File::create(*s.url);
-            if (not file) {
-                s.error = Some(file.none());
-                return;
-            }
-            Io::TextEncoder<> enc{file.expect()};
-            (void)enc.writeStr(s.text->string().str());
-            s.text->flush();
+            s.error = Sys::writeAllText(*s.url, s.text->string().str()).error();
+            if (not s.error)
+                s.text->flush();
         },
         [&](SaveAs& sa) {
             s.url = Some(sa.url);
-            auto file = Sys::File::create(*s.url);
-            if (not file) {
-                s.error = Some(file.none());
-                return;
-            }
-            Io::TextEncoder<> enc{file.expect()};
-            (void)enc.writeStr(s.text->string().str());
-            s.text->flush();
+            s.error = Sys::writeAllText(*s.url, s.text->string().str()).error();
+            if (not s.error)
+                s.text->flush();
         }
     );
 

@@ -96,12 +96,12 @@ static Ui::Task<Action> reduce(State& s, Action a) {
         },
         [&](App::KeyboardEvent const& e) {
             Io::TextEncoder<> enc{*s.pty};
-            if (e.type == App::KeyboardEvent::PRESS) {
+            if (e.type == App::KeyboardEvent::PRESS or e.type == App::KeyboardEvent::REPEAT) {
                 if (e.key == App::Key::ENTER) {
-                    (void)enc.writeRune('\n');
+                    (void)enc.writeRune('\r');
                 } else if (e.key == App::Key::BKSPC) {
-                    (void)enc.writeRune('\b');
-                } else {
+                    (void)enc.writeRune(0x7f);
+                } else if (e.rune) {
                     (void)enc.writeRune(e.rune);
                 }
             }
@@ -139,6 +139,7 @@ Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty) {
                 .body = [&] {
                     return Vte::viewport(s.terminal, Model::map<App::KeyboardEvent>()) |
                            Ui::insets(6_au) |
+                           Ui::focusable({.visual = false, .steal = true}) |
                            Kr::contextMenu([] {
                                return contextMenu();
                            }) |
@@ -165,7 +166,7 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     auto terminal = makeRc<Vte::Terminal>(Vte::Theme{});
 
     Sys::Command command{
-        .exe = "luna"s,
+        .exe = "shell"s,
         .env = {}
     };
     auto [process, p] = co_try$(command.spawnPty());

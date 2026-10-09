@@ -3,6 +3,7 @@ export module Hideo.Files:app;
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Sys;
 import Karm.Gfx;
 
@@ -10,6 +11,7 @@ import :model;
 import :widgets;
 
 using namespace Karm::Ref::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Files {
 
@@ -20,7 +22,7 @@ Ui::Child sidenavItem(State const& s, Gfx::Icon icon, String title, Ref::Url url
 
 Ui::Child sidebar(State const& s) {
     return Kr::sidenavContent({
-        Kr::searchbar(""s) | Ui::insets({6, 0}),
+        Kr::searchbar(""s) | Ui::insets({6_au, 0_au}),
         sidenavItem(s, Mdi::HOME, "Home"s, "location://home"_url),
         sidenavItem(s, Mdi::FILE_DOCUMENT, "Documents"s, "location://documents"_url),
         sidenavItem(s, Mdi::IMAGE, "Pictures"s, "location://pictures"_url),
@@ -62,9 +64,9 @@ export Ui::Child app() {
             }),
             .middleTools = Some([&] -> Ui::Children {
                 return {
-                    Ui::empty(36),
-                    breadcrumb(s) | Ui::maxSize({480, Ui::UNCONSTRAINED}) | Ui::grow(),
-                    Ui::empty(36),
+                    Ui::empty(36_au),
+                    breadcrumb(s) | Ui::maxSize({480_au, Ui::UNCONSTRAINED}) | Ui::grow(),
+                    Ui::empty(36_au),
                 };
             }),
             .endTools = Some([&] -> Ui::Children {

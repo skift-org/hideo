@@ -10,15 +10,16 @@ import Karm.Math;
 import :model;
 
 using namespace Karm;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Shell {
 
-Ui::Child appIcon(Gfx::Icon const& icon, Gfx::ColorRamp ramp, isize size = 22) {
+Ui::Child appIcon(Gfx::Icon const& icon, Gfx::ColorRamp ramp, Math::Au size = 22_au) {
     return Ui::icon(icon, size) |
            Ui::insets(size / 2.75) |
            Ui::center() |
            Ui::box({
-               .borderRadii = size * 0.25,
+               .borderRadii = size.cast<f64>() * 0.25,
                .borderWidth = 1,
                .borderFill = Some(ramp[5]),
                .backgroundFill = Some(ramp[6]),
@@ -28,12 +29,12 @@ Ui::Child appIcon(Gfx::Icon const& icon, Gfx::ColorRamp ramp, isize size = 22) {
 
 Ui::Child appRow(Rc<Launcher> launcher, bool selected) {
     auto child = Ui::hflow(
-                     12,
+                     12_au,
                      Math::Align::START | Math::Align::VCENTER,
-                     appIcon(launcher->icon, launcher->ramp, 18),
+                     appIcon(launcher->icon, launcher->ramp, 18_au),
                      Ui::labelMedium(launcher->name)
                  ) |
-                 Ui::insets(6) |
+                 Ui::insets(6_au) |
                  Ui::button(
                      Some(Model::bind<StartApplication>(launcher)),
                      selected ? Ui::ButtonStyle::regular() : Ui::ButtonStyle::subtle()
@@ -41,7 +42,7 @@ Ui::Child appRow(Rc<Launcher> launcher, bool selected) {
 
     if (selected) {
         child |= Ui::keyboardShortcut(App::Key::ENTER);
-        child |= Ui::scrollToMe(8);
+        child |= Ui::scrollToMe(8_au);
     }
 
     return child;
@@ -54,7 +55,7 @@ Ui::Child appsList(State const& state) {
         });
 
     return Ui::vflow(
-        6,
+        6_au,
         iter(state.filtered) |
             Selecti([&](auto& man, usize i) {
                 return appRow(man, i == state.searchIndex);
@@ -77,9 +78,9 @@ Ui::Child runningApp(Rc<Window> instance) {
                    Mdi::CLOSE
                ) |
                    Ui::align(Math::Align::TOP_END) |
-                   Ui::insets({6, 6, 0, 0})
+                   Ui::insets({6_au, 6_au, 0_au, 0_au})
            ) |
-           Ui::pinSize({120, 192});
+           Ui::pinSize({120_au, 192_au});
 }
 
 Ui::Child runningApps(State const& state) {
@@ -87,10 +88,10 @@ Ui::Child runningApps(State const& state) {
         return Ui::empty();
 
     if (state.windows.len() == 0)
-        return Ui::empty(64);
+        return Ui::empty(64_au);
 
     return Ui::hflow(
-               8,
+               8_au,
                iter(state.windows) |
                    Select([](auto& instance) {
                        return runningApp(instance);
@@ -98,12 +99,12 @@ Ui::Child runningApps(State const& state) {
                    Collect<Ui::Children>()
            ) |
            Ui::center() |
-           Ui::insets({64, 0, 16, 0});
+           Ui::insets({64_au, 0_au, 16_au, 0_au});
 }
 
 export Ui::Child appsSearchbar(State const& s) {
     return Ui::hflow(
-        8,
+        8_au,
         Math::Align::VCENTER | Math::Align::START,
         Ui::stack(
             s.searchQuery ? Ui::empty() : Ui::labelLarge(Ui::GRAY500, "Search for anything…"),
@@ -116,10 +117,10 @@ export Ui::Child appsSearchbar(State const& s) {
 export Ui::Child appsContent(State const& s) {
     return Ui::vflow(
                appsSearchbar(s) |
-                   Ui::insets({18, 18}),
+                   Ui::insets({18_au, 18_au}),
                Kr::separator(),
                appsList(s) |
-                   Ui::insets(12) | Ui::vscroll() | Ui::grow()
+                   Ui::insets(12_au) | Ui::vscroll() | Ui::grow()
            ) |
            Ui::keyboardShortcut(App::Key::UP, {}, [](auto& n) {
                Model::bubble<SelectSearch>(n, {-1});
@@ -138,7 +139,7 @@ export Ui::Child appsLauncher(State const& state) {
                .backgroundFill = Some(Ui::GRAY900),
                .shadowStyle = Some(Gfx::BoxShadow::elevated(16)),
            }) |
-           Ui::pinSize({500, 400}) | Ui::focusable({.visual = false, .steal = true});
+           Ui::pinSize({500_au, 400_au}) | Ui::focusable({.visual = false, .steal = true});
 }
 
 export Ui::Child appsFlyout(State const& state) {
@@ -149,7 +150,7 @@ export Ui::Child appsFlyout(State const& state) {
             appsContent(state) | Ui::grow()
         ) |
             Ui::box({
-                .margin = 8,
+                .margin = 8_au,
                 .borderRadii = 8,
                 .borderWidth = 1,
                 .borderFill = Some(Ui::GRAY800),

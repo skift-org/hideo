@@ -9,6 +9,7 @@ import Mdi;
 import :model;
 
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Counter {
 
@@ -37,19 +38,19 @@ export Ui::Child app() {
                 );
 
                 return Ui::vflow(
-                           32,
+                           32_au,
                            Math::Align::CENTER,
                            Ui::text(
                                Ui::TextStyles::codeLarge()
                                    .withFontSize(48),
                                "{}", s.counter
                            ) | Ui::grow(),
-                           Ui::hflow(16, decBtn, incBtn),
+                           Ui::hflow(16_au, decBtn, incBtn),
                            resetBtn
                        ) |
-                       Ui::insets(32) | Kr::scaffoldContent();
+                       Ui::insets(32_au) | Kr::scaffoldContent();
             },
-            .size = 420,
+            .size = 420_au,
         });
     });
 }

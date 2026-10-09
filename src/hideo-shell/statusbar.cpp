@@ -2,12 +2,14 @@ export module Hideo.Shell:statusbar;
 
 import Mdi;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Kira;
 import Karm.Gfx;
 
 import :model;
 
 using namespace Karm;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Shell {
 
@@ -19,7 +21,7 @@ Ui::Child statusbarClock(State const& s) {
 Ui::Child statusbarIndicator(Gfx::Icon icon) {
     return Ui::icon(icon) |
            Ui::center() |
-           Ui::insets(4);
+           Ui::insets(4_au);
 }
 
 Ui::Child statusbarBatteryIndicator() {
@@ -39,10 +41,10 @@ export Ui::Child statusbar(State const& s) {
            ) |
            Ui::minSize({
                Ui::UNCONSTRAINED,
-               32,
+               32_au,
            }) |
            Ui::box({
-               .padding = {0, 12},
+               .padding = {0_au, 12_au},
                .backgroundFill = Some(s.hasFullWindow() ? Ui::GRAY950 : Ui::GRAY950.withOpacity(0.6)),
            });
 }

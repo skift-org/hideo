@@ -9,6 +9,7 @@ import Mdi;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Wear {
 
@@ -56,7 +57,7 @@ Ui::Child digitalWatchface(DateTime dt) {
     );
 
     auto clock = Ui::vflow(
-        16,
+        16_au,
         Math::Align::CENTER,
         Ui::displayMedium("{:02}:{:02}", time.hour, time.minute),
         Ui::titleMedium(dateTime)
@@ -68,8 +69,8 @@ Ui::Child digitalWatchface(DateTime dt) {
 
 Ui::Child menu() {
     return Ui::vflow(
-               6,
-               Ui::titleMedium("Applications") | Ui::center() | Ui::bound() | Ui::minSize({Ui::UNCONSTRAINED, 96}),
+               6_au,
+               Ui::titleMedium("Applications") | Ui::center() | Ui::bound() | Ui::minSize({Ui::UNCONSTRAINED, 96_au}),
                Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
                Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
                Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
@@ -83,7 +84,7 @@ Ui::Child menu() {
                Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s),
                Ui::button(Some(Ui::SINK<>), Mdi::COG, "Settings"s)
            ) |
-           Ui::insets(16) |
+           Ui::insets(16_au) |
            Ui::vscroll();
 }
 
@@ -101,7 +102,7 @@ Ui::Child app() {
                       Ui::keyboardShortcut(App::Key::ESC, Model::bind<Page>(Page::WATCH));
                ;
            }) |
-           Ui::pinSize(192);
+           Ui::pinSize(192_au);
 }
 
 } // namespace Hideo::Wear

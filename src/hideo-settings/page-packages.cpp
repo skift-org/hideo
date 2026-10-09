@@ -7,6 +7,7 @@ export module Hideo.Settings:pagePackages;
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Sys;
 import Karm.Gfx;
 import Karm.Ref;
@@ -16,6 +17,7 @@ import :common;
 
 using namespace Karm::Literals;
 using namespace Karm::Fmt::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Settings {
 
@@ -33,7 +35,7 @@ Ui::Child packageDetails(Sys::Bundle const& b) {
             NONE,
             Some(
                 Ui::hflow(
-                    6,
+                    6_au,
                     Ui::button(
                         Some(Ui::SINK<>),
                         Ui::ButtonStyle::destructive(),
@@ -74,7 +76,7 @@ Ui::Child packageList(State const& s) {
         return Kr::emptyError(Mdi::WIDGETS_OUTLINE, "Could not list packages"s, s.packages.none().msg());
 
     return Ui::vflow(
-        6,
+        6_au,
         iter(s.packages.expect()) |
             Select(packageItem) |
             Collect<Ui::Children>()
@@ -83,7 +85,7 @@ Ui::Child packageList(State const& s) {
 
 export Ui::Child pagePackages(State const& s) {
     return Ui::vflow(
-               8,
+               8_au,
                Kr::titleRow("Packages"s),
                packageList(s)
            ) |

@@ -7,12 +7,14 @@ export module Hideo.Settings:pageAbout;
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Sys;
 import Karm.Gfx;
 import :model;
 import :common;
 
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Settings {
 
@@ -25,8 +27,8 @@ Ui::Child errorScope(Str what, auto callback) {
 
     return Ui::box(
         {
-            .margin = 12,
-            .padding = 4,
+            .margin = 12_au,
+            .padding = 4_au,
             .borderRadii = 6,
             .borderWidth = 1,
             .borderFill = Some(Gfx::RED700),
@@ -34,8 +36,8 @@ Ui::Child errorScope(Str what, auto callback) {
             .foregroundFill = Gfx::RED100,
         },
         Ui::hflow(
-            6,
-            Ui::icon(Mdi::ALERT_OCTAGON_OUTLINE, 24) | Ui::center(),
+            6_au,
+            Ui::icon(Mdi::ALERT_OCTAGON_OUTLINE, 24_au) | Ui::center(),
             Ui::vflow(
                 Ui::text(Ui::TextStyles::labelMedium().withColor(Gfx::WHITE), "Can't display {}", what),
                 Ui::text(Ui::TextStyles::bodySmall(), Io::toSentenceCase(child.none().msg()).expect())
@@ -201,7 +203,7 @@ Ui::Child cpuInfos() {
 
 export Ui::Child pageAbout(State const&) {
     return Ui::vflow(
-               8,
+               8_au,
                Kr::titleRow("About"s),
                userInfos() | Kr::card(),
                sysInfos() | Kr::card(),

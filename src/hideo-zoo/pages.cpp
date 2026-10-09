@@ -16,6 +16,7 @@ import :model;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Zoo {
 
@@ -53,7 +54,7 @@ Page PAGE_AVATAR{
     "An image element with a fallback for representing the user.",
     [] {
         return Ui::vflow(
-                   16,
+                   16_au,
                    Kr::avatar(),
                    Kr::avatar(String{"CV"s}),
                    Kr::avatar(Gfx::Icon{Mdi::CAT}),
@@ -74,7 +75,7 @@ Page PAGE_BADGE{
     "Displays a badge or a component that looks like a badge.",
     [] {
         return Ui::vflow(
-                   16,
+                   16_au,
                    Math::Align::CENTER,
                    Kr::badge(Kr::BadgeStyle::INFO, "Info"s),
                    Kr::badge(Kr::BadgeStyle::SUCCESS, "Success"s),
@@ -92,7 +93,7 @@ Page PAGE_BUTTON{
     "Displays a badge or a component that looks like a badge.",
     [] {
         return Ui::vflow(
-                   16,
+                   16_au,
                    Math::Align::CENTER,
                    Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::regular(), "Regular button"),
                    Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::primary(), "Primary button"),
@@ -118,7 +119,7 @@ Page PAGE_CARD{
                    "This is a card"
                ) |
                Ui::center() |
-               Ui::pinSize({400, 300}) |
+               Ui::pinSize({400_au, 300_au}) |
                Kr::card() | Ui::center();
     },
 };
@@ -183,7 +184,7 @@ Page PAGE_CLOCK{
     "An analogue clock that display the time",
     [] {
         return Kr::clock({}) |
-               Ui::pinSize({400, 300}) |
+               Ui::pinSize({400_au, 300_au}) |
                Ui::center();
     },
 };
@@ -240,7 +241,7 @@ Page PAGE_DIALOG{
                            n,
                            Kr::dialogContent({
                                Kr::dialogTitleBar("Dialog"s),
-                               Ui::labelLarge("Hello, world") | Ui::center() | Ui::pinSize({200, 160}),
+                               Ui::labelLarge("Hello, world") | Ui::center() | Ui::pinSize({200_au, 160_au}),
                            })
                        );
                    }),
@@ -256,7 +257,7 @@ Page PAGE_FILE_DIALOG{
     "A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.",
     [] {
         return Ui::vflow(
-                   6,
+                   6_au,
                    Ui::button(
                        Some([](auto& n) {
                            Ui::showDialog(
@@ -301,7 +302,7 @@ Page PAGE_FOCUS{
     "A control that can be focused by the user.",
     [] {
         return Ui::vflow(
-                   8,
+                   8_au,
                    Ui::labelLarge("Apple") | Ui::focusable(),
                    Ui::labelLarge("Banana") | Ui::focusable(),
                    Ui::labelLarge("Cherry") | Ui::focusable()
@@ -379,12 +380,12 @@ Page PAGE_INPUT{
             {},
             [](State const& s) {
                 return Ui::vflow(
-                           16,
+                           16_au,
                            Math::Align::CENTER,
-                           Kr::input(Mdi::ACCOUNT, "Username"s, s.username, Model::map<UpdateUsername>()) | Ui::pinSize({240, Ui::UNCONSTRAINED}),
-                           Kr::input(Mdi::EMAIL, "Email"s, s.email, Model::map<UpdateEmail>()) | Ui::pinSize({240, Ui::UNCONSTRAINED}),
-                           Kr::input(Mdi::LOCK, "Password"s, s.password, Model::map<UpdatePassword>()) | Ui::pinSize({240, Ui::UNCONSTRAINED}),
-                           Kr::input("Text"s, s.text, Model::map<UpdateText>()) | Ui::pinSize({240, Ui::UNCONSTRAINED}),
+                           Kr::input(Mdi::ACCOUNT, "Username"s, s.username, Model::map<UpdateUsername>()) | Ui::pinSize({240_au, Ui::UNCONSTRAINED}),
+                           Kr::input(Mdi::EMAIL, "Email"s, s.email, Model::map<UpdateEmail>()) | Ui::pinSize({240_au, Ui::UNCONSTRAINED}),
+                           Kr::input(Mdi::LOCK, "Password"s, s.password, Model::map<UpdatePassword>()) | Ui::pinSize({240_au, Ui::UNCONSTRAINED}),
+                           Kr::input("Text"s, s.text, Model::map<UpdateText>()) | Ui::pinSize({240_au, Ui::UNCONSTRAINED}),
                            Ui::labelMedium(
                                "Your username is {} and your email is {}."s,
                                s.username ? s.username.str() : "unknown"s,
@@ -443,32 +444,32 @@ Page PAGE_PROGRESS{
     [] {
         return Ui::vflow(
                    Ui::hflow(
-                       8,
-                       Kr::indeterminedProgress(12),
-                       Kr::indeterminedProgress(18),
-                       Kr::indeterminedProgress(24),
-                       Kr::indeterminedProgress(48)
+                       8_au,
+                       Kr::indeterminedProgress(12_au),
+                       Kr::indeterminedProgress(18_au),
+                       Kr::indeterminedProgress(24_au),
+                       Kr::indeterminedProgress(48_au)
                    ),
                    Ui::hflow(
-                       8,
-                       Kr::pieCountDown(0.25, 12),
-                       Kr::pieCountDown(0.25, 18),
-                       Kr::pieCountDown(0.25, 24),
-                       Kr::pieCountDown(0.25, 48)
+                       8_au,
+                       Kr::pieCountDown(0.25, 12_au),
+                       Kr::pieCountDown(0.25, 18_au),
+                       Kr::pieCountDown(0.25, 24_au),
+                       Kr::pieCountDown(0.25, 48_au)
                    ),
                    Ui::hflow(
-                       8,
-                       Kr::pieCountDown(0.5, 12),
-                       Kr::pieCountDown(0.5, 18),
-                       Kr::pieCountDown(0.5, 24),
-                       Kr::pieCountDown(0.5, 48)
+                       8_au,
+                       Kr::pieCountDown(0.5, 12_au),
+                       Kr::pieCountDown(0.5, 18_au),
+                       Kr::pieCountDown(0.5, 24_au),
+                       Kr::pieCountDown(0.5, 48_au)
                    ),
                    Ui::hflow(
-                       8,
-                       Kr::pieCountDown(0.75, 12),
-                       Kr::pieCountDown(0.75, 18),
-                       Kr::pieCountDown(0.75, 24),
-                       Kr::pieCountDown(0.75, 48)
+                       8_au,
+                       Kr::pieCountDown(0.75, 12_au),
+                       Kr::pieCountDown(0.75, 18_au),
+                       Kr::pieCountDown(0.75, 24_au),
+                       Kr::pieCountDown(0.75, 48_au)
                    )
                ) |
                Ui::center();
@@ -494,9 +495,9 @@ Page PAGE_RESIZABLE{
     "A control that allows the user to resize an element.",
     [] {
         return Ui::hflow(
-            Ui::labelMedium("One") | Ui::center() | Kr::resizable(Kr::ResizeHandlePosition::END, 200, NONE),
+            Ui::labelMedium("One") | Ui::center() | Kr::resizable(Kr::ResizeHandlePosition::END, 200_au, NONE),
             Ui::vflow(
-                Ui::labelMedium("Two") | Ui::center() | Kr::resizable(Kr::ResizeHandlePosition::BOTTOM, 200, NONE),
+                Ui::labelMedium("Two") | Ui::center() | Kr::resizable(Kr::ResizeHandlePosition::BOTTOM, 200_au, NONE),
                 Ui::labelMedium("Three") | Ui::center() | Ui::grow()
             ) | Ui::grow()
         );
@@ -607,8 +608,8 @@ Page PAGE_ROWS{
             )
         );
 
-        return Ui::vflow(8, title, list) |
-               Ui::maxSize({420, Ui::UNCONSTRAINED}) |
+        return Ui::vflow(8_au, title, list) |
+               Ui::maxSize({420_au, Ui::UNCONSTRAINED}) |
                Ui::grow() |
                Ui::hcenter() |
                Ui::vscroll();
@@ -671,11 +672,11 @@ Page PAGE_SELECTION{
         Ui::Children items;
         for (auto& l : labels) {
             items.pushBack(
-                Ui::labelMedium(l) | Ui::insets(4) | Kr::selectionItem(false, Ui::SINK<bool>)
+                Ui::labelMedium(l) | Ui::insets(4_au) | Kr::selectionItem(false, Ui::SINK<bool>)
             );
         }
 
-        return Ui::vflow(6, std::move(items)) | Ui::insets(6) | Kr::selectionArea() | Ui::vscroll();
+        return Ui::vflow(6_au, std::move(items)) | Ui::insets(6_au) | Kr::selectionArea() | Ui::vscroll();
     },
 };
 
@@ -690,7 +691,7 @@ Page PAGE_SIDENAV{
                 Kr::sidenavItem(true, Some(Ui::SINK<>), Mdi::DUCK, "Item 1"s),
                 Kr::sidenavTree(Mdi::TREE, "Item 2"s, [] {
                     return Ui::vflow(
-                        8,
+                        8_au,
                         Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::DUCK, "Subitem 1"s),
                         Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::DUCK, "Subitem 2"s),
                         Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::DUCK, "Subitem 3"s)
@@ -739,7 +740,7 @@ Page PAGE_SLIDER{
                    0.5,
                    Some(Ui::SINK<f64>)
                ) |
-               Ui::minSize({320, Ui::UNCONSTRAINED}) |
+               Ui::minSize({320_au, Ui::UNCONSTRAINED}) |
                Ui::center();
     },
 };
@@ -768,7 +769,7 @@ Page PAGE_TABBAR{
                        Kr::tabbarItem(state == 2, bind(2), Kr::tabarItemIcon(Mdi::FORMAT_ALIGN_RIGHT)),
                    });
 
-                   return Ui::vflow(32, Math::Align::CENTER, noIcons, withIcon, onlyIcon);
+                   return Ui::vflow(32_au, Math::Align::CENTER, noIcons, withIcon, onlyIcon);
                }) |
                Ui::center();
     },
@@ -796,34 +797,34 @@ static Page PAGE_TYPOGRAPHY{
                    Ui::displayLarge("Display Large"),
                    Ui::displayMedium("Display Medium"),
                    Ui::displaySmall("Display Small"),
-                   Ui::empty(32),
+                   Ui::empty(32_au),
 
                    Ui::headlineLarge("Headline Large"),
                    Ui::headlineMedium("Headline Medium"),
                    Ui::headlineSmall("Headline Small"),
-                   Ui::empty(32),
+                   Ui::empty(32_au),
 
                    Ui::titleLarge("Title Large"),
                    Ui::titleMedium("Title Medium"),
                    Ui::titleSmall("Title Small"),
-                   Ui::empty(32),
+                   Ui::empty(32_au),
 
                    Ui::labelLarge("Label Large"),
                    Ui::labelMedium("Label Medium"),
                    Ui::labelSmall("Label Small"),
-                   Ui::empty(32),
+                   Ui::empty(32_au),
 
                    Ui::bodyLarge("Body Large"),
                    Ui::bodyMedium("Body Medium"),
                    Ui::bodySmall("Body Small"),
-                   Ui::empty(32),
+                   Ui::empty(32_au),
 
                    Ui::codeLarge("Code Large"),
                    Ui::codeMedium("Code Medium"),
                    Ui::codeSmall("Code Small"),
-                   Ui::empty(32)
+                   Ui::empty(32_au)
                ) |
-               Ui::insets(16) |
+               Ui::insets(16_au) |
                Ui::vscroll();
     },
 };

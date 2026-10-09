@@ -10,6 +10,7 @@ import Karm.Math;
 import :model;
 
 using namespace Karm;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Shell {
 
@@ -20,7 +21,7 @@ Ui::Child taskbarSearchButton() {
                Mdi::MAGNIFY,
                "Search…"
            ) |
-           Ui::minSize({180, Ui::UNCONSTRAINED});
+           Ui::minSize({180_au, Ui::UNCONSTRAINED});
 }
 
 Ui::Child taskbarCalendarButton(State const& s) {
@@ -47,7 +48,7 @@ Ui::Child taskbarStatusButton() {
         Some(Model::bind<ActivatePanel>(Panel::SYS)),
         Ui::ButtonStyle::subtle().withRadii(99),
         Ui::hflow(
-            6,
+            6_au,
             Math::Align::CENTER,
             Ui::icon(Mdi::WIFI_STRENGTH_4),
             Ui::icon(Mdi::VOLUME_HIGH),
@@ -56,17 +57,17 @@ Ui::Child taskbarStatusButton() {
         ) |
 
             Ui::center() |
-            Ui::insets({0, 12}) |
+            Ui::insets({0_au, 12_au}) |
             Ui::bound()
     );
 }
 
 Ui::Child taskbar(State const& s) {
     return Ui::stack(
-               Ui::hflow(6, taskbarSearchButton(), Ui::grow(NONE), taskbarStatusButton()), taskbarCalendarButton(s) | Ui::center()
+               Ui::hflow(6_au, taskbarSearchButton(), Ui::grow(NONE), taskbarStatusButton()), taskbarCalendarButton(s) | Ui::center()
            ) |
            Ui::box({
-               .padding = 4,
+               .padding = 4_au,
                .backgroundFill = Some(Gfx::BLACK),
            });
 }

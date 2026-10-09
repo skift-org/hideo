@@ -14,6 +14,7 @@ import Hideo.Files;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Text {
 
@@ -97,7 +98,7 @@ Ui::Child editor(Rc<Ui::TextModel> text) {
                    Model::bubble(n, a);
                }
            ) |
-           Ui::focusable({.visual = false, .steal = true}) | Ui::insets(16) |
+           Ui::focusable({.visual = false, .steal = true}) | Ui::insets(16_au) |
            Ui::vscroll() |
            Ui::grow();
 }
@@ -186,15 +187,15 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                     }
 
                     return Ui::vflow(
-                        4,
+                        4_au,
                         Ui::vflow(
                             Ui::hflow(
-                                0,
+                                0_au,
                                 Math::Align::CENTER,
                                 Ui::labelSmall("{}{}", s.url ? s.url->basename() : "Untitled", s.text->dirty() ? "*" : ""),
-                                Ui::icon(Mdi::CIRCLE_SMALL, Some(Ui::GRAY700)) | Ui::insets({0, -3}),
+                                Ui::icon(Mdi::CIRCLE_SMALL, Some(Ui::GRAY700)) | Ui::insets({0_au, -3_au}),
                                 Ui::text(Ui::TextStyles::labelSmall().withColor(Ui::GRAY500), "{}", s.url)
-                            ) | Ui::insets({6, 16}),
+                            ) | Ui::insets({6_au, 16_au}),
                             Kr::separator(),
 
                             s.error
@@ -203,7 +204,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                         ) |
                             Kr::scaffoldContent() | Ui::grow(),
                         Ui::hflow(
-                            6,
+                            6_au,
                             Math::Align::CENTER,
                             Ui::labelSmall("{}", s.text->dirty() ? "Edited" : ""),
                             Ui::grow(NONE),
@@ -212,7 +213,7 @@ export Ui::Child app(Opt<Ref::Url> url, Res<String> str) {
                             Ui::labelSmall("UTF-8"),
                             Kr::separator(),
                             Ui::labelSmall("LF")
-                        ) | Ui::insets({6, 16})
+                        ) | Ui::insets({6_au, 16_au})
                     );
                 },
             });

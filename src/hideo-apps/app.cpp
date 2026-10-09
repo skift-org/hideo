@@ -3,16 +3,18 @@ export module Hideo.Apps;
 import Mdi;
 import Karm.Core;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Kira;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Apps {
 
 Ui::Child sidebar() {
     return Kr::sidenavContent({
-        Kr::searchbar(""s) | Ui::insets({6, 0}),
+        Kr::searchbar(""s) | Ui::insets({6_au, 0_au}),
         Kr::sidenavItem(true, Some(Ui::SINK<>), Mdi::STAR_OUTLINE, "Discover"s),
         Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::GAMEPAD_OUTLINE, "Play"s),
         Kr::sidenavItem(false, Some(Ui::SINK<>), Mdi::BRUSH_OUTLINE, "Create"s),

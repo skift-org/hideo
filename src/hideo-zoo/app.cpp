@@ -3,6 +3,7 @@ export module Hideo.Zoo:app;
 import Karm.Core;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Glob;
 
 import Mdi;
@@ -52,7 +53,7 @@ export Ui::Child app() {
 
                 return Kr::sidenavContent({
                            Kr::searchbar(s.searchQuery, Model::map<UpdateSearch>()),
-                           Ui::vflow(8, items) | Ui::grow(),
+                           Ui::vflow(8_au, items) | Ui::grow(),
                        }) |
                        Kr::resizable(Kr::ResizeHandlePosition::END);
             }),
@@ -61,9 +62,9 @@ export Ui::Child app() {
                 return Ui::vflow(
                            Ui::vflow(
                                Ui::titleMedium(page->name),
-                               Ui::empty(4),
+                               Ui::empty(4_au),
                                Ui::bodySmall(page->description)
-                           ) | Ui::insets(16),
+                           ) | Ui::insets(16_au),
                            Kr::separator(),
                            page->build() | Ui::grow()
                        ) |

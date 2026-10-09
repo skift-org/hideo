@@ -14,6 +14,7 @@ import Karm.Math;
 import :model;
 
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Clock {
 
@@ -21,14 +22,14 @@ namespace Hideo::Clock {
 
 Ui::Child alarmCard(Time alarm, bool enabled) {
     return Ui::hflow(
-               24,
+               24_au,
                Math::Align::CENTER,
                Ui::displayMedium("{:02}:{:02}", alarm.hour, alarm.minute),
                Ui::grow(NONE),
                Kr::toggle(enabled, Ui::SINK<bool>)
            ) |
            Ui::box({
-               .padding = 12,
+               .padding = 12_au,
                .borderRadii = 12,
                .backgroundFill = Some(Ui::GRAY900),
            });
@@ -36,13 +37,13 @@ Ui::Child alarmCard(Time alarm, bool enabled) {
 
 Ui::Child alarmPage() {
     return Ui::vflow(
-               12,
+               12_au,
                alarmCard({0, 0, 8}, true),
                alarmCard({0, 0, 12}, false),
                alarmCard({0, 0, 18}, true),
                alarmCard({0, 0, 22}, false)
            ) |
-           Ui::insets(12);
+           Ui::insets(12_au);
 }
 
 // MARK: Clock Page ------------------------------------------------------------
@@ -51,11 +52,11 @@ Ui::Child clockPage(State const& s) {
     auto time = s.dateTime.time;
 
     return Ui::vflow(
-               12,
-               Kr::clock(time) | Ui::pinSize({200, 200}),
+               12_au,
+               Kr::clock(time) | Ui::pinSize({200_au, 200_au}),
                Ui::displayMedium("{:02}:{:02}:{:02}", time.hour, time.minute, time.second) | Ui::center()
            ) |
-           Ui::insets(12);
+           Ui::insets(12_au);
 }
 
 // MARK: Timer Page ------------------------------------------------------------
@@ -105,7 +106,7 @@ export Ui::Child app() {
                 .body = [&] {
                     return Ui::vflow(
                                Ui::hflow(
-                                   0,
+                                   0_au,
                                    Math::Align::CENTER,
                                    Ui::titleLarge(toStr(s.page)),
                                    Ui::grow(NONE),
@@ -115,7 +116,7 @@ export Ui::Child app() {
                                        Mdi::DOTS_HORIZONTAL
                                    )
                                ) |
-                                   Ui::insets(12),
+                                   Ui::insets(12_au),
                                appContent(s) | Ui::vscroll() | Ui::grow()
                            ) |
                            Kr::scaffoldContent() |

@@ -4,10 +4,12 @@ import Mdi;
 import Karm.Core;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Math;
 
 import :model;
 
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Images {
 
@@ -18,7 +20,7 @@ Ui::Child viewerPreview(State const& state) {
                .borderFill = Some(Ui::GRAY50.withOpacity(0.1)),
                .backgroundFill = Some(Ui::GRAY50),
            }) |
-           Ui::insets(8) |
+           Ui::insets(8_au) |
            Ui::fit();
 }
 
@@ -27,7 +29,7 @@ Ui::Child viewerControls(State const&) {
                Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle(), Mdi::ARROW_LEFT),
                Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle(), Mdi::ARROW_RIGHT)
            ) |
-           Ui::insets({0, 0, 8, 0}) |
+           Ui::insets({0_au, 0_au, 8_au, 0_au}) |
            Ui::center();
 }
 

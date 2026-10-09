@@ -11,11 +11,12 @@ import Karm.Vte;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Console {
 
 Ui::Child colorBubble(Gfx::Color color) {
-    return Ui::empty(16) |
+    return Ui::empty(16_au) |
            Ui::box({
                .borderRadii = 4,
                .borderWidth = 1,
@@ -33,22 +34,22 @@ Ui::Child colorSchemeOption(Vte::ColorScheme scheme) {
         colors.pushBack(colorBubble(scheme.colors[i + 8]));
     }
     return Ui::hflow(
-               6,
-               Ui::labelMedium(scheme.name) | Ui::center() | Ui::insets({0, 64, 0, 0}),
+               6_au,
+               Ui::labelMedium(scheme.name) | Ui::center() | Ui::insets({0_au, 64_au, 0_au, 0_au}),
                Ui::grow(NONE),
                Ui::labelLarge(scheme.colors[7], "AaBbCc") |
                    Ui::box({
-                       .padding = 6,
+                       .padding = 6_au,
                        .borderRadii = 4,
                        .backgroundFill = Some(scheme.colors[0]),
                    }),
                Ui::vflow(
-                   2,
-                   Ui::hflow(2, std::move(grays)),
-                   Ui::hflow(2, std::move(colors))
+                   2_au,
+                   Ui::hflow(2_au, std::move(grays)),
+                   Ui::hflow(2_au, std::move(colors))
                )
            ) |
-           Ui::insets({6, 16});
+           Ui::insets({6_au, 16_au});
 }
 
 Ui::Child settingsDialog() {
@@ -137,7 +138,7 @@ Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty) {
                 .title = "Console"s,
                 .body = [&] {
                     return Vte::viewport(s.terminal, Model::map<App::KeyboardEvent>()) |
-                           Ui::insets(6) |
+                           Ui::insets(6_au) |
                            Kr::contextMenu([] {
                                return contextMenu();
                            }) |

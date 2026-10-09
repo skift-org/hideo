@@ -12,6 +12,7 @@ import Karm.Math;
 using namespace Karm;
 using namespace Karm::Literals;
 using namespace Karm::Ref::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Oobe {
 
@@ -48,7 +49,7 @@ using Model = Ui::Model<State, Action, reduce>;
 
 Ui::Child welcomeStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Step 1 of 6"),
         Ui::titleLarge("Welcome!"),
         Ui::bodyMedium("Let’s get your device ready with a few simple steps."),
@@ -111,7 +112,7 @@ Ui::Child welcomeStep(State const&) {
 
 Ui::Child networkStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Step 2 of 6"),
         Ui::titleLarge("Get connected"),
         Ui::bodyMedium("Choose a Wi-Fi network to connect this device to the internet."),
@@ -126,7 +127,7 @@ Ui::Child networkStep(State const&) {
                 Kr::rowContent(Some(Ui::icon(Mdi::WIFI_STRENGTH_1_LOCK)), "Smart Lightbulb"s, NONE, NONE),
                 Kr::rowContent(Some(Ui::icon(Mdi::WIFI_STRENGTH_1_LOCK)), "Bob's Iphone"s, NONE, NONE)
             ) |
-                Ui::vhscroll() | Ui::pinSize({Ui::UNCONSTRAINED, 260})
+                Ui::vhscroll() | Ui::pinSize({Ui::UNCONSTRAINED, 260_au})
         ),
         Ui::grow(NONE),
         Ui::hflow(
@@ -147,12 +148,12 @@ Ui::Child networkStep(State const&) {
 
 Ui::Child accountStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Step 3 of 6"),
         Ui::titleLarge("Set up your account"),
         Ui::bodyMedium("Choose how you want to sign in and sync data on this device."),
         Ui::vflow(
-            12,
+            12_au,
             Kr::buttonRow(
                 Some(Model::bind(Step::ACCOUNT_LOCAL)),
                 Mdi::ACCOUNT_CIRCLE_OUTLINE,
@@ -192,12 +193,12 @@ Ui::Child accountStep(State const&) {
 
 Ui::Child accountLocalStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Step 3 of 6"),
         Ui::titleLarge("Set up local account"),
         Ui::bodyMedium("Create an account that only exists on this device. Your data stays local and is not synced online."),
         Ui::vflow(
-            6,
+            6_au,
             Kr::input(Mdi::ACCOUNT, "Username"s, ""s, Ui::SINK<String>),
             Kr::input(Mdi::LOCK, "Password"s, ""s, Ui::SINK<String>),
             Kr::input(Mdi::LOCK, "Confirm password"s, ""s, Ui::SINK<String>)
@@ -221,7 +222,7 @@ Ui::Child accountLocalStep(State const&) {
 
 Ui::Child accountOnlineStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Step 3 of 6"),
         Ui::titleLarge("Sign in to your account"),
         Ui::bodyMedium(
@@ -240,7 +241,7 @@ Ui::Child accountOnlineStep(State const&) {
             )
         ) | Kr::card(),
         Ui::vflow(
-            6,
+            6_au,
             Kr::input(
                 Mdi::ACCOUNT,
                 "Email"s,
@@ -263,7 +264,7 @@ Ui::Child accountOnlineStep(State const&) {
                 "Back"
             ),
             Ui::grow(NONE),
-            Kr::indeterminedProgress() | Ui::insets({0, 12}),
+            Kr::indeterminedProgress() | Ui::insets({0_au, 12_au}),
             Ui::button(
                 Some(Model::bind(Step::DEVICE)),
                 Ui::ButtonStyle::regular(),
@@ -275,7 +276,7 @@ Ui::Child accountOnlineStep(State const&) {
 
 Ui::Child accountRegisterStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Step 3 of 6"),
         Ui::titleLarge("Create a new account"),
         Ui::bodyMedium(
@@ -293,7 +294,7 @@ Ui::Child accountRegisterStep(State const&) {
             )
         ) | Kr::card(),
         Ui::vflow(
-            6,
+            6_au,
             Kr::input(Mdi::ACCOUNT, "Username"s, ""s, Ui::SINK<String>),
             Kr::input(Mdi::ACCOUNT, "Email"s, ""s, Ui::SINK<String>),
             Kr::input(Mdi::LOCK, "Password"s, ""s, Ui::SINK<String>),
@@ -307,7 +308,7 @@ Ui::Child accountRegisterStep(State const&) {
                 "Back"
             ),
             Ui::grow(NONE),
-            Kr::indeterminedProgress() | Ui::insets({0, 12}),
+            Kr::indeterminedProgress() | Ui::insets({0_au, 12_au}),
             Ui::button(
                 Some(Model::bind(Step::DEVICE)),
                 Ui::ButtonStyle::regular(),
@@ -319,14 +320,14 @@ Ui::Child accountRegisterStep(State const&) {
 
 Ui::Child deviceStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(
             Ui::GRAY500,
             "Step 4 of 6"
         ),
         Ui::titleLarge("Name this device"),
         Ui::bodyMedium("Pick a name to help you recognize this device across apps and services."),
-        Ui::empty(8),
+        Ui::empty(8_au),
         Kr::card(
             Kr::buttonRow(
                 Some(Ui::SINK<>),
@@ -360,11 +361,11 @@ Ui::Child deviceStep(State const&) {
 
 Ui::Child appsStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Step 5 of 6"),
         Ui::titleLarge("Get some apps"),
         Ui::bodyMedium("Install a few essentials now. You can always add more later."),
-        Ui::empty(8),
+        Ui::empty(8_au),
         Kr::card(
             Kr::checkboxRow(true, Ui::SINK<bool>, "Install recommended apps"s),
             Kr::separator(),
@@ -433,7 +434,7 @@ Ui::Child appsStep(State const&) {
                                        Some(Kr::checkbox(true, Ui::SINK<bool>))
                                    )
                                ) |
-                               Ui::vscroll() | Ui::pinSize({Ui::UNCONSTRAINED, 180});
+                               Ui::vscroll() | Ui::pinSize({Ui::UNCONSTRAINED, 180_au});
                     },
                 }
             )
@@ -449,7 +450,7 @@ Ui::Child appsStep(State const&) {
 
 Ui::Child finishStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Step 6 of 6"),
         Ui::titleLarge("Review your choices"),
         Ui::bodyMedium("Here’s a summary of your setup. Adjust anything you like before finishing."),
@@ -497,14 +498,14 @@ Ui::Child finishStep(State const&) {
 
 Ui::Child finishingStep(State const&) {
     return Ui::vflow(
-        12,
+        12_au,
         Ui::labelSmall(Ui::GRAY500, "Almost there"),
         Ui::titleLarge("Finalizing setup"),
         Ui::bodyMedium("Saving your settings and getting everything ready to use."),
         Ui::vflow(
-            16,
+            16_au,
             Math::Align::CENTER,
-            Kr::indeterminedProgress(32),
+            Kr::indeterminedProgress(32_au),
             Ui::labelMedium("Applying configurations…"),
             Ui::button(Some(Model::bind(Step::FINISH)), Ui::ButtonStyle::regular(), "Cancel"s)
         ) | Ui::center() |
@@ -541,7 +542,7 @@ Ui::Child stepContent(State const& s) {
 
 Ui::Child stepContainer(Ui::Child child) {
     return child |
-           Ui::insets(16) |
+           Ui::insets(16_au) |
            Ui::box({
                .borderRadii = 8,
                .borderWidth = 1,
@@ -549,14 +550,14 @@ Ui::Child stepContainer(Ui::Child child) {
                .backgroundFill = Some(Ui::GRAY950),
                .shadowStyle = Some(Gfx::BoxShadow::elevated(16)),
            }) |
-           Ui::pinSize({480, 520}) |
+           Ui::pinSize({480_au, 520_au}) |
            Ui::center();
 }
 
 Ui::Child appContent(State const& s) {
     if (App::formFactor == App::FormFactor::MOBILE) {
         return stepContent(s) |
-               Ui::insets(16);
+               Ui::insets(16_au);
     }
 
     return Ui::stack(
@@ -574,8 +575,8 @@ export Ui::Child app() {
             return appContent(s) |
                    Ui::pinSize(
                        App::formFactor == App::FormFactor::MOBILE
-                           ? Math::Vec2i{411, 731}
-                           : Math::Vec2i{1280, 720}
+                           ? Math::Vec2Au{411_au, 731_au}
+                           : Math::Vec2Au{1280_au, 720_au}
                    ) |
                    Ui::dialogLayer();
             ;

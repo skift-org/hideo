@@ -408,29 +408,29 @@ export struct Viewport : Ui::View<Viewport> {
         _radii = o._radii;
     }
 
-    void paint(Gfx::Canvas& g, Math::Recti) override {
+    void paint(Gfx::Canvas& g, Math::RectAu) override {
         auto surface = _window->surface();
         g.push();
         if (not _radii.zero()) {
             g.fillStyle(surface);
-            g.fill(bound(), _radii);
+            g.fill(bound().cast<f64>(), _radii);
         } else {
             g.blit(_bound.cast<isize>(), surface);
         }
         g.pop();
     }
 
-    void layout(Math::Recti rect) override {
+    void layout(Math::RectAu rect) override {
         if (_primary)
-            _window->resize(_snap, rect.wh);
+            _window->resize(_snap, rect.wh.cast<isize>());
         View::layout(rect);
     }
 
-    Math::Vec2i size(Math::Vec2i, Ui::Hint) override {
-        return _window->bound(_snap).size();
+    Math::Vec2Au size(Math::Vec2Au, Ui::Hint) override {
+        return _window->bound(_snap).size().cast<Math::Au>();
     }
 
-    Math::Vec2i _quadrantDir(Math::Vec2i pos) const {
+    Math::Vec2i _quadrantDir(Math::Vec2Au pos) const {
         return {
             pos.x < _bound.center().x ? -1 : 1,
             pos.y < _bound.center().y ? -1 : 1,
@@ -452,7 +452,7 @@ export struct Viewport : Ui::View<Viewport> {
             return;
 
         if (auto it = e.is<WindowFlipEvent>(); it and it->window == _window) {
-            Ui::shouldRepaint(*this, it->region.offset(bound().topStart()));
+            Ui::shouldRepaint(*this, it->region.cast<Math::Au>().offset(bound().topStart()));
         } else if (auto it = e.is<App::MouseEvent>(); it) {
             if (it->type == App::MouseEvent::RELEASE and _window->dragged) {
                 Model::bubble<EndDragWindow>(*this, {_window});
@@ -479,7 +479,7 @@ export struct Viewport : Ui::View<Viewport> {
                 return;
             }
 
-            if (bound().contains(it->pos)) {
+            if (bound().contains(it->pos.cast<Math::Au>())) {
                 // The client application decides where a resize can be
                 // initiated and requests the matching cursor as the pointer
                 // hovers these regions.
@@ -496,7 +496,7 @@ export struct Viewport : Ui::View<Viewport> {
                 }
 
                 if (it->type == App::MouseEvent::PRESS and it->button == App::MouseButton::RIGHT and App::match(it->mods, App::KeyMod::SUPER) and _snap == App::Snap::NONE and not e.accepted()) {
-                    Model::bubble<StartResizeWindow>(*this, {_window, _quadrantDir(it->pos)});
+                    Model::bubble<StartResizeWindow>(*this, {_window, _quadrantDir(it->pos.cast<Math::Au>())});
                     e.accept();
                 }
 
@@ -504,7 +504,7 @@ export struct Viewport : Ui::View<Viewport> {
                     return;
 
                 auto transformedEvent = *it;
-                transformedEvent.pos = transformedEvent.pos - bound().xy;
+                transformedEvent.pos = transformedEvent.pos - bound().xy.cast<isize>();
                 auto ee = App::makeEvent<App::MouseEvent>(transformedEvent);
                 _window->event(*ee);
                 e.accept();

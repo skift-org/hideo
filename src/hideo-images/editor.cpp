@@ -11,11 +11,13 @@ import :model;
 import :kernel;
 
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Images {
 
 Ui::Child histogram(Hist const& hist) {
-    return Ui::onPaint([hist](Gfx::Canvas& g, Math::Vec2i size) {
+    return Ui::onPaint([hist](Gfx::Canvas& g, Math::Vec2Au sizeAu) {
+        auto size = sizeAu.cast<isize>();
         usize n = hist.len();
         if (n < 2 or size.x <= 1 or size.y <= 1)
             return;
@@ -52,7 +54,7 @@ Ui::Child histogram(Hist const& hist) {
 Ui::Child editorHistogram(Editor const& editor) {
     auto graphSelect =
         Ui::hflow(
-            6,
+            6_au,
             Ui::button(
                 Some(Model::bind(Graph::HIST)),
                 Ui::ButtonStyle::text().withForegroundFill(Ui::GRAY50.withOpacity(editor.graph == Graph::HIST ? 1 : 0.5)),
@@ -90,7 +92,7 @@ Ui::Child editorHistogram(Editor const& editor) {
                 Ui::labelSmall("Luma")
             )
         ) |
-        Ui::insets(8);
+        Ui::insets(8_au);
 
     return Ui::vflow(
         graphSelect,
@@ -100,16 +102,16 @@ Ui::Child editorHistogram(Editor const& editor) {
                 Ui::button(
                     Some(Model::bind<ToggleFlag>(KernelFlags::SHADOW_CLIP)),
                     Ui::ButtonStyle::subtle().withForegroundFill(editor.flags.has(KernelFlags::SHADOW_CLIP) ? Ui::GRAY50 : Ui::GRAY600),
-                    Ui::icon(Mdi::TRIANGLE, 12)
+                    Ui::icon(Mdi::TRIANGLE, 12_au)
                 ) | Ui::align(Math::Align::TOP_START),
                 Ui::button(
                     Some(Model::bind<ToggleFlag>(KernelFlags::HIGHLIGHT_CLIP)),
                     Ui::ButtonStyle::subtle().withForegroundFill(editor.flags.has(KernelFlags::HIGHLIGHT_CLIP) ? Ui::GRAY50 : Ui::GRAY600),
-                    Ui::icon(Mdi::TRIANGLE, 12)
+                    Ui::icon(Mdi::TRIANGLE, 12_au)
                 ) | Ui::align(Math::Align::TOP_END)
-            ) | Ui::insets(8)
+            ) | Ui::insets(8_au)
         ) |
-            Ui::pinSize(192) | Ui::grow()
+            Ui::pinSize(192_au) | Ui::grow()
     );
 }
 
@@ -119,7 +121,7 @@ Ui::Child editorPreview(Editor const& editor) {
                .borderWidth = 1,
                .borderFill = Some(Ui::GRAY50.withOpacity(0.1)),
            }) |
-           Ui::insets(8) |
+           Ui::insets(8_au) |
            Ui::fit();
 }
 
@@ -133,21 +135,21 @@ Ui::Child editorPresets(Editor const& editor) {
                 Ui::button(Some(Model::bind<Preset>(Presets::PUNCHY)), "PUNCHY"),
                 Ui::button(Some(Model::bind<Preset>(Presets::FLAT)), "FLAT"),
 
-                Ui::empty(4),
+                Ui::empty(4_au),
                 Ui::button(Some(Model::bind<Preset>(Presets::WARM_SUNSET)), "WARM_SUNSET"),
                 Ui::button(Some(Model::bind<Preset>(Presets::COOL_MIST)), "COOL_MIST"),
                 Ui::button(Some(Model::bind<Preset>(Presets::RETRO_FADE)), "RETRO_FADE"),
 
-                Ui::empty(4),
+                Ui::empty(4_au),
                 Ui::button(Some(Model::bind<Preset>(Presets::HIGH_KEY)), "HIGH_KEY"),
                 Ui::button(Some(Model::bind<Preset>(Presets::TEAL_ORANGE)), "TEAL_ORANGE"),
                 Ui::button(Some(Model::bind<Preset>(Presets::MOODY_LOW_KEY)), "MOODY_LOW_KEY"),
 
-                Ui::empty(4),
+                Ui::empty(4_au),
                 Ui::button(Some(Model::bind<Preset>(Presets::KODACHROME)), "KODACHROME"),
                 Ui::button(Some(Model::bind<Preset>(Presets::MATTE_FILM)), "MATTE_FILM"),
 
-                Ui::empty(4),
+                Ui::empty(4_au),
                 Ui::button(Some(Model::bind<Preset>(Presets::BLEACH_BYPASS)), "BLEACH_BYPASS"),
                 Ui::button(Some(Model::bind<Preset>(Presets::SEPIA_FADE)), "SEPIA_FADE"),
                 Ui::button(Some(Model::bind<Preset>(Presets::DREAMY_GLOW)), "DREAMY_GLOW"),
@@ -158,19 +160,19 @@ Ui::Child editorPresets(Editor const& editor) {
             )
         ) | Kr::scaffoldContent() |
             Ui::grow(),
-        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandlePosition::TOP, {192}, NONE)
+        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandlePosition::TOP, {192_au}, NONE)
     );
 }
 
 Ui::Child adjustmentSlider(Editor const& editor, Adjustment adjustment, Kr::Slider::Origin origin) {
-    Ui::ButtonStyle resetStyle = Ui::ButtonStyle::text().withMargin(0).withPadding(0);
+    Ui::ButtonStyle resetStyle = Ui::ButtonStyle::text().withMargin(0_au).withPadding(0_au);
     resetStyle.idleStyle.foregroundFill = Gfx::ALPHA;
     resetStyle.hoverStyle.backgroundFill = Some(Ui::GRAY950);
     resetStyle.pressStyle.backgroundFill = Some(Ui::GRAY950);
     resetStyle.pressStyle.backgroundFill = Some(Ui::GRAY950);
 
     return Ui::vflow(
-        4,
+        4_au,
         Ui::hflow(
             Ui::labelSmall("{}", adjustment),
             Ui::grow(NONE),
@@ -183,7 +185,7 @@ Ui::Child adjustmentSlider(Editor const& editor, Adjustment adjustment, Kr::Slid
                     resetStyle, Ui::labelSmall("reset")
                 )
             )
-        ) | Ui::insets({0, 8}),
+        ) | Ui::insets({0_au, 8_au}),
         Kr::slider(
             editor.kernel.sliderValue(adjustment),
             Some([=](auto& n, f32 value) {
@@ -197,8 +199,8 @@ Ui::Child adjustmentSlider(Editor const& editor, Adjustment adjustment, Kr::Slid
 Ui::Child adjustmentGroup(Str name, Ui::Children els) {
     return Ui::vflow(
         Ui::titleSmall(name) |
-            Ui::insets({16, 12, 8, 12}),
-        Ui::vflow(6, els) | Ui::insets({8, 4, 8, 4})
+            Ui::insets({16_au, 12_au, 8_au, 12_au}),
+        Ui::vflow(6_au, els) | Ui::insets({8_au, 4_au, 8_au, 4_au})
     );
 }
 
@@ -207,12 +209,12 @@ Ui::Child editorProperties(Editor const& editor) {
         Ui::vscroll(
             Ui::vflow(
                 Ui::hflow(
-                    4,
+                    4_au,
                     Ui::button(Some(Model::bind<Auto>()), Mdi::AUTO_FIX),
                     Ui::button(Some(Model::bind<Preset>(Presets::NEUTRAL)), Mdi::RESTORE),
                     Ui::grow(NONE),
                     Ui::button(Some(Model::bind<Toggle>()), editor.before ? Mdi::EYE_OFF : Mdi::EYE)
-                ) | Ui::insets(6),
+                ) | Ui::insets(6_au),
                 adjustmentGroup(
                     "Light"s,
                     {
@@ -264,7 +266,7 @@ Ui::Child editorProperties(Editor const& editor) {
             )
         ) | Kr::scaffoldContent() |
             Ui::grow(),
-        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandlePosition::TOP, {192}, NONE)
+        editorHistogram(editor) | Kr::scaffoldContent() | Kr::resizable(Kr::ResizeHandlePosition::TOP, {192_au}, NONE)
     );
 }
 
@@ -275,10 +277,10 @@ Ui::Child editorSidepanel(State const& s) {
             : editorPresets(s.mode.expect<Editor>());
 
     return Ui::hflow(
-        4,
+        4_au,
         panel | Ui::grow(),
         Ui::vflow(
-            4,
+            4_au,
             Ui::button(
                 Some(Model::bind<Panel>(Panel::ADJUST)),
                 Ui::ButtonStyle::subtle().withForegroundFill(s.panel == Panel::ADJUST ? Ui::GRAY50 : Ui::GRAY500),
@@ -332,7 +334,7 @@ Ui::Child editorApp(State const& s) {
         .body = [&] {
             return Ui::hflow(
                 editorPreview(s.mode.expect<Editor>()) | Ui::bound() | Kr::scaffoldContent() | Ui::grow(),
-                editorSidepanel(s) | Kr::resizable(Kr::ResizeHandlePosition::START, {320}, NONE)
+                editorSidepanel(s) | Kr::resizable(Kr::ResizeHandlePosition::START, {320_au}, NONE)
             );
         },
     });

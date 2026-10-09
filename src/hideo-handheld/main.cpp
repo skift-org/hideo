@@ -12,6 +12,7 @@ import Mdi;
 using namespace Karm;
 using namespace Karm::Literals;
 using namespace Karm::Ref::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Handheld {
 
@@ -79,25 +80,25 @@ Gfx::ProseProps inputMedium() {
 
 Ui::Child buttonHint(Str button, Str description, Gfx::Color color) {
     return Ui::hflow(
-        Ui::text(inputMedium(), button) | Ui::center() | Ui::minSize(26) |
+        Ui::text(inputMedium(), button) | Ui::center() | Ui::minSize(26_au) |
             Ui::box({
-                .margin = 4,
+                .margin = 4_au,
                 .borderRadii = 999,
                 .backgroundFill = Some(color),
                 .foregroundFill = color.luminance() > 0.6 ? Gfx::BLACK : Gfx::WHITE,
             }),
         Ui::labelLarge(description) |
             Ui::center() |
-            Ui::insets({0, 12, 0, 2})
+            Ui::insets({0_au, 12_au, 0_au, 2_au})
     );
 }
 
 Ui::Child buttonHints(Ui::Children children) {
     return Ui::hflow(
-               6,
+               6_au,
                std::move(children)
            ) |
-           Ui::insets(8);
+           Ui::insets(8_au);
 }
 
 Ui::Child logo(Str text) {
@@ -106,11 +107,11 @@ Ui::Child logo(Str text) {
 
 Ui::Child statusWidget(Gfx::Icon icon) {
     return Ui::hflow(
-               12,
-               Ui::icon(icon) | Ui::center() | Ui::minSize(22)
+               12_au,
+               Ui::icon(icon) | Ui::center() | Ui::minSize(22_au)
            ) |
            Ui::box({
-               .padding = 8,
+               .padding = 8_au,
                .borderRadii = 999,
                .borderWidth = 1,
                .backgroundFill = Some(Ui::GRAY900),
@@ -120,7 +121,7 @@ Ui::Child statusWidget(Gfx::Icon icon) {
 Ui::Child statusWidget(Str description) {
     return Ui::labelLarge(description) | Ui::center() |
            Ui::box({
-               .padding = {8, 16},
+               .padding = {8_au, 16_au},
                .borderRadii = 999,
                .borderWidth = 1,
                .backgroundFill = Some(Ui::GRAY900),
@@ -129,11 +130,11 @@ Ui::Child statusWidget(Str description) {
 
 Ui::Child statusWidget(Gfx::Icon icon, Str description) {
     return Ui::hflow(
-               6,
-               Ui::icon(icon) | Ui::center() | Ui::minSize(22), Ui::labelLarge(description) | Ui::center()
+               6_au,
+               Ui::icon(icon) | Ui::center() | Ui::minSize(22_au), Ui::labelLarge(description) | Ui::center()
            ) |
            Ui::box({
-               .padding = {8, 16, 8, 8},
+               .padding = {8_au, 16_au, 8_au, 8_au},
                .borderRadii = 999,
                .borderWidth = 1,
                .backgroundFill = Some(Ui::GRAY900),
@@ -142,12 +143,12 @@ Ui::Child statusWidget(Gfx::Icon icon, Str description) {
 
 Ui::Child status() {
     return Ui::hflow(
-               6,
+               6_au,
                statusWidget(Mdi::BROADCAST),
                statusWidget(Mdi::BATTERY_50, "50%"),
                statusWidget("11:29")
            ) |
-           Ui::insets({12, 0});
+           Ui::insets({12_au, 0_au});
 }
 
 Ui::Child tileGameCover(Ref::Url image) {
@@ -155,7 +156,7 @@ Ui::Child tileGameCover(Ref::Url image) {
 }
 
 Ui::Child tileAppCover(Gfx::Icon icon, Gfx::ColorRamp ramp) {
-    return Ui::icon(icon, 96) |
+    return Ui::icon(icon, 96_au) |
            Ui::center() | Ui::bound() |
            Ui::box({
                .borderRadii = 6,
@@ -166,7 +167,7 @@ Ui::Child tileAppCover(Gfx::Icon icon, Gfx::ColorRamp ramp) {
 
 Ui::Child tileContent(Ui::Child child) {
     return child |
-           Ui::pinSize(192) |
+           Ui::pinSize(192_au) |
            Ui::box({
                .borderRadii = 6,
                .shadowStyle = Some(Gfx::BoxShadow::elevated(8)),
@@ -201,9 +202,9 @@ Ui::Child appList() {
     return Ui::vflow(
                Ui::grow(NONE),
                Ui::headlineMedium("Celeste") |
-                   Ui::insets({0, 48, 16}),
+                   Ui::insets({0_au, 48_au, 16_au}),
                Ui::hflow(
-                   26,
+                   26_au,
                    tileButton(Model::bind<State::LaunchGame>(), tileContent(tileGameCover("bundle://hideo-handheld/tiles/celeste.qoi"_url))),
                    tileButton(Model::bind<State::LaunchGame>(), tileContent(tileGameCover("bundle://hideo-handheld/tiles/doom.qoi"_url))),
                    tileButton(Model::bind<State::LaunchGame>(), tileContent(tileGameCover("bundle://hideo-handheld/tiles/minicraft.qoi"_url))),
@@ -213,7 +214,7 @@ Ui::Child appList() {
 
                    Kr::separator(Gfx::GRAY500),
                    tileButton(Ui::SINK<>, tileContent(tileAppCover(Mdi::APPS, Gfx::ZINC_RAMP)))
-               ) | Ui::insets({0, 48, 48}) |
+               ) | Ui::insets({0_au, 48_au, 48_au}) |
                    Ui::hscroll()
            ) |
            Ui::grow();
@@ -221,16 +222,16 @@ Ui::Child appList() {
 
 Ui::Child runningAppItem() {
     return Ui::hflow(
-        6,
+        6_au,
         Ui::hflow(
-            12,
+            12_au,
             Ui::image("bundle://hideo-handheld/tiles/celeste.qoi"_url, Some(6)) |
                 Ui::box({
                     .borderRadii = 6,
                     .borderWidth = 1,
                     .borderFill = Some(Ui::GRAY50.withOpacity(0.4)),
                 }) |
-                Ui::pinSize(48) | Ui::vcenter(),
+                Ui::pinSize(48_au) | Ui::vcenter(),
             Ui::vflow(
                 Ui::titleMedium("Celeste"s),
                 Ui::bodySmall("Version: v0.1"s)
@@ -339,10 +340,10 @@ Ui::Child quickSettings(State const& s) {
                    Kr::separator(),
                    Ui::vflow(
                        Ui::vflow(
-                           8,
+                           8_au,
                            std::move(items)
                        ) |
-                           Ui::insets({8, 16, 8, 16}) |
+                           Ui::insets({8_au, 16_au, 8_au, 16_au}) |
                            Ui::vscroll() | Ui::grow(),
                        Kr::separator(),
                        buttonHints({
@@ -353,7 +354,7 @@ Ui::Child quickSettings(State const& s) {
                    ) |
                        Ui::box({.backgroundFill = Some(Ui::GRAY950)}) | Ui::grow()
                ) |
-                   Ui::slideIn(Ui::SlideFrom::END) | Ui::pinSize(320)
+                   Ui::slideIn(Ui::SlideFrom::END) | Ui::pinSize(320_au)
            ) |
            Ui::box({
                .backgroundFill = Some(Gfx::BLACK.withOpacity(0.4)),
@@ -362,25 +363,25 @@ Ui::Child quickSettings(State const& s) {
 
 Ui::Child topBar() {
     return Ui::hflow(
-               6,
+               6_au,
                Ui::grow(NONE),
                status()
            ) |
-           Ui::insets({8, 16, 8, 16});
+           Ui::insets({8_au, 16_au, 8_au, 16_au});
 }
 
 Ui::Child appMenu() {
     return Kr::contextMenuContent({
         Kr::dialogHeader({
             Ui::hflow(
-                12,
+                12_au,
                 Ui::image("bundle://hideo-handheld/tiles/celeste.qoi"_url, Some(6)) |
                     Ui::box({
                         .borderRadii = 6,
                         .borderWidth = 1,
                         .borderFill = Some(Ui::GRAY50.withOpacity(0.4)),
                     }) |
-                    Ui::pinSize(64) | Ui::vcenter(),
+                    Ui::pinSize(64_au) | Ui::vcenter(),
                 Ui::vflow(
                     Kr::dialogTitle("Celeste"s),
                     Kr::dialogDescription("Version: v0.1"s),
@@ -463,7 +464,7 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
 
     co_return co_await Ui::runAsync(
         env,
-        Hideo::Handheld::app() | Ui::pinSize({640, 480}),
+        Hideo::Handheld::app() | Ui::pinSize({640_au, 480_au}),
         ct
     );
 }

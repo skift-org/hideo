@@ -7,6 +7,8 @@ import Karm.Math;
 
 import :model;
 
+using namespace Karm::Math::Literals;
+
 namespace Hideo::Keyboard {
 
 static Ui::Child toolbar() {
@@ -19,12 +21,12 @@ static Ui::Child toolbar() {
 }
 
 static Ui::Child key(auto icon) {
-    return Ui::button(Some(Ui::SINK<>), Ui::titleMedium(icon) | Ui::center() | Ui::pinSize(32));
+    return Ui::button(Some(Ui::SINK<>), Ui::titleMedium(icon) | Ui::center() | Ui::pinSize(32_au));
 }
 
 static Ui::Child keyboard(State const& k) {
     auto firstRow = Ui::hflow(
-        8,
+        8_au,
         key(k.shift ? "Q" : "q"),
         key(k.shift ? "W" : "w"),
         key(k.shift ? "E" : "e"),
@@ -38,7 +40,7 @@ static Ui::Child keyboard(State const& k) {
     );
 
     auto secondRow = Ui::hflow(
-        8,
+        8_au,
         Ui::grow(NONE),
         key(k.shift ? "A" : "a"),
         key(k.shift ? "S" : "s"),
@@ -53,7 +55,7 @@ static Ui::Child keyboard(State const& k) {
     );
 
     auto thirdRow = Ui::hflow(
-        8,
+        8_au,
         Ui::button(
             Some(Model::bind<ToggleShift>()),
             Ui::ButtonStyle::secondary(),
@@ -74,7 +76,7 @@ static Ui::Child keyboard(State const& k) {
     );
 
     auto fourthRow = Ui::hflow(
-                         8,
+                         8_au,
                          Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::secondary(), "&123") | Ui::grow(2),
                          key(","),
                          Ui::button(Some(Ui::SINK<>), Ui::empty()) | Ui::grow(6),
@@ -84,7 +86,7 @@ static Ui::Child keyboard(State const& k) {
                      Ui::grow();
 
     return Ui::vflow(
-        8,
+        8_au,
         firstRow | Ui::hcenterFill() | Ui::grow(),
         secondRow | Ui::grow(),
         thirdRow | Ui::grow(),
@@ -97,14 +99,14 @@ export Ui::Child flyout() {
         return Ui::vflow(
                    Kr::separator(),
                    Ui::vflow(
-                       8,
+                       8_au,
                        toolbar(),
                        keyboard(k) | Ui::grow()
                    ) |
                        Ui::hcenterFill() |
-                       Ui::minSize({Ui::UNCONSTRAINED, 280}) |
+                       Ui::minSize({Ui::UNCONSTRAINED, 280_au}) |
                        Ui::box({
-                           .padding = 8,
+                           .padding = 8_au,
                            .backgroundFill = Some(Ui::GRAY950),
                        })
                ) |

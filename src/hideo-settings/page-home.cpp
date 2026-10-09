@@ -2,6 +2,7 @@ export module Hideo.Settings:pageHome;
 
 import Mdi;
 import Karm.Ui;
+import Karm.Math;
 import Karm.App;
 import Karm.Sys;
 import Karm.Gfx;
@@ -9,17 +10,18 @@ import Karm.Gfx;
 import :model;
 
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Settings {
 
 Ui::Child tileButton(Ui::Send<> onPress, Gfx::Icon icon, String text) {
     return Ui::vflow(
-               Ui::icon(icon, 32) | Ui::center() | Ui::grow(),
+               Ui::icon(icon, 32_au) | Ui::center() | Ui::grow(),
                Ui::text(text) | Ui::center()
            ) |
-           Ui::insets(8) |
+           Ui::insets(8_au) |
            Ui::bound() |
-           Ui::minSize({96, 72}) |
+           Ui::minSize({96_au, 72_au}) |
            Ui::button(Some(onPress), Ui::ButtonStyle::secondary());
 }
 
@@ -40,11 +42,11 @@ export Ui::Child pageHome(State const&) {
     auto isMobile = App::formFactor == App::FormFactor::MOBILE;
 
     auto gridLayout = isMobile
-                          ? Ui::GridStyle::simpleGrow(4, 2, 4)
-                          : Ui::GridStyle::simpleFixed({3, 96}, {3, 120}, 8);
+                          ? Ui::GridStyle::simpleGrow(4, 2, 4_au)
+                          : Ui::GridStyle::simpleFixed({3, 96_au}, {3, 120_au}, 8_au);
 
     auto grid = Ui::grid(gridLayout, items) |
-                Ui::insets(8);
+                Ui::insets(8_au);
 
     if (isMobile)
         return grid;

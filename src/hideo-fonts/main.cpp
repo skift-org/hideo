@@ -9,6 +9,7 @@ import Mdi;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Fonts {
 
@@ -91,11 +92,11 @@ Ui::Child allFamiliesItem(State const& s, Symbol family) {
     };
 
     return Ui::vflow(
-               8,
+               8_au,
                Ui::labelMedium(Ui::GRAY500, "{} · {} {}", family, nStyle, nStyle == 1 ? "Style" : "Styles"),
                Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), pangramFor(*fontface))
            ) |
-           Ui::insets({8, 0, 8, 12}) |
+           Ui::insets({8_au, 0_au, 8_au, 12_au}) |
            Ui::hclip() |
            Ui::button(Some(Model::bind<SelectFamily>(family)), Ui::ButtonStyle::outline());
 }
@@ -108,8 +109,8 @@ Ui::Child allFamiliesContent(State const& s) {
         children.pushBack(allFamiliesItem(s, family));
     }
 
-    return Ui::vflow(8, children) |
-           Ui::insets(16) |
+    return Ui::vflow(8_au, children) |
+           Ui::insets(16_au) |
            Ui::vscroll();
 }
 
@@ -137,7 +138,7 @@ Ui::Child fontfaceTags(Gfx::FontAttrs const& attrs) {
         children.pushBack(fontfaceTag(Io::toStr(attrs.weight)));
     }
 
-    return Ui::hflow(4, children);
+    return Ui::hflow(4_au, children);
 }
 
 Ui::Child familyItem(State const&, Rc<Gfx::Fontface> fontface) {
@@ -149,12 +150,12 @@ Ui::Child familyItem(State const&, Rc<Gfx::Fontface> fontface) {
     };
 
     return Ui::vflow(
-               8,
+               8_au,
                Ui::labelMedium(Ui::GRAY500, "{}", attrs.family),
                Ui::text(Gfx::ProseProps{font}.withMultiline(false).withWordwrap(false), pangramFor(*fontface)),
                fontfaceTags(attrs)
            ) |
-           Ui::insets({8, 0, 8, 12}) |
+           Ui::insets({8_au, 0_au, 8_au, 12_au}) |
            Ui::hclip() |
            Ui::button(Some(Model::bind<SelectFace>(fontface)), Ui::ButtonStyle::outline());
 }
@@ -164,7 +165,7 @@ Ui::Child familyContent(State const& s) {
     auto& fontBook = s.fontBook;
     auto fontfaces = fontBook.queryFamily(s.fontFamily.expect());
 
-    auto header = Ui::labelSmall("{}", s.fontFamily.expect()) | Ui::insets({6, 16});
+    auto header = Ui::labelSmall("{}", s.fontFamily.expect()) | Ui::insets({6_au, 16_au});
 
     for (auto const& fontface : fontfaces) {
         children.pushBack(familyItem(s, fontface));
@@ -173,7 +174,7 @@ Ui::Child familyContent(State const& s) {
     return Ui::vflow(
         header,
         Kr::separator(),
-        Ui::vflow(8, children) | Ui::insets(16) | Ui::vscroll() | Ui::grow()
+        Ui::vflow(8_au, children) | Ui::insets(16_au) | Ui::vscroll() | Ui::grow()
     );
 }
 
@@ -192,8 +193,8 @@ Ui::Child pangrams(Rc<Gfx::Fontface> fontface) {
         size *= 1.2;
     }
 
-    return Ui::vflow(8, children) |
-           Ui::insets(16) |
+    return Ui::vflow(8_au, children) |
+           Ui::insets(16_au) |
            Ui::vhscroll();
 }
 
@@ -203,11 +204,11 @@ Ui::Child fontfaceContent(State const& s) {
 
     return Ui::vflow(
         Ui::hflow(
-            0,
+            0_au,
             Math::Align::CENTER,
             Ui::labelSmall(attrs.normal() ? "{}" : "{}  · ", attrs.family),
             fontfaceTags(attrs)
-        ) | Ui::insets({6, 16}),
+        ) | Ui::insets({6_au, 16_au}),
         Kr::separator(),
         pangrams(fontface)
     );

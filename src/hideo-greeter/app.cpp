@@ -14,6 +14,7 @@ import Karm.Image;
 using namespace Karm;
 using namespace Karm::Literals;
 using namespace Karm::Ref::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Greeter {
 
@@ -58,16 +59,16 @@ using Model = Ui::Model<State, Action, reduce>;
 
 Ui::Child userLogin() {
     return Ui::vflow(
-               32,
-               Kr::avatar(Karm::Image::loadOrFallback("bundle://hideo-images/images/geraldine.png"_url).expect(), 160),
+               32_au,
+               Kr::avatar(Karm::Image::loadOrFallback("bundle://hideo-images/images/geraldine.png"_url).expect(), 160_au),
                Ui::headlineLarge("Geraldine") | Ui::center(),
                Ui::hflow(
-                   4,
+                   4_au,
                    Kr::input(Mdi::LOCK, "Password"s, ""s, Ui::SINK<String>) | Ui::box({.backgroundFill = Some(Ui::GRAY950)}) | Ui::grow(),
                    Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::regular(), Mdi::CHEVRON_RIGHT)
-               ) | Ui::pinSize({260, Ui::UNCONSTRAINED})
+               ) | Ui::pinSize({260_au, Ui::UNCONSTRAINED})
            ) |
-           Ui::insets(32);
+           Ui::insets(32_au);
 }
 
 Ui::Child appContent(State const&) {
@@ -84,8 +85,8 @@ export Ui::Child app() {
         return appContent(s) |
                Ui::pinSize(
                    App::formFactor == App::FormFactor::MOBILE
-                       ? Math::Vec2i{411, 731}
-                       : Math::Vec2i{1280, 720}
+                       ? Math::Vec2Au{411_au, 731_au}
+                       : Math::Vec2Au{1280_au, 720_au}
                ) |
                Ui::dialogLayer();
         ;

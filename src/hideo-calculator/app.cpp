@@ -8,6 +8,8 @@ import Karm.Math;
 
 import :model;
 
+using namespace Karm::Math::Literals;
+
 namespace Hideo::Calculator {
 
 Ui::Child textButton(Opt<Ui::Send<>> onPress, Ui::ButtonStyle style, String t) {
@@ -23,10 +25,10 @@ Ui::Child textButton(Opt<Ui::Send<>> onPress, String t) {
 
 Ui::Child keypad(State const& state) {
     return Ui::grid(
-               Ui::GridStyle::simpleGrow(7, 4, 4),
+               Ui::GridStyle::simpleGrow(7, 4, 4_au),
 
                Ui::hflow(
-                   4,
+                   4_au,
                    Ui::button(Model::bindIf<MemClearAction>(state.hasMem), Ui::ButtonStyle::subtle(), "MC"),
                    Ui::button(Model::bindIf<MemRecallAction>(state.hasMem), Ui::ButtonStyle::subtle(), "MR"),
                    Ui::button(Some(Model::bind<MemAddAction>()), Ui::ButtonStyle::subtle(), "M+"),
@@ -68,7 +70,7 @@ Ui::Child keypad(State const& state) {
                Ui::button(Some(Model::bind<EnterDecimalAction>()), Mdi::CIRCLE_SMALL),
                Ui::button(Some(Model::bind<EqualAction>()), Ui::ButtonStyle::primary(), Mdi::EQUAL)
            ) |
-           Ui::insets(8);
+           Ui::insets(8_au);
 }
 
 Ui::Child screen(State const& state) {
@@ -83,8 +85,8 @@ Ui::Child screen(State const& state) {
                      : Ui::headlineMedium("{}", state.hasRhs ? state.rhs : state.lhs)) |
         Ui::align(Math::Align::VCENTER | Math::Align::END);
 
-    return Ui::vflow(8, /* debugExpr, */ currExpr, result) |
-           Ui::insets({8, 16}) |
+    return Ui::vflow(8_au, /* debugExpr, */ currExpr, result) |
+           Ui::insets({8_au, 16_au}) |
            Ui::focusable();
 }
 
@@ -100,7 +102,7 @@ export Ui::Child app() {
                        ) |
                        Kr::scaffoldContent();
             },
-            .size = {280, 440},
+            .size = {280_au, 440_au},
         });
     });
 }

@@ -2,11 +2,13 @@ export module Hideo.Shell:power;
 
 import Mdi;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Kira;
 import Karm.Core;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Shell {
 
@@ -39,7 +41,7 @@ export Ui::Child powerDialog() {
                 "Shutdown"
             ),
         }) |
-            Ui::minSize({260, Ui::UNCONSTRAINED}),
+            Ui::minSize({260_au, Ui::UNCONSTRAINED}),
     });
 }
 

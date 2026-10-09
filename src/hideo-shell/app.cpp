@@ -19,6 +19,7 @@ import :desktop;
 import :lock;
 
 using namespace Karm;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Shell {
 
@@ -44,8 +45,8 @@ export Ui::Child app(State state) {
                 Ui::popoverLayer() |
                 Ui::pinSize(
                     App::formFactor == App::FormFactor::MOBILE
-                        ? Math::Vec2i{411, 731}
-                        : Math::Vec2i{1280, 720}
+                        ? Math::Vec2Au{411_au, 731_au}
+                        : Math::Vec2Au{1280_au, 720_au}
                 ) |
                 Ui::keyboardShortcut(App::Key::ESC, {}, [&](auto& n) {
                     if (state.activePanel != Panel::NIL)

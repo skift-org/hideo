@@ -20,6 +20,7 @@ export import :model;
 using namespace Karm;
 using namespace Karm::Literals;
 using namespace Karm::Ref::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Avplayer {
 
@@ -45,15 +46,15 @@ Ui::Child audioContent() {
                      .borderWidth = 2,
                      .borderFill = Some(Ui::GRAY100.withOpacity(0.1)),
                  }) |
-                 Ui::pinSize(256);
+                 Ui::pinSize(256_au);
 
     return Ui::stack(
                background,
                Ui::vflow(
-                   4,
+                   4_au,
                    Math::Align::CENTER,
                    cover,
-                   Ui::empty(4),
+                   Ui::empty(4_au),
                    Ui::titleLarge("Unknown Title"),
                    Ui::labelMedium("Unknown Artist")
                ) | Ui::center()
@@ -85,7 +86,7 @@ Ui::Child duration(Duration dur) {
 
 Ui::Child scrubberControls(State const& s) {
     return Ui::hflow(
-        6,
+        6_au,
         Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
         duration(s.player->tell()),
         Kr::slider(
@@ -102,7 +103,7 @@ Ui::Child scrubberControls(State const& s) {
 
 Ui::Child volumeControls(State const& s) {
     return Ui::hflow(
-               0,
+               0_au,
                Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
                Ui::button(
                    Some(Model::bind<ToggleMute>()),
@@ -117,7 +118,7 @@ Ui::Child volumeControls(State const& s) {
                )
            ) |
            Ui::box({
-               .padding = {0, 6, 0, 0},
+               .padding = {0_au, 6_au, 0_au, 0_au},
                .borderRadii = 4,
                .backgroundFill = Some(Ui::GRAY800),
            });
@@ -125,12 +126,12 @@ Ui::Child volumeControls(State const& s) {
 
 Ui::Child mediaControls(State const& s) {
     return Ui::hflow(
-               6,
+               6_au,
                Math::Align::VCENTER | Math::Align::HFILL | Math::Align::TOP_START,
                transportControls(s),
-               Ui::empty(4),
+               Ui::empty(4_au),
                scrubberControls(s) | Ui::grow(),
-               Ui::empty(4),
+               Ui::empty(4_au),
                volumeControls(s),
                Ui::button(
                    Some(Ui::bindBubble<App::RequestSnapeEvent>(App::Snap::FULL)),
@@ -138,7 +139,7 @@ Ui::Child mediaControls(State const& s) {
                    Mdi::FULLSCREEN
                )
            ) |
-           Ui::insets(8);
+           Ui::insets(8_au);
 }
 
 Ui::Child player(State const& s) {

@@ -11,6 +11,7 @@ import :model;
 import :background;
 
 using namespace Karm::Ref::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Shell {
 
@@ -33,7 +34,7 @@ Ui::Child lockScreen(State const& state) {
     );
 
     auto clock = Ui::vflow(
-        0,
+        0_au,
         Math::Align::CENTER,
         Ui::text(Gfx::ProseProps{blackFontface()}.withFontSize(16), dateTime),
         Ui::text(
@@ -44,7 +45,7 @@ Ui::Child lockScreen(State const& state) {
     );
 
     auto hintText = Ui::vflow(
-        Ui::icon(Mdi::CHEVRON_UP, 48) |
+        Ui::icon(Mdi::CHEVRON_UP, 48_au) |
             Ui::center(),
         Ui::labelLarge(
             App::formFactor == App::FormFactor::MOBILE
@@ -57,7 +58,7 @@ Ui::Child lockScreen(State const& state) {
     return Ui::stack(
         background(state),
         Ui::vflow(clock, Ui::grow(NONE), hintText | Ui::slideIn(Ui::SlideFrom::BOTTOM)) |
-            Ui::insets(App::formFactor == App::FormFactor::MOBILE ? 64 : 128) |
+            Ui::insets(App::formFactor == App::FormFactor::MOBILE ? 64_au : 128_au) |
             Ui::dragRegion() |
             Ui::keyboardShortcut(App::Key::SPACE, Model::bind<Unlock>()) |
             Ui::dismisable(Model::bind<Unlock>(), Ui::DismisDir::TOP, 0.3) |

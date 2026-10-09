@@ -8,6 +8,7 @@ import Karm.Math;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Chat {
 
@@ -16,11 +17,11 @@ Ui::Child messageSidebarItem(Str name) {
         false,
         Some(Ui::SINK<>),
         Ui::hflow(
-            12,
+            12_au,
             Math::Align::CENTER,
             Kr::avatar(),
             Ui::vflow(
-                4,
+                4_au,
                 Ui::labelLarge(name),
                 Ui::bodySmall("Some test message...")
             )
@@ -30,7 +31,7 @@ Ui::Child messageSidebarItem(Str name) {
 
 Ui::Child messageSidebar() {
     return Kr::sidenavContent({
-        Kr::searchbar(""s) | Ui::insets({6, 0}),
+        Kr::searchbar(""s) | Ui::insets({6_au, 0_au}),
         messageSidebarItem("Mathilde"),
         messageSidebarItem("Lou"),
         messageSidebarItem("Jordan"),
@@ -41,19 +42,19 @@ Ui::Child messageSidebar() {
 
 Ui::Child messageComposer() {
     return Ui::hflow(
-               4,
+               4_au,
                Kr::input("Message"s, ""s, Ui::SINK<String>) | Ui::grow(),
                Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::primary(), Mdi::SEND, "Send"s)
            ) |
-           Ui::insets(6);
+           Ui::insets(6_au);
 }
 
 Ui::Child messageBubble(String text, bool self) {
     return Ui::bodyMedium(text) |
-           Ui::sizing(Ui::UNCONSTRAINED, {320, Ui::UNCONSTRAINED}) |
+           Ui::sizing(Ui::UNCONSTRAINED, {320_au, Ui::UNCONSTRAINED}) |
            Ui::box({
-               .margin = {2, 12},
-               .padding = {6, 12},
+               .margin = {2_au, 12_au},
+               .padding = {6_au, 12_au},
                .borderRadii = 16,
                .backgroundFill = Some(self ? Ui::ACCENT900 : Ui::GRAY900),
                .foregroundFill = Ui::GRAY100,

@@ -14,6 +14,7 @@ import Karm.Logger;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Graph {
 
@@ -214,7 +215,7 @@ using Model = Ui::Model<State, Action, reduce>;
 
 export Ui::Child relationRow(Relation const& relation) {
     return Ui::hflow(
-        4,
+        4_au,
         Ui::icon(Mdi::DRAG_VERTICAL_VARIANT) | Ui::vcenter(),
         Ui::button(Some(Ui::SINK<>), Ui::ButtonStyle::subtle().withForegroundFill(relation.color), Mdi::CIRCLE),
         Ui::codeMedium(relation.expression) | Ui::vcenter() | Ui::grow(),

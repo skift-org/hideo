@@ -13,6 +13,7 @@ import :model;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Camera {
 
@@ -22,9 +23,9 @@ struct VideoSurface : Ui::View<VideoSurface> {
 
     VideoSurface(Rc<Av::VideoStream> stream) : _stream(stream) {}
 
-    void paint(Gfx::Canvas& g, Math::Recti) override {
+    void paint(Gfx::Canvas& g, Math::RectAu) override {
         if (_frame)
-            g.blit(bound(), _frame.expect().surface);
+            g.blit(bound().cast<isize>(), _frame.expect().surface);
     }
 
     void event(App::Event& e) override {
@@ -42,12 +43,12 @@ struct VideoSurface : Ui::View<VideoSurface> {
         Ui::View<VideoSurface>::event(e);
     }
 
-    Math::Vec2i size(Math::Vec2i size, Ui::Hint hint) override {
+    Math::Vec2Au size(Math::Vec2Au size, Ui::Hint hint) override {
         if (not _frame)
-            return 0;
+            return {};
         if (hint == Ui::Hint::MIN)
-            return _frame->surface->bound().fit(Math::Recti{size}).size();
-        return _frame->surface->bound().size().cast<isize>();
+            return _frame->surface->bound().cast<f64>().fit(Math::Rectf{size.cast<f64>()}).size().cast<Math::Au>();
+        return _frame->surface->bound().size().cast<Math::Au>();
     }
 };
 
@@ -64,7 +65,7 @@ Ui::Child cameraInfoDialog(State const& s) {
 
     return Kr::dialogContent({
         Kr::dialogTitleBar("Camera Debug"s),
-        Kr::dialogBody(els) | Ui::vscroll() | Ui::maxSize({Ui::UNCONSTRAINED, 256}),
+        Kr::dialogBody(els) | Ui::vscroll() | Ui::maxSize({Ui::UNCONSTRAINED, 256_au}),
     });
 }
 
@@ -72,7 +73,8 @@ Ui::Child appContent(State const& s) {
     auto viewport =
         Ui::stack(
             makeRc<VideoSurface>(s.stream),
-            Ui::onPaint([guidelines = s.guidelines](Gfx::Canvas& g, Math::Vec2i size) {
+            Ui::onPaint([guidelines = s.guidelines](Gfx::Canvas& g, Math::Vec2Au sizeAu) {
+                auto size = sizeAu.cast<isize>();
                 g.strokeStyle(Gfx::Stroke{
                     .fill = Gfx::WHITE.withOpacity(0.5),
                     .width = 1,
@@ -105,7 +107,7 @@ Ui::Child appContent(State const& s) {
 
     auto topBar =
         Ui::vflow(
-            8,
+            8_au,
             Ui::button(
                 Some([&](auto& n) {
                     Ui::showDialog(n, cameraInfoDialog(s));
@@ -132,14 +134,14 @@ Ui::Child appContent(State const& s) {
         Ui::vflow(
             Ui::button(
                 Some(Ui::SINK<>),
-                Ui::ButtonStyle::regular().withRadii(999).withPadding(12),
-                Ui::icon(Mdi::CAMERA_FLIP, 24)
+                Ui::ButtonStyle::regular().withRadii(999).withPadding(12_au),
+                Ui::icon(Mdi::CAMERA_FLIP, 24_au)
             ) | Ui::center(),
 
             Ui::button(
                 Some(Model::bind<Capture>()),
-                Ui::ButtonStyle::regular().withRadii(999).withPadding(16),
-                Ui::icon(Mdi::CAMERA, 38)
+                Ui::ButtonStyle::regular().withRadii(999).withPadding(16_au),
+                Ui::icon(Mdi::CAMERA, 38_au)
             ) | Ui::center() |
                 Ui::grow(),
 
@@ -149,13 +151,13 @@ Ui::Child appContent(State const& s) {
                 (s.lastImage
                      ? Ui::image(s.lastImage.expect(), Some(999)) | Ui::cover()
                      : Ui::empty()) |
-                    Ui::pinSize(48)
+                    Ui::pinSize(48_au)
             ) | Ui::center()
         );
 
     return Ui::hflow(
         topBar,
-        viewport | Ui::bound() | Kr::scaffoldContent() | Ui::insets({0, 8}) | Ui::grow(),
+        viewport | Ui::bound() | Kr::scaffoldContent() | Ui::insets({0_au, 8_au}) | Ui::grow(),
         bottomBar
     );
 }

@@ -9,11 +9,13 @@ import Karm.Core;
 import Karm.Crypto;
 import Karm.Sys;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Kira;
 import Karm.Logger;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Otp {
 
@@ -55,9 +57,9 @@ Ui::Child otpCard(Otp const& otp) {
                    Ui::titleSmall(otp.name),
                    Ui::displaySmall(otp.code)
                ) | Ui::grow(),
-               Kr::pieCountDown(otp.countDown, 26) | Ui::center()
+               Kr::pieCountDown(otp.countDown, 26_au) | Ui::center()
            ) |
-           Ui::insets(8) |
+           Ui::insets(8_au) |
            Kr::card();
 }
 
@@ -86,12 +88,12 @@ export Ui::Child app() {
             }),
             .body = [&] {
                 return Ui::vflow(
-                           6,
+                           6_au,
                            iter(s.otps) | Select(otpCard) | Collect<Ui::Children>()
                        ) |
-                       Ui::insets(8) | Kr::scaffoldContent();
+                       Ui::insets(8_au) | Kr::scaffoldContent();
             },
-            .size = {480, 500},
+            .size = {480_au, 500_au},
         });
     });
 }

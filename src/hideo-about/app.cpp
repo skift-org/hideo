@@ -13,6 +13,7 @@ import Mdi;
 using namespace Karm;
 using namespace Karm::Literals;
 using namespace Karm::Ref::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::About {
 
@@ -33,13 +34,13 @@ export Ui::Child app() {
 
                 auto inspireMe = Ui::state(Sys::instant().val(), [](auto v, auto bind) {
                     auto body = Ui::hflow(
-                        8, Math::Align::CENTER,
-                        Ui::image("bundle://hideo-about/progress.qoi"_url, Some(4)) | Ui::sizing(Ui::UNCONSTRAINED, 24),
+                        8_au, Math::Align::CENTER,
+                        Ui::image("bundle://hideo-about/progress.qoi"_url, Some(4)) | Ui::sizing(Ui::UNCONSTRAINED, 24_au),
                         Ui::bodySmall(wholesome(v))
                     );
 
-                    return body | Ui::insets({6, 16, 6, 12}) |
-                           Ui::minSize({Ui::UNCONSTRAINED, 32}) |
+                    return body | Ui::insets({6_au, 16_au, 6_au, 12_au}) |
+                           Ui::minSize({Ui::UNCONSTRAINED, 32_au}) |
                            Ui::button(Some(bind(v + 1)), Ui::ButtonStyle::subtle());
                 });
 
@@ -51,23 +52,23 @@ export Ui::Child app() {
                 );
 
                 return Ui::vflow(
-                           8,
+                           8_au,
                            Ui::hflow(
-                               8, titleText,
+                               8_au, titleText,
                                Kr::versionBadge() | Ui::center()
                            ),
                            Ui::empty(),
                            bodyText,
                            Ui::grow(NONE),
                            Ui::hflow(
-                               8,
+                               8_au,
                                inspireMe | Ui::vcenter() | Ui::grow(),
                                licenseBtn
                            )
                        ) |
-                       Ui::insets(8) | Kr::scaffoldContent();
+                       Ui::insets(8_au) | Kr::scaffoldContent();
             },
-        .size = {460, 320},
+        .size = {460_au, 320_au},
     });
 }
 

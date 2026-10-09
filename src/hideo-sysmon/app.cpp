@@ -10,13 +10,14 @@ import Karm.Math;
 import :model;
 
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Sysmon {
 
 // MARK: Sidebar ---------------------------------------------------------------
 
 Ui::Child graph(Gfx::Color color) {
-    return Ui::empty({72, 0}) |
+    return Ui::empty({72_au, 0_au}) |
            Ui::box({
                .borderRadii = 4,
                .borderWidth = 1,
@@ -30,14 +31,14 @@ Ui::Child sidebarItem(bool selected, Ui::Send<> onPress, Gfx::Color color, Strin
         selected,
         Some(onPress),
         Ui::hflow(
-            4,
+            4_au,
             graph(color),
             Ui::vflow(
                 Ui::titleSmall(title),
                 Ui::labelMedium(description)
             ) |
-                Ui::insets(4) |
-                Ui::minSize({112, Ui::UNCONSTRAINED})
+                Ui::insets(4_au) |
+                Ui::minSize({112_au, Ui::UNCONSTRAINED})
         )
     );
 }
@@ -102,14 +103,14 @@ Ui::Child processListItem(State const& s, Rc<Sys::ProcessStat> const& process) {
 
 Ui::Child processListContent(State const& s) {
     return Ui::vflow(
-               8,
+               8_au,
                iter(s.processes) |
                    Select([&](auto& p) {
                        return processListItem(s, p);
                    }) |
                    Collect<Ui::Children>()
            ) |
-           Ui::insets(16) |
+           Ui::insets(16_au) |
            Ui::vscroll();
 }
 
@@ -125,10 +126,10 @@ export Ui::Child app() {
             }),
             .body = [s] {
                 return Ui::vflow(
-                    4,
+                    4_au,
                     processListContent(s) | Kr::scaffoldContent() | Ui::grow(),
                     Ui::hflow(
-                        4,
+                        4_au,
                         Math::Align::END | Math::Align::VFILL,
                         Ui::button(Model::bindIf<DetailProcess>(s.selectedProcess().has()), Ui::ButtonStyle::subtle(), Mdi::INFORMATION_OUTLINE),
                         Ui::button(Model::bindIf<KillProcess>(s.selectedProcess().has()), Ui::ButtonStyle::destructive(), "End Task")

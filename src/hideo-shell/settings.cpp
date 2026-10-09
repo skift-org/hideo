@@ -3,6 +3,7 @@ export module Hideo.Shell:settings;
 import Mdi;
 import Karm.Kira;
 import Karm.Ui;
+import Karm.Math;
 import Karm.Gfx;
 
 import :model;
@@ -10,6 +11,7 @@ import :power;
 import :notifications;
 
 using namespace Karm;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Shell {
 
@@ -61,7 +63,7 @@ Ui::Child dateAndTime(State const& state) {
            Ui::button(
                Some(Ui::SINK<>),
                Ui::ButtonStyle::subtle()
-                   .withPadding({0, 12})
+                   .withPadding({0_au, 12_au})
            );
 }
 
@@ -81,7 +83,7 @@ Ui::Child quickheader(State const& state) {
 
 Ui::Child quickTools(State const&) {
     return Ui::hflow(
-        8,
+        8_au,
         Ui::button(
             Some(Model::bind<Lock>()),
             Ui::ButtonStyle::secondary(),
@@ -114,9 +116,9 @@ Ui::Child quickTools(State const&) {
 Ui::Child colapsedQuickSettings(State const&) {
     auto settings = Ui::grid(
         {
-            .rows = Ui::GridUnit::fixed(46).repeated(2),
+            .rows = Ui::GridUnit::fixed(46_au).repeated(2),
             .columns = Ui::GridUnit::grow().repeated(2),
-            .gaps = 8,
+            .gaps = 8_au,
         },
         quickSetting({
             .icon = Mdi::SWAP_VERTICAL,
@@ -173,9 +175,9 @@ Gfx::Icon _iconForVolumeValue(f64 value) {
 Ui::Child expendedQuickSettings(State const& s) {
     auto settings = Ui::grid(
         {
-            .rows = Ui::GridUnit::fixed(46).repeated(4),
+            .rows = Ui::GridUnit::fixed(46_au).repeated(4),
             .columns = Ui::GridUnit::grow().repeated(2),
-            .gaps = 8,
+            .gaps = 8_au,
         },
         quickSetting({
             .icon = Mdi::SWAP_VERTICAL,
@@ -225,7 +227,7 @@ Ui::Child expendedQuickSettings(State const& s) {
     );
 
     return Ui::vflow(
-        8,
+        8_au,
         Kr::slider(
             s.brightness,
             [](auto& n, auto value) {
@@ -255,17 +257,17 @@ export Ui::Child sysFlyout(State const& state) {
     body.pushBack(quickheader(state));
     if (state.isSysPanelColapsed) {
         body.pushBack(colapsedQuickSettings(state));
-        body.pushBack(Ui::labelMedium("Notifications") | Ui::insets({6, 0, 0, 12}));
+        body.pushBack(Ui::labelMedium("Notifications") | Ui::insets({6_au, 0_au, 0_au, 12_au}));
         body.pushBack(notifications(state) | Ui::grow());
     } else {
         body.pushBack(expendedQuickSettings(state) | Ui::grow());
     }
     body.pushBack(Kr::dragHandle());
 
-    return Ui::vflow(8, body) |
+    return Ui::vflow(8_au, body) |
            Ui::box({
-               .margin = {8, 8, 32, 8},
-               .padding = {12, 12, 0, 12},
+               .margin = {8_au, 8_au, 32_au, 8_au},
+               .padding = {12_au, 12_au, 0_au, 12_au},
                .borderRadii = 8,
                .borderWidth = 1,
                .borderFill = Some(Ui::GRAY800),

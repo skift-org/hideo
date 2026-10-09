@@ -9,6 +9,7 @@ import :widgets;
 
 using namespace Karm::Literals;
 using namespace Karm::Ref::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Files {
 
@@ -28,9 +29,9 @@ export Ui::Child openDialog(Ui::Send<Ref::Url> onFile) {
                            "Can't access this location"s,
                            Io::toStr(*s.directoryError)
                        )) |
-                    Ui::pinSize({500, 300}) |
+                    Ui::pinSize({500_au, 300_au}) |
                     Kr::scaffoldContent() |
-                    Ui::insets({0, 6}),
+                    Ui::insets({0_au, 6_au}),
                 Kr::dialogFooter({
                     Ui::grow(NONE),
                     Kr::dialogCancel(),
@@ -67,9 +68,9 @@ export Ui::Child saveDialog(Ui::Send<Ref::Url> onFile) {
                            "Can't access this location"s,
                            Io::toStr(*s.directoryError)
                        )) |
-                    Ui::pinSize({500, 300}) |
+                    Ui::pinSize({500_au, 300_au}) |
                     Kr::scaffoldContent() |
-                    Ui::insets({0, 6}),
+                    Ui::insets({0_au, 6_au}),
                 Kr::dialogFooter({
                     Kr::input("Filename"s, s.inputFilename, Model::map<SetFilename>()) | Ui::grow(),
                     Kr::dialogCancel(),
@@ -104,9 +105,9 @@ export Ui::Child directoryDialog(Ui::Send<Ref::Url> onFile) {
                            "Can't access this location"s,
                            Io::toStr(*d.directoryError)
                        )) |
-                    Ui::pinSize({500, 300}) |
+                    Ui::pinSize({500_au, 300_au}) |
                     Kr::scaffoldContent() |
-                    Ui::insets({0, 6}),
+                    Ui::insets({0_au, 6_au}),
                 Kr::dialogFooter({
                     Ui::grow(NONE),
                     Kr::dialogCancel(),

@@ -11,14 +11,16 @@ import :settings;
 import :background;
 import :taskbar;
 
+using namespace Karm::Math::Literals;
+
 namespace Hideo::Shell {
 
-auto desktopPanel(Math::Vec2i size = {500, 400}) {
+auto desktopPanel(Math::Vec2Au size = {500_au, 400_au}) {
     return [=](Ui::Child child) {
         return child |
                Ui::pinSize(size) |
                Ui::box({
-                   .padding = 8,
+                   .padding = 8_au,
                    .borderRadii = 12,
                    .borderWidth = 1,
                    .borderFill = Some(Ui::GRAY800),
@@ -41,7 +43,7 @@ Ui::Child desktopStack(State const& state) {
                        .borderFill = Some(Ui::GRAY800),
                        .shadowStyle = Some(Gfx::BoxShadow::elevated(topLevel ? 16 : 4).withSkipOccluded(true)),
                    }) |
-                   Ui::placed(window->_floatingBound);
+                   Ui::placed(window->_floatingBound.cast<Math::Au>());
         }
 
         apps.pushFront(node);
@@ -53,17 +55,17 @@ Ui::Child desktopStack(State const& state) {
 
 Ui::Child notificationPanel(State const& state) {
     return Ui::vflow(
-               8,
+               8_au,
                Ui::labelMedium("Notifications") |
-                   Ui::insets({6, 0, 0, 12}),
+                   Ui::insets({6_au, 0_au, 0_au, 12_au}),
                notifications(state) | Ui::grow()
            ) |
-           desktopPanel({500, 400});
+           desktopPanel({500_au, 400_au});
 }
 
 Ui::Child settingsPanel(State const& state) {
     return expendedQuickSettings(state) |
-           desktopPanel({320, Ui::UNCONSTRAINED});
+           desktopPanel({320_au, Ui::UNCONSTRAINED});
 }
 
 Ui::Child desktopPanels(State const& s) {
@@ -83,7 +85,7 @@ Ui::Child desktopPanels(State const& s) {
                          Ui::slideIn(Ui::SlideFrom::TOP)
                    : Ui::empty()
            ) |
-           Ui::insets(4);
+           Ui::insets(4_au);
 }
 
 Ui::Child desktopScreen(State const& state) {

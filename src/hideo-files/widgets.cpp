@@ -11,6 +11,8 @@ import Mdi;
 
 import :model;
 
+using namespace Karm::Math::Literals;
+
 namespace Hideo::Files {
 
 struct Type2Icon {
@@ -111,8 +113,8 @@ Ui::Child directoryListing(State const& s) {
         children.pushBack(directorEntry(entry));
     }
 
-    return Ui::vflow(8, children) |
-           Ui::insets(16) |
+    return Ui::vflow(8_au, children) |
+           Ui::insets(16_au) |
            Kr::selectionArea() |
            Ui::vscroll() | Ui::key(s.currentIndex);
 }
@@ -140,19 +142,19 @@ export Ui::Child dialogDirectoryListing(State const& s) {
         children.pushBack(dialogEntry(s, entry));
     }
 
-    return Ui::vflow(8, children) |
-           Ui::insets(16) |
+    return Ui::vflow(8_au, children) |
+           Ui::insets(16_au) |
            Ui::vscroll() | Ui::key(s.currentIndex);
 }
 
 Ui::Child breadcrumbItem(Str text, isize index) {
     return Ui::hflow(
-        0,
+        0_au,
         Math::Align::CENTER,
         Ui::icon(Mdi::CHEVRON_RIGHT),
         Ui::button(
             Some(Model::bind<GoParent>(index)),
-            Ui::ButtonStyle::text().withPadding({2, 0}),
+            Ui::ButtonStyle::text().withPadding({2_au, 0_au}),
             Ui::text(text)
         )
     );
@@ -205,7 +207,7 @@ Ui::Child breadcrumbRoot(Ref::Url const& url) {
         Some(Model::bind<GoRoot>()),
         Ui::ButtonStyle::text(),
         Ui::hflow(
-            8,
+            8_au,
             Math::Align::CENTER,
             Ui::icon(iconForUrl(url)),
             Ui::text(textForUrl(url))
@@ -238,7 +240,7 @@ export Ui::Child breadcrumb(State const& s) {
                    .backgroundFill = Some(Ui::GRAY800),
                },
                Ui::hflow(
-                   Ui::empty(12),
+                   Ui::empty(12_au),
                    Ui::hflow(items) |
                        Ui::hscroll() |
                        Ui::grow(),

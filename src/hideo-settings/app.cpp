@@ -1,6 +1,7 @@
 export module Hideo.Settings:app;
 
 import Karm.Ui;
+import Karm.Math;
 
 import Mdi;
 import Karm.Kira;
@@ -14,7 +15,7 @@ namespace Hideo::Settings {
 
 Ui::Child sidebar(State const& state) {
     Ui::Children items = {
-        Kr::searchbar(""s) | Ui::insets({6, 0}),
+        Kr::searchbar(""s) | Ui::insets({6_au, 0_au}),
         Kr::sidenavItem(state.page() == Page::ACCOUNT, Some(Model::bind<GoTo>(Page::ACCOUNT)), Mdi::ACCOUNT, "Accounts"s),
         Kr::sidenavItem(state.page() == Page::PERSONALIZATION, Some(Model::bind<GoTo>(Page::PERSONALIZATION)), Mdi::PALETTE, "Personalization"s),
         Kr::sidenavItem(state.page() == Page::PACKAGES, Some(Model::bind<GoTo>(Page::PACKAGES)), Mdi::WIDGETS_OUTLINE, "Packages"s),

@@ -12,6 +12,7 @@ import Hideo.Canvas.Freehand;
 
 using namespace Karm;
 using namespace Karm::Literals;
+using namespace Karm::Math::Literals;
 
 namespace Hideo::Canvas {
 
@@ -110,9 +111,9 @@ struct Viewport : Ui::View<Viewport> {
         _paintChildren(g, ref);
     }
 
-    void paint(Gfx::Canvas& g, Math::Recti) override {
+    void paint(Gfx::Canvas& g, Math::RectAu) override {
         g.push();
-        g.clip(bound());
+        g.clip(bound().cast<f64>());
 
         for (auto const& node : _state.tree._nodes) {
             if (node.topLevel())
@@ -131,11 +132,11 @@ struct Viewport : Ui::View<Viewport> {
     }
 
     void event(App::Event& event) override {
-        if (auto e = event.is<App::MouseEvent>(); e and bound().contains(e->pos)) {
+        if (auto e = event.is<App::MouseEvent>(); e and bound().contains(e->pos.cast<Math::Au>())) {
             switch (e->type) {
             case App::MouseEvent::PRESS:
                 if (e->button == App::MouseButton::RIGHT) {
-                    Ui::showPopover(*this, e->pos, canvasContextMenu(_state));
+                    Ui::showPopover(*this, e->pos.cast<Math::Au>(), canvasContextMenu(_state));
                 } else {
                     Model::bubble<CanvasPress>(
                         *this,
@@ -192,10 +193,10 @@ Ui::Child colorButton(State const& s, Gfx::Color color) {
                          Mdi::CHECK,
                          Some(color.luminance() > 0.7 ? Gfx::BLACK : Gfx::WHITE)
                      )
-                   : Ui::empty(18)
+                   : Ui::empty(18_au)
            ) |
            Ui::box({
-               .padding = 2,
+               .padding = 2_au,
                .borderRadii = 99,
                .backgroundFill = Some(color),
            }) |
@@ -207,7 +208,7 @@ Ui::Child colorButton(State const& s, Gfx::Color color) {
 
 Ui::Child colorBar(State const& s) {
     return Ui::hflow(
-               4,
+               4_au,
                colorButton(s, Gfx::WHITE),
                colorButton(s, Gfx::BLACK),
                colorButton(s, Gfx::RED),
@@ -229,8 +230,8 @@ Ui::Child colorBar(State const& s) {
                colorButton(s, Gfx::ROSE)
            ) |
            Ui::box({
-               .margin = 4,
-               .padding = 4,
+               .margin = 4_au,
+               .padding = 4_au,
                .borderRadii = 99,
                .backgroundFill = Some(Ui::GRAY900),
            });
@@ -248,7 +249,7 @@ Ui::Child toolbarButton(State const& s, Tool tool, Gfx::Icon icon) {
 
 Ui::Child toolbar(State const& s) {
     return Ui::hflow(
-               4,
+               4_au,
                toolbarButton(s, Tool::SELECT, Mdi::CURSOR_DEFAULT),
                toolbarButton(s, Tool::FREEHAND, Mdi::GESTURE),
                toolbarButton(s, Tool::FRAME, Mdi::ARTBOARD),
@@ -256,7 +257,7 @@ Ui::Child toolbar(State const& s) {
                toolbarButton(s, Tool::TEXT, Mdi::FORMAT_TEXT)
            ) |
            Ui::box({
-               .padding = 2,
+               .padding = 2_au,
                .borderRadii = 4,
                .backgroundFill = Some(Ui::GRAY900),
            });
@@ -276,14 +277,14 @@ Ui::Child viewportPanel(State const& s) {
                Ui::stack(
                    toolbar(s) | Ui::align(Math::Align::BOTTOM | Math::Align::HCENTER),
                    colorBar(s) | Ui::align(Math::Align::TOP | Math::Align::HCENTER) | Ui::cond(s.currentTool == Tool::FREEHAND),
-                   toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2)
-               ) | Ui::insets(16)
+                   toolbarZoom() | Ui::align(Math::Align::BOTTOM | Math::Align::START) | Ui::insets(2_au)
+               ) | Ui::insets(16_au)
            ) |
            Kr::scaffoldContent();
 }
 
 Ui::Child propertiesPanel(State const&) {
-    return Ui::empty(240) | Kr::scaffoldContent();
+    return Ui::empty(240_au) | Kr::scaffoldContent();
 }
 
 export Ui::Child app() {
@@ -306,7 +307,7 @@ export Ui::Child app() {
             .body = [&] {
                 if (s.propertiesVisible) {
                     return Ui::hflow(
-                        2,
+                        2_au,
                         viewportPanel(s) | Ui::grow(),
                         propertiesPanel(s)
                     );

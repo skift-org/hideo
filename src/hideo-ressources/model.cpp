@@ -7,19 +7,16 @@ export module Hideo.Sysmon:model;
 import Karm.Ui;
 import Karm.Core;
 import Karm.Sys;
+import Karm.Chart;
 
 using namespace Karm;
 
-namespace Hideo::Sysmon {
+namespace Hideo::Resources {
 
 export enum struct Page {
     PROCESSES,
-
     PROCESSORS,
     MEMORY,
-    DRIVES,
-    NETWORK,
-    GRAPHICS,
 };
 
 export struct State {
@@ -28,8 +25,22 @@ export struct State {
     Vec<Rc<Sys::ProcessStat>> processes;
     bool details = false;
 
-    Opt<Rc<Sys::ProcessStat>>
-    selectedProcess() const {
+    Vec<Sys::Cpu> hartInfo;
+    Vec<Chart::Serie> hartData;
+    Sys::MemInfo memoryInfo;
+    Chart::Serie memoryData;
+    Chart::Serie swapData;
+
+    State() {
+        memoryData.values.resize(32);
+        swapData.values.resize(32);
+        hartInfo = Sys::Cpu::list().expect();
+        hartData.resize(hartInfo.len());
+        for (auto& c : hartData)
+            c.values.resize(32);
+    }
+
+    Opt<Rc<Sys::ProcessStat>> selectedProcess() const {
         return iter(processes) |
                FindFirst([&](Rc<Sys::ProcessStat> const& p) {
                    return p->id == selected;
@@ -79,6 +90,26 @@ Ui::Task<Action> reduce(State& s, Action action) {
                     s.processes.pushBack(stat);
             }
             reverse(mutSub(s.processes));
+
+            // cpu
+            auto newCpuInfo = Sys::Cpu::list().expect();
+
+            for (auto& [c, i] : iter(newCpuInfo) | Index()) {
+                auto totalTime = s.hartInfo[i].totalTime();
+                auto idleTime = s.hartInfo[i].idleTime;
+                s.hartData[i].values.pushBack(1 - ((c.idleTime - idleTime).value() / (f64)(c.totalTime() - totalTime).value()));
+                s.hartData[i].values.popFront();
+            }
+
+            s.hartInfo = newCpuInfo;
+
+            // memory
+            s.memoryInfo = Sys::meminfo().expect();
+            s.memoryData.values.pushBack(s.memoryInfo.physicalUsed() / (f64)s.memoryInfo.physicalTotal);
+            s.memoryData.values.popFront();
+
+            s.swapData.values.pushBack(s.memoryInfo.swapUsed() / (f64)s.memoryInfo.swapTotal);
+            s.swapData.values.popFront();
         }
     );
     return NONE;
@@ -89,9 +120,9 @@ export using Model = Ui::Model<State, Action, reduce>;
 export Async::Task<> refreshTask(Ui::Child app, Async::CancellationToken ct) {
     while (not ct.cancelled()) {
         Model::event<Refresh>(*app);
-        co_trya$(Sys::globalSched().sleepAsync(Sys::instant() + Duration::fromSecs(3), ct));
+        co_trya$(Sys::globalSched().sleepAsync(Sys::instant() + Duration::fromSecs(1), ct));
     }
     co_return Ok();
 }
 
-} // namespace Hideo::Sysmon
+} // namespace Hideo::Resources

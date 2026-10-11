@@ -26,6 +26,7 @@ export struct State {
     bool details = false;
 
     Vec<Sys::Cpu> hartInfo;
+    Chart::Serie cpuData;
     Vec<Chart::Serie> hartData;
     Sys::MemInfo memoryInfo;
     Chart::Serie memoryData;
@@ -35,6 +36,8 @@ export struct State {
         memoryData.values.resize(32);
         swapData.values.resize(32);
         hartInfo = Sys::Cpu::list().expect();
+
+        cpuData.values.resize(32);
         hartData.resize(hartInfo.len());
         for (auto& c : hartData)
             c.values.resize(32);
@@ -92,14 +95,20 @@ Ui::Task<Action> reduce(State& s, Action action) {
             reverse(mutSub(s.processes));
 
             // cpu
+
             auto newCpuInfo = Sys::Cpu::list().expect();
 
+            f64 totalUsage = 0.;
             for (auto& [c, i] : iter(newCpuInfo) | Index()) {
                 auto totalTime = s.hartInfo[i].totalTime();
                 auto idleTime = s.hartInfo[i].idleTime;
-                s.hartData[i].values.pushBack(1 - ((c.idleTime - idleTime).value() / (f64)(c.totalTime() - totalTime).value()));
+                auto usage = 1 - ((c.idleTime - idleTime).value() / (f64)(c.totalTime() - totalTime).value());
+                s.hartData[i].values.pushBack(usage);
                 s.hartData[i].values.popFront();
+                totalUsage += usage;
             }
+            s.cpuData.values.pushBack(totalUsage / newCpuInfo.len());
+            s.cpuData.values.popFront();
 
             s.hartInfo = newCpuInfo;
 

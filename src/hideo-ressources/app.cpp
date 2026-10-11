@@ -15,6 +15,18 @@ using namespace Karm::Math::Literals;
 
 namespace Hideo::Resources {
 
+export auto pageScaffold() {
+    return [](auto inner) {
+        return inner |
+               Ui::insets({32_au, 8_au, 32_au, 8_au}) |
+               Ui::maxSize({460_au, Ui::UNCONSTRAINED}) |
+               Ui::grow() |
+               Ui::hcenter() |
+               Ui::vscroll() |
+               Ui::grow();
+    };
+}
+
 // MARK: Sidebar ---------------------------------------------------------------
 
 Ui::Child graph(Gfx::Color color, Chart::Serie serie) {
@@ -40,19 +52,15 @@ Ui::Child graph(Gfx::Color color, Chart::Serie serie) {
            });
 }
 
-Ui::Child sidebarItem(bool selected, Ui::Send<> onPress, Chart::Serie serie, Gfx::Color color, String title, String description) {
-    return Kr::sidenavItem(
+Ui::Child sidebarItem(bool selected, Ui::Send<> onPress, Chart::Serie serie, Gfx::Color color, Gfx::Icon icon, String title) {
+    return Kr::sidenavItemContent(
         selected,
         Some(onPress),
-        Ui::hflow(
-            4_au,
-            graph(color, serie),
-            Ui::vflow(
-                Ui::titleSmall(title),
-                Ui::labelMedium(description)
-            ) |
-                Ui::insets(4_au) |
-                Ui::minSize({112_au, Ui::UNCONSTRAINED})
+        Ui::vflow(
+            8_au,
+            Kr::sidenavItemIconAndText(icon, title),
+            graph(color, serie) |
+                Ui::minSize({Ui::UNCONSTRAINED, 72_au})
         )
     );
 }
@@ -65,22 +73,21 @@ Ui::Child sidebar(State const& s) {
             Mdi::FILE_TREE,
             "Processes"s
         ),
-
         sidebarItem(
             s.page == Page::PROCESSORS,
             Model::bind(Page::PROCESSORS),
-            s.hartData[0],
+            s.cpuData,
             Gfx::BLUE,
-            "Processors"s,
-            "AMD Ryzen 7 7700X"s
+            Mdi::MEMORY,
+            "Processor"s
         ),
         sidebarItem(
             s.page == Page::MEMORY,
             Model::bind(Page::MEMORY),
             s.memoryData,
             Gfx::CYAN,
-            "Memory"s,
-            "32GB DDR5 3200MHz"s
+            Mdi::CHIP,
+            "Memory"s
         ),
     });
 }
@@ -105,20 +112,28 @@ Ui::Child processListContent(State const& s) {
                    }) |
                    Collect<Ui::Children>()
            ) |
-           Ui::insets(16_au) |
-           Ui::vscroll();
+           Ui::insets(8_au) |
+           Kr::card();
 }
 
 Ui::Child processPage(State const& s) {
     return Ui::vflow(
-        4_au,
-        processListContent(s) | Kr::scaffoldContent() | Ui::grow(),
+        processListContent(s) | pageScaffold(),
+        Kr::separator(),
         Ui::hflow(
-            4_au,
-            Math::Align::END | Math::Align::VFILL,
-            Ui::button(Model::bindIf<DetailProcess>(s.selectedProcess().has()), Ui::ButtonStyle::subtle(), Mdi::INFORMATION_OUTLINE),
-            Ui::button(Model::bindIf<KillProcess>(s.selectedProcess().has()), Ui::ButtonStyle::destructive(), "End Task")
-        ) | Ui::end()
+            4_au, Math::Align::END | Math::Align::VFILL,
+            Ui::button(
+                Model::bindIf<DetailProcess>(s.selectedProcess().has()),
+                Ui::ButtonStyle::subtle(),
+                Mdi::INFORMATION_OUTLINE
+            ),
+            Ui::button(
+                Model::bindIf<KillProcess>(s.selectedProcess().has()),
+                Ui::ButtonStyle::destructive(),
+                "End Task"
+            )
+        ) | Ui::end() |
+            Ui::insets(8_au)
     );
 }
 
@@ -126,20 +141,47 @@ Ui::Child processPage(State const& s) {
 
 Ui::Child processorPage(State const& s) {
     return Ui::vflow(
-               iter(s.hartData) | Selecti([](Chart::Serie const& s, usize i) {
-                   return Ui::vflow(
-                              4_au,
-                              Ui::titleMedium("HART {}", i + 1),
-                              graph(Gfx::BLUE, s) | Ui::minSize({Ui::UNCONSTRAINED, 240_au}),
-                              Ui::labelMedium("{:.1}%", last(s.values) * 100)
+               16_au,
+               Ui::vflow(
+                   8_au,
+                   Ui::titleSmall("Processor"),
+                   graph(Gfx::CYAN, s.cpuData) | Ui::minSize({Ui::UNCONSTRAINED, 160_au}),
+                   Ui::labelMedium("{:.1}%", s.cpuData.lastValue().unwrapOr(0.0) * 100)
+               ) |
+                   Ui::insets(16_au) |
+                   Kr::card(),
 
-                          ) |
-                          Ui::insets(16_au) |
-                          Kr::scaffoldContent();
-               }) |
-               Collect<Ui::Children>()
+               Kr::treeRow(
+                   NONE,
+                   "Hardware Threads"s,
+                   NONE,
+                   Ui::Slot{
+                       [&] -> Ui::Child {
+                           return Ui::grid(
+                                      Ui::GridStyle{
+                                          Ui::GridUnit::fixed(160_au).repeated((s.hartData.len() + 1) / 2),
+                                          Ui::GridUnit::grow().repeated(2),
+                                          8_au,
+                                          Math::Flow::LEFT_TO_RIGHT,
+                                          Math::Align::FILL,
+                                      },
+                                      iter(s.hartData) | Select([](Chart::Serie const& s) {
+                                          return Ui::vflow(
+                                              4_au,
+                                              graph(Gfx::BLUE, s) | Ui::grow(),
+                                              Ui::labelMedium("{:.1}%", s.lastValue().unwrapOr(0.0) * 100)
+
+                                          );
+                                      }) |
+                                          Collect<Ui::Children>()
+                                  ) |
+                                  Ui::insets(16_au);
+                       }
+                   }
+               ) |
+                   Kr::card()
            ) |
-           Ui::vscroll();
+           pageScaffold();
 }
 
 // MARK: Memory ----------------------------------------------------------------
@@ -147,22 +189,35 @@ Ui::Child processorPage(State const& s) {
 Ui::Child memoryPage(State const& s) {
     return Ui::vflow(
                Ui::vflow(
-                   4_au,
-                   Ui::titleMedium("Memory"),
-                   graph(Gfx::CYAN, s.memoryData) | Ui::grow(),
+                   8_au,
+                   Ui::titleSmall("Memory"),
+                   graph(Gfx::CYAN, s.memoryData) | Ui::minSize({Ui::UNCONSTRAINED, 160_au}),
                    Ui::labelMedium("{} / {}", DataSize{s.memoryInfo.physicalUsed()}, DataSize{s.memoryInfo.physicalTotal})
-               ) | Ui::insets(16_au) |
-                   Ui::grow(),
+               ) | Ui::insets(16_au),
                Kr::separator(),
                Ui::vflow(
-                   4_au,
-                   Ui::titleMedium("Swap"),
-                   graph(Gfx::CYAN, s.swapData) | Ui::grow(),
+                   8_au,
+                   Ui::titleSmall("Swap"),
+                   graph(Gfx::GREEN, s.swapData) | Ui::minSize({Ui::UNCONSTRAINED, 160_au}),
                    Ui::labelMedium("{} / {}", DataSize{s.memoryInfo.swapUsed()}, DataSize{s.memoryInfo.swapTotal})
-               ) | Ui::insets(16_au) |
-                   Ui::grow()
+               ) |
+                   Ui::insets(16_au)
            ) |
-           Kr::scaffoldContent();
+           Kr::card() |
+           pageScaffold();
+}
+
+// MARK: Page ------------------------------------------------------------------
+
+Ui::Child pageContent(State const& s) {
+    switch (s.page) {
+    case Page::PROCESSES:
+        return processPage(s);
+    case Page::PROCESSORS:
+        return processorPage(s);
+    case Page::MEMORY:
+        return memoryPage(s);
+    }
 }
 
 // MARK: App -------------------------------------------------------------------
@@ -176,14 +231,8 @@ export Ui::Child app() {
                 return sidebar(s) | Kr::resizable(Kr::ResizeHandlePosition::END);
             }),
             .body = [s] {
-                switch (s.page) {
-                case Page::PROCESSES:
-                    return processPage(s);
-                case Page::PROCESSORS:
-                    return processorPage(s);
-                case Page::MEMORY:
-                    return memoryPage(s);
-                }
+                return pageContent(s) |
+                       Kr::scaffoldContent();
             },
         });
     });

@@ -170,9 +170,16 @@ Page PAGE_CHECKBOX{
     "Checkbox",
     "A control that allows the user to toggle between checked and not checked.",
     [] {
-        return Kr::checkbox(
-                   true,
-                   Ui::SINK<bool>
+        return Ui::vflow(
+                   Kr::checkbox(
+                       true,
+                       Ui::SINK<bool>
+                   ),
+                   Kr::checkbox(
+                       true,
+                       Ui::SINK<bool>,
+                       "Show hidden"s
+                   )
                ) |
                Ui::center();
     },
@@ -481,9 +488,9 @@ Page PAGE_RADIO{
     "Radio",
     "A set of checkable buttons—known as radio buttons—where no more than one of the buttons can be checked at a time.",
     [] {
-        return Kr::radio(
-                   true,
-                   Ui::SINK<bool>
+        return Ui::vflow(
+                   Kr::radio(true, Ui::SINK<bool>),
+                   Kr::radio(true, Ui::SINK<bool>, "Apple"s)
                ) |
                Ui::center();
     },

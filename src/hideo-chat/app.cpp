@@ -13,7 +13,7 @@ using namespace Karm::Math::Literals;
 namespace Hideo::Chat {
 
 Ui::Child messageSidebarItem(Str name) {
-    return Kr::sidenavItem(
+    return Kr::sidenavItemContent(
         false,
         Some(Ui::SINK<>),
         Ui::hflow(

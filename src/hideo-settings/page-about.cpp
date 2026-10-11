@@ -210,7 +210,7 @@ export Ui::Child pageAbout(State const&) {
                memInfos() | Kr::card(),
                cpuInfos() | Kr::card()
            ) |
-           pageScaffold;
+           pageScaffold();
 }
 
 } // namespace Hideo::Settings

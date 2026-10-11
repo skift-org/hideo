@@ -89,7 +89,7 @@ export Ui::Child pagePackages(State const& s) {
                Kr::titleRow("Packages"s),
                packageList(s)
            ) |
-           pageScaffold;
+           pageScaffold();
 }
 
 } // namespace Hideo::Settings

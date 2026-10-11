@@ -8,14 +8,16 @@ using namespace Karm::Math::Literals;
 
 namespace Hideo::Settings {
 
-export Ui::Child pageScaffold(Ui::Child inner) {
-    return inner |
-           Ui::insets({0_au, 0_au, 32_au, 0_au}) |
-           Ui::maxSize({460_au, Ui::UNCONSTRAINED}) |
-           Ui::grow() |
-           Ui::hcenter() |
-           Ui::vscroll() |
-           Ui::grow();
+export auto pageScaffold() {
+    return [](auto inner) {
+        return inner |
+               Ui::insets({0_au, 0_au, 32_au, 0_au}) |
+               Ui::maxSize({460_au, Ui::UNCONSTRAINED}) |
+               Ui::grow() |
+               Ui::hcenter() |
+               Ui::vscroll() |
+               Ui::grow();
+    };
 }
 
 } // namespace Hideo::Settings

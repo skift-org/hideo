@@ -407,7 +407,7 @@ Ui::Child homeMenu(State const& s) {
                    Ui::grow(NONE),
                    buttonHint("X", "QUIT GAME", Ui::GRAY50) | Ui::cond(s.inGame),
                    buttonHint("Y", "OPTIONS", Ui::GRAY50) | Ui::cond(not s.quickMenuVisible),
-                   buttonHint("A", "LAUCN", Ui::GRAY50),
+                   buttonHint("A", "LAUNCH", Ui::GRAY50),
                    buttonHint("B", "BACK", Ui::GRAY50) | Ui::cond(s.quickMenuVisible),
                })
            ) |

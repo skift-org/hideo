@@ -108,8 +108,9 @@ Ui::Child app() {
 } // namespace Hideo::Wear
 
 Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
+    auto app = co_trya$(App::Application::createAsync(env, {.options = {App::ApplicationOptions::ROOT}}, ct));
     co_return co_await Ui::runAsync(
-        env,
+        app,
         Hideo::Wear::app(),
         ct
     );

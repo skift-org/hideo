@@ -92,7 +92,7 @@ export enum struct Panel {
 };
 
 export struct State : Meta::NoCopy {
-    bool locked = true;
+    bool locked = false;
     bool keyboard = false;
     bool nightLight = false;
     f64 brightness = 1;

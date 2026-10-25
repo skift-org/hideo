@@ -172,7 +172,8 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     auto [process, p] = co_try$(command.spawnPty());
     auto pty = makeRc<Sys::Pty>(std::move(p));
 
-    auto app = Hideo::Console::app(terminal, pty);
-    Async::detach(_handleAsync(pty, app, ct));
-    co_return co_await Ui::runAsync(env, app, ct);
+    auto app = co_trya$(App::Application::createAsync(env, {.options = {App::ApplicationOptions::ROOT}}, ct));
+    auto ui = Hideo::Console::app(terminal, pty);
+    Async::detach(_handleAsync(pty, ui, ct));
+    co_return co_await Ui::runAsync(app, ui, ct);
 }

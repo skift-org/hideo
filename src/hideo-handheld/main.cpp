@@ -451,19 +451,20 @@ Ui::Child stacking(State const& s) {
 
 Ui::Child app() {
     return Ui::reducer<Model>({}, [](State const& s) {
-        return stacking(s) |
-               Ui::keyboardShortcut(App::Key::M, Model::bind<State::QuickMenuToggle>()) |
-               Ui::dialogLayer();
-    });
+               return stacking(s) |
+                      Ui::keyboardShortcut(App::Key::M, Model::bind<State::QuickMenuToggle>()) |
+                      Ui::dialogLayer();
+           }) |
+           Kr::pointer();
 }
 
 } // namespace Hideo::Handheld
 
 Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     App::formFactor = App::FormFactor::MOBILE;
-
+    auto app = co_trya$(App::Application::createAsync(env, {.options = {App::ApplicationOptions::ROOT}}, ct));
     co_return co_await Ui::runAsync(
-        env,
+        app,
         Hideo::Handheld::app() | Ui::pinSize({640_au, 480_au}),
         ct
     );

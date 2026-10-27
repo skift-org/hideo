@@ -130,7 +130,9 @@ Ui::Task<Action> reduce(State& s, Action a) {
             if (stat and stat.expect().type == Sys::Type::FILE) {
                 (void)Sys::launch({
                     .action = Ref::Uti::PUBLIC_PREVIEW,
-                    .objects = {dest},
+                    .objects = {
+                        Sys::Object{dest},
+                    },
                 });
             } else {
                 s.inputFilename = ""s;

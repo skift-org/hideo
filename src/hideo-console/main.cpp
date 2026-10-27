@@ -166,7 +166,7 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     auto terminal = makeRc<Vte::Terminal>(Vte::Theme{});
 
     Sys::Command command{
-        .exe = "shell"s,
+        .args = {"shell"s},
         .env = {}
     };
     auto [process, p] = co_try$(command.spawnPty());

@@ -67,7 +67,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             Sys::launch(
                 {
                     .action = Ref::Uti::PUBLIC_PREVIEW,
-                    .objects = {s.lastImageUrl},
+                    .objects = {Sys::Object{s.lastImageUrl}},
                 }
             )
                 .expect("could not launch intent");

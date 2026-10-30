@@ -59,7 +59,7 @@ Ui::Child settingsDialog() {
             Kr::titleRow("Font"s),
             Ui::vflow(
                 Kr::numberRow(16.0, Ui::SINK<f64>, 100, "Font Size"s)
-            ) | Kr::card(),
+            ) | Kr::scaffoldContent(),
 
             Kr::titleRow("Color Scheme"s),
             Ui::vflow(
@@ -69,13 +69,13 @@ Ui::Child settingsDialog() {
                 colorSchemeOption(Vte::ColorScheme::solarized()),
                 colorSchemeOption(Vte::ColorScheme::dracula()),
                 colorSchemeOption(Vte::ColorScheme::nord())
-            ) | Kr::card(),
+            ) | Kr::scaffoldContent(),
 
             Kr::titleRow("Terminal"s),
             Ui::vflow(
                 Kira::toggleRow(true, Ui::SINK<bool>, "Scrollback"s),
                 Kira::numberRow(1000.0, Ui::SINK<f64>, 100, "Scrollback Size"s)
-            ) | Kr::card(),
+            ) | Kr::scaffoldContent(),
         }) | Ui::vscroll() |
             Ui::grow(),
     });
@@ -84,6 +84,7 @@ Ui::Child settingsDialog() {
 struct State {
     Rc<Vte::Terminal> terminal;
     Rc<Sys::Pty> pty;
+    bool rootApplication = true;
 };
 
 using Action = Union<
@@ -95,7 +96,7 @@ static Ui::Task<Action> reduce(State& s, Action a) {
             s.terminal->write(b);
         },
         [&](App::KeyboardEvent const& e) {
-            Io::TextEncoder<> enc{*s.pty};
+            Io::TextEncoder enc{*s.pty};
             if (e.type == App::KeyboardEvent::PRESS or e.type == App::KeyboardEvent::REPEAT) {
                 if (e.key == App::Key::ENTER) {
                     (void)enc.writeRune('\r');
@@ -129,10 +130,15 @@ Ui::Child contextMenu() {
     });
 }
 
-Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty) {
+Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty, bool rootApplication) {
     return Ui::reducer<Model>(
-        State{terminal, pty},
+        State{terminal, pty, rootApplication},
         [](State const& s) {
+            if (s.rootApplication)
+                return Vte::viewport(s.terminal, Model::map<App::KeyboardEvent>()) |
+                       Ui::insets(5_au) |
+                       Ui::focusable({.visual = false, .steal = true}) |
+                       Ui::pinSize({1280_au, 720_au});
             return Kr::scaffold({
                 .icon = Mdi::CONSOLE_LINE,
                 .title = "Console"s,
@@ -140,10 +146,10 @@ Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty) {
                     return Vte::viewport(s.terminal, Model::map<App::KeyboardEvent>()) |
                            Ui::insets(6_au) |
                            Ui::focusable({.visual = false, .steal = true}) |
+                           Kr::scaffoldContent() |
                            Kr::contextMenu([] {
                                return contextMenu();
-                           }) |
-                           Kr::scaffoldContent();
+                           });
                 },
             });
         }
@@ -173,7 +179,7 @@ Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {
     auto pty = makeRc<Sys::Pty>(std::move(p));
 
     auto app = co_trya$(App::Application::createAsync(env, {.options = {App::ApplicationOptions::ROOT}}, ct));
-    auto ui = Hideo::Console::app(terminal, pty);
+    auto ui = Hideo::Console::app(terminal, pty, app->options().has(App::ApplicationOptions::ROOT));
     Async::detach(_handleAsync(pty, ui, ct));
     co_return co_await Ui::runAsync(app, ui, ct);
 }

@@ -17,9 +17,10 @@ namespace Hideo::Shell {
 
 static Opt<Rc<Gfx::Fontface>> _blackFontface = NONE;
 
-static Rc<Gfx::Fontface> blackFontface() {
-    if (not _blackFontface)
-        _blackFontface = Font::loadFontfaceOrFallback("bundle://fonts.inter/fonts/Inter-Bold.ttf"_url).ok();
+Rc<Gfx::Fontface> blackFontface() {
+    if (not _blackFontface) {
+        _blackFontface = Some(Font::globalDatabase().queryClosestOrFallback("sans-serif"_sym, {.weight = Gfx::FontWeight::BLACK}));
+    }
     return *_blackFontface;
 }
 

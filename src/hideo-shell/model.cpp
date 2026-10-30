@@ -32,13 +32,7 @@ export struct Launcher {
     Gfx::Icon icon = Mdi::APPLICATION;
     String name;
     Gfx::ColorRamp ramp;
-
-    Launcher(Gfx::Icon icon, String name, Gfx::ColorRamp ramp)
-        : icon(icon), name(name), ramp(ramp) {}
-
-    virtual ~Launcher() = default;
-
-    virtual void launch(State&) = 0;
+    App::Intent intent;
 };
 
 export inline constexpr Math::Vec2i MIN_WINDOW_SIZE = {250, 150};
@@ -102,23 +96,22 @@ export struct State : Meta::NoCopy {
     String searchQuery = ""s;
     usize searchIndex = 0;
 
-    DateTime dateTime;
-
     Rc<Gfx::Image> background;
-    Vec<Noti> noti;
-    Vec<Rc<Launcher>> launchers;
-    Vec<Rc<Launcher>> filtered;
-    Vec<Rc<Window>> windows;
+    Vec<Noti> noti = {};
+    Vec<Launcher> launchers = {};
+    Vec<Launcher> filtered = {};
+    Vec<Rc<Window>> windows = {};
+    DateTime dateTime = {};
 
     void filter() {
-        Vec<Tuple<Rc<Launcher>, int>> matches;
-        for (auto l : launchers) {
+        Vec<Tuple<Launcher, int>> matches;
+        for (auto& l : launchers) {
             if (not searchQuery) {
                 matches.pushBack({l, {}});
                 continue;
             }
 
-            auto match = Glob::matchFuzzy(l->name, searchQuery);
+            auto match = Glob::matchFuzzy(l.name, searchQuery);
             if (not match)
                 continue;
             matches.pushBack({l, match->score});
@@ -133,7 +126,7 @@ export struct State : Meta::NoCopy {
                    Select([](auto& m) {
                        return m.v0;
                    }) |
-                   Collect<Vec<Rc<Launcher>>>();
+                   Collect<Vec<Launcher>>();
     }
 
     void updateFocus() {
@@ -189,7 +182,7 @@ export struct DimisNoti {
 };
 
 export struct StartApplication {
-    Rc<Launcher> launcher;
+    Launcher launcher;
 };
 
 export struct AddWindow {
@@ -317,7 +310,7 @@ Ui::Task<Action> reduce(State& s, Action a) {
             s.noti.removeAt(dismis.index);
         },
         [&](StartApplication start) {
-            start.launcher->launch(s);
+            (void)App::launch(start.launcher.intent);
             s.activePanel = Panel::NIL;
         },
         [&](AddWindow add) {
@@ -531,19 +524,6 @@ export struct MockWindow : Window {
     }
 
     void event(App::Event&) override {}
-};
-
-export struct MockLauncher : Launcher {
-    using Launcher::Launcher;
-
-    void launch(State& s) override {
-        auto instance = makeRc<MockWindow>(
-            icon,
-            name,
-            ramp
-        );
-        s.windows.emplaceFront(instance);
-    }
 };
 
 } // namespace Hideo::Shell

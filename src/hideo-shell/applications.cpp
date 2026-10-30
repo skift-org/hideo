@@ -27,12 +27,12 @@ Ui::Child appIcon(Gfx::Icon const& icon, Gfx::ColorRamp ramp, Math::Au size = 22
            });
 }
 
-Ui::Child appRow(Rc<Launcher> launcher, bool selected) {
+Ui::Child appRow(Launcher const& launcher, bool selected) {
     auto child = Ui::hflow(
                      12_au,
                      Math::Align::START | Math::Align::VCENTER,
-                     appIcon(launcher->icon, launcher->ramp, 18_au),
-                     Ui::labelMedium(launcher->name)
+                     appIcon(launcher.icon, launcher.ramp, 18_au),
+                     Ui::labelMedium(launcher.name)
                  ) |
                  Ui::insets(6_au) |
                  Ui::button(

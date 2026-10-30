@@ -7,6 +7,7 @@ import Karm.Ref;
 import Karm.Image;
 import Karm.Sys;
 import Karm.Gfx;
+import Karm.App;
 
 using namespace Karm;
 using namespace Karm::Ref::Literals;
@@ -64,10 +65,10 @@ Ui::Task<Action> reduce(State& s, Action a) {
             }
         },
         [&](OpenLast) {
-            Sys::launch(
+            App::launch(
                 {
                     .action = Ref::Uti::PUBLIC_PREVIEW,
-                    .objects = {Sys::Object{s.lastImageUrl}},
+                    .attachments = {{s.lastImageUrl}},
                 }
             )
                 .expect("could not launch intent");

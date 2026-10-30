@@ -62,6 +62,7 @@ using Model = Ui::Model<State, Action, reduce>;
 static constexpr Str LATIN_PANGRAM = "All beings born free, equal in dignity, rights—justice demanded, voice exhorted, zealously championed worldwide";
 static constexpr Str EMOJI_PANGRAM = "🥰💀✌️🌴🐢🐐🍄⚽🍻👑📸😬👀🚨🏡🕊️🏆😻🌟🧿🍀🎨🍜";
 static constexpr Str MATH_PANGRAM = "𝞉𝞩𝟃𞻰⟥⦀⦁ 𝚢𝚣𝚤𝖿𝗀𝗁𝗂 𝑻𝑼𝑽𝗔𝗕𝗖𝗗 ϑϕϰϱϵℊℎ ⊰⊱⊲⊳⊴⊵⫕ 𞹴𞹵𞹶𞹷𞹹𞹺𞹻";
+static constexpr Str FANGSONG_PANGRAM = "人人生而自由，在尊严和权利上一律平等——呼唤正义，奋力疾呼，在全世界热忱捍卫。";
 
 bool textInFont(Gfx::Fontface& ff, Str text) {
     for (auto r : iterRunes(text)) {
@@ -72,6 +73,8 @@ bool textInFont(Gfx::Fontface& ff, Str text) {
 }
 
 Str pangramFor(Gfx::Fontface& ff) {
+    if (textInFont(ff, FANGSONG_PANGRAM))
+        return FANGSONG_PANGRAM;
     if (textInFont(ff, LATIN_PANGRAM))
         return LATIN_PANGRAM;
     if (textInFont(ff, MATH_PANGRAM))

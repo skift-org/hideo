@@ -4,6 +4,7 @@ import Karm.Core;
 import Karm.Ui;
 import Karm.Ref;
 import Karm.Sys;
+import Karm.App;
 
 using namespace Karm;
 using namespace Karm::Literals;
@@ -128,10 +129,10 @@ Ui::Task<Action> reduce(State& s, Action a) {
 
             auto stat = Sys::stat(dest);
             if (stat and stat.expect().type == Sys::Type::FILE) {
-                (void)Sys::launch({
+                (void)App::launch({
                     .action = Ref::Uti::PUBLIC_PREVIEW,
-                    .objects = {
-                        Sys::Object{dest},
+                    .attachments = {
+                        App::Attachment{dest},
                     },
                 });
             } else {

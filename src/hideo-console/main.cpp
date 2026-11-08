@@ -88,10 +88,11 @@ struct State {
 };
 
 using Action = Union<
-    Bytes, App::KeyboardEvent>;
+    Bytes,
+    App::KeyboardEvent>;
 
-static Ui::Task<Action> reduce(State& s, Action a) {
-    a.visit(
+static Ui::Task<Action> reduce(State& s, Action action) {
+    action.visit(
         [&](Bytes b) {
             s.terminal->write(b);
         },
@@ -130,22 +131,26 @@ Ui::Child contextMenu() {
     });
 }
 
+auto terminalContent(State const& s) -> Ui::Child {
+    return Vte::viewport(s.terminal, Model::map<App::KeyboardEvent>()) |
+           Ui::focusable({.visual = false, .steal = true});
+}
+
 Ui::Child app(Rc<Vte::Terminal> terminal, Rc<Sys::Pty> pty, bool rootApplication) {
     return Ui::reducer<Model>(
         State{terminal, pty, rootApplication},
         [](State const& s) {
             if (s.rootApplication)
-                return Vte::viewport(s.terminal, Model::map<App::KeyboardEvent>()) |
-                       Ui::insets(5_au) |
-                       Ui::focusable({.visual = false, .steal = true}) |
+                return terminalContent(s) |
+                       Ui::insets(6_au) |
                        Ui::pinSize({1280_au, 720_au});
+
             return Kr::scaffold({
                 .icon = Mdi::CONSOLE_LINE,
                 .title = "Console"s,
                 .body = [&] {
-                    return Vte::viewport(s.terminal, Model::map<App::KeyboardEvent>()) |
+                    return terminalContent(s) |
                            Ui::insets(6_au) |
-                           Ui::focusable({.visual = false, .steal = true}) |
                            Kr::scaffoldContent() |
                            Kr::contextMenu([] {
                                return contextMenu();

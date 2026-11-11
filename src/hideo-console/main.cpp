@@ -169,8 +169,13 @@ Async::Task<> _handleAsync(Rc<Sys::Pty> pty, Ui::Child app, Async::CancellationT
     while (true) {
         co_try$(ct.errorIfCanceled());
         auto read = co_trya$(pty->readAsync(buf, ct));
+        if (read == 0)
+            break;
         Hideo::Console::Model::event(*app, sub(buf, 0, read));
     }
+
+    Ui::bubble<App::RequestCloseEvent>(*app);
+    co_return Ok();
 }
 
 Async::Task<> entryPointAsync(Sys::Env& env, Async::CancellationToken ct) {

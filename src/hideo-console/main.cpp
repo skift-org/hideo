@@ -99,9 +99,9 @@ static Ui::Task<Action> reduce(State& s, Action action) {
         [&](App::KeyboardEvent const& e) {
             Io::TextEncoder enc{*s.pty};
             if (e.type == App::KeyboardEvent::PRESS or e.type == App::KeyboardEvent::REPEAT) {
-                if (e.key == App::Key::ENTER) {
+                if (e.logicalKey == App::Key::ENTER) {
                     (void)enc.writeRune('\r');
-                } else if (e.key == App::Key::BKSPC) {
+                } else if (e.logicalKey == App::Key::BKSPC) {
                     (void)enc.writeRune(0x7f);
                 } else if (e.rune) {
                     (void)enc.writeRune(e.rune);

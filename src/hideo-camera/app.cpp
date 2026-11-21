@@ -23,6 +23,10 @@ struct VideoSurface : Ui::View<VideoSurface> {
 
     VideoSurface(Rc<Av::VideoStream> stream) : _stream(stream) {}
 
+    void adopt(VideoSurface& o) override {
+        _frame = o._frame;
+    }
+
     void paint(Gfx::Canvas& g, Math::RectAu) override {
         if (_frame)
             g.blit(bound().cast<isize>(), _frame.expect().surface);

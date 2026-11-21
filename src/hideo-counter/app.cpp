@@ -4,7 +4,6 @@ import Karm.Ui;
 import Karm.Kira;
 import Karm.Core;
 import Karm.Math;
-import Karm.Signals;
 import Mdi;
 import :model;
 

@@ -55,6 +55,10 @@ struct Viewport : Ui::View<Viewport> {
     Viewport(State const& state)
         : _state(state) {}
 
+    void adopt(Viewport& o) override {
+        _listener = o._listener;
+    }
+
     void _paintChildren(Gfx::Canvas& g, Ref parent) {
         for (auto const& child : _state.tree._nodes) {
             if (child.parent == parent)

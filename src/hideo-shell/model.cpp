@@ -396,11 +396,6 @@ export struct Viewport : Ui::View<Viewport> {
     Viewport(Rc<Window> window, bool primary, App::Snap snap, Math::Radiif radii)
         : _window(window), _primary(primary), _snap(snap), _radii(radii) {}
 
-    void reconcile(Viewport& o) override {
-        _window = o._window;
-        _radii = o._radii;
-    }
-
     void paint(Gfx::Canvas& g, Math::RectAu) override {
         auto surface = _window->surface();
         g.push();
